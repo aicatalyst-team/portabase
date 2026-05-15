@@ -132,7 +132,7 @@ async function createDefaultOrganization() {
 }
 
 function consoleAscii() {
-  console.log(
+  log.info(
     "                                                          \n" +
       "     ____             __        __                        \n" +
       "    / __ \\____  _____/ /_____ _/ /_  ____ _________       \n" +

@@ -1,5 +1,8 @@
 "use server";
 import {userAction} from "@/lib/safe-actions/actions";
+import { logger } from "@/lib/logger";
+
+const log = logger.child({ module: "features/upload/upload.action" });
 import {z} from "zod";
 import {v4 as uuidv4} from "uuid";
 import {db} from "@/db";
@@ -69,7 +72,7 @@ export const uploadUserImageAction = userAction.schema(
         }
 
         const result = await dispatchStorage(input, undefined, settings.storageChannel.id);
-        console.log(result);
+        log.debug({ result }, "Upload dispatch result");
         if (!result.success) {
             return {
                 success: false,

@@ -1,6 +1,9 @@
 import {PageParams} from "@/types/next";
 import {Page, PageContent, PageHeader, PageTitle} from "@/features/layout/page";
 import {db} from "@/db";
+import { logger } from "@/lib/logger";
+
+const log = logger.child({ module: "dashboard/admin/settings" });
 import {notFound} from "next/navigation";
 import {SettingsTabs} from "@/components/wrappers/dashboard/admin/settings/settings-tabs";
 import {desc, isNull} from "drizzle-orm";
@@ -14,7 +17,7 @@ export default async function RoutePage(props: PageParams<{}>) {
         where: (fields, {eq}) => eq(fields.name, "system"),
     });
 
-    console.log(settings)
+    log.debug({ settings }, "Settings loaded");
 
     const storageChannels = await db.query.storageChannel.findMany({
         with: {
