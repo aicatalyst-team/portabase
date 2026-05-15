@@ -1,6 +1,9 @@
 import pino, { type Logger } from "pino";
+import {env} from "@/env.mjs";
 
-const isProd = process.env.NODE_ENV === "production";
+const isProd = env.NODE_ENV === "production";
+const defaultLevel = isProd ? "info" : "debug";
+const level = (env.LOG_LEVEL ?? defaultLevel) as pino.Level;
 
 function getLocalTimestamp() {
     const date = new Date();
@@ -19,7 +22,7 @@ function getLocalTimestamp() {
 }
 
 export const logger: Logger = pino({
-    level: isProd ? "info" : "debug",
+    level,
     base: null,
 
     ...(isProd

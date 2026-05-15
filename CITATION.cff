@@ -21,6 +21,8 @@ keywords:
   - backups
   - postgresql
   - mysql
+  - firebird
+  - mssql
   - mariadb
   - devops
   - database
@@ -31,5 +33,5 @@ keywords:
   - web-ui
   - agent
 license: Apache-2.0
-version: 1.13.0
+version: 1.14.1
 date-released: '2026-03-02'
