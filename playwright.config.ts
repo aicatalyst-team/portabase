@@ -6,7 +6,8 @@ import path from 'path';
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config({ path: path.resolve(__dirname, '.env.e2e') });
+
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -44,9 +45,14 @@ export default defineConfig({
             dependencies: ['setup'],
         },
         {
+            name: 'oidc',
+            testMatch: '**/oidc.spec.ts',
+            dependencies: ['auth'],
+        },
+        {
             name: 'access-management',
             testMatch: '**/access-management.spec.ts',
-            dependencies: ['auth'],
+            dependencies: ['oidc'],
         },
         {
             name: 'notification',
@@ -63,11 +69,10 @@ export default defineConfig({
             testMatch: '**/agent.spec.ts',
             dependencies: ['access-management'],
         },
-
         {
             name: 'project',
             testMatch: '**/project.spec.ts',
-            dependencies: ['access-management'],
+            dependencies: ['agent'],
         },
         {
             name: 'cleanup',

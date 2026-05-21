@@ -33,19 +33,64 @@ jobs:
           load: true
           tags: portabase/portabase:test
 
-      - name: Run app container
+      - name: Create shared Docker network
         run: |
-          docker run -d --name myapp \
-            -p 8887:80 \
-            -e NODE_ENV=production \
-            -e PROJECT_URL=http://localhost:8887 \
-            -e PROJECT_SECRET=80af5e4c875dfded3a6ba511c6ed8b0160cad723f848ee0851403ed6141f6ba1 \
-            portabase/portabase:test
+          docker network inspect portabase >/dev/null 2>&1 || \
+            docker network create portabase
+
+      - name: Seed OIDC services
+        run: make seed-auth
+
+      - name: Wait for OIDC providers
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://localhost:3056/realms/master/.well-known/openid-configuration >/dev/null; then
+              echo "Keycloak is ready"
+              break
+            fi
+            if [ "$i" -eq 60 ]; then
+              echo "Timeout: Keycloak never became ready"
+              docker compose -f docker-compose.oidc.yml logs
+              exit 1
+            fi
+            echo "Waiting for Keycloak... ($i/60)"
+            sleep 2
+          done
+
+          for i in {1..60}; do
+            if curl -fsS http://localhost:3055/healthz >/dev/null; then
+              echo "Pocket ID is ready"
+              break
+            fi
+            if [ "$i" -eq 60 ]; then
+              echo "Timeout: Pocket ID never became ready"
+              docker compose -f docker-compose.oidc.yml logs
+              exit 1
+            fi
+            echo "Waiting for Pocket ID... ($i/60)"
+            sleep 2
+          done
+
+          for i in {1..60}; do
+            if curl -fsS http://localhost:3057/application/o/portabase/.well-known/openid-configuration >/dev/null; then
+              echo "Authentik is ready"
+              break
+            fi
+            if [ "$i" -eq 60 ]; then
+              echo "Timeout: Authentik never became ready"
+              docker compose -f docker-compose.oidc.yml logs
+              exit 1
+            fi
+            echo "Waiting for Authentik... ($i/60)"
+            sleep 2
+          done
+
+      - name: Start E2E app stack
+        run: docker compose -f docker-compose.prod.yml up -d --no-build
 
       - name: Wait for app port to be listening
         run: |
           for i in {1..40}; do
-          
             if curl -fsS http://localhost:8887/ >/dev/null; then
               echo "App is responding on port 8887"
               exit 0
@@ -54,7 +99,7 @@ jobs:
             sleep 2
           done
           echo "Timeout: app never became ready"
-          docker logs myapp
+          docker compose -f docker-compose.prod.yml logs
           exit 1
 
       - name: Install Playwright browsers
@@ -114,4 +159,6 @@ jobs:
 
       - name: Cleanup
         if: always()
-        run: docker stop myapp && docker rm myapp || true
+        run: |
+          docker compose -f docker-compose.prod.yml down --volumes || true
+          docker compose -f docker-compose.oidc.yml down --volumes || true

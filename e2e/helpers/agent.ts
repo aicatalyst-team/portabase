@@ -1,4 +1,5 @@
 import {Page} from "@playwright/test";
+import {execSync} from "node:child_process";
 
 
 /**
@@ -63,4 +64,17 @@ export async function remove(page: Page, name: string) {
     await get(page, name).click();
     await page.getByRole("button", {name: /Delete Agent/i}).click();
     await page.getByRole("button", {name: "Delete", exact: true}).click();
+}
+
+
+export async function launch(edgeKey: string) {
+    const output = execSync(
+        `EDGE_KEY=${edgeKey} docker compose -f e2e/helpers/agent/docker-compose.agent-a.yml up -d`,
+        {
+            cwd: process.cwd(),
+            encoding: "utf-8",
+            stdio: ["ignore", "pipe", "pipe"],
+        },
+    );
+    return output;
 }

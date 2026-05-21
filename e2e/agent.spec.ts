@@ -1,10 +1,5 @@
 import {expect, test} from "@playwright/test";
-import {execSync} from "child_process";
-import fs from "fs";
-import os from "os";
-import path from "path";
-import {createAgentWithDockerDatabases} from "./helpers/agent-cli";
-import {create, edit, get, remove} from "./helpers/agent";
+import {create, edit, get, launch, remove} from "./helpers/agent";
 import {LOCAL_STORAGE_PATH} from "./helpers/session";
 
 const agent = {
@@ -64,53 +59,21 @@ test.describe.serial(() => {
         await expect(page.getByText(agent.bName)).toHaveCount(0);
     });
 
-    // test("Launch the updated agent", async ({page}) => {
-    //     await page.goto("/dashboard/agents");
-    //     await expect(page.getByRole("heading", {name: "Agents"})).toBeVisible();
-    //     await get(page, agent.aName).click();
-    //
-    //     await expect(page).toHaveURL(/\/dashboard\/agents\/.+/);
-    //     await expect(page.getByText(agent.aName, {exact: true})).toBeVisible();
-    //     await expect(page.getByText("Registration & Setup")).toBeVisible();
-    //
-    //     const commandInput = page.locator("input[readonly]").first();
-    //     await page.locator("input[readonly]").first().locator("xpath=following-sibling::button[1]").click();
-    //     const command = await commandInput.inputValue();
-    //
-    //     agentWorkspace = fs.mkdtempSync(path.join(os.tmpdir(), "portabase-agent-"));
-    //     await createAgentWithDockerDatabases(command, agentWorkspace);
-    //     execSync(`portabase start "${agent.aName}"`, {
-    //         cwd: agentWorkspace,
-    //         stdio: "pipe",
-    //         timeout: 120_000,
-    //     });
-    //
-    //     await expect(page.getByText("Never connected.")).toHaveCount(0, {timeout: 120_000});
-    //     await expect(page.getByText("Action Required")).toHaveCount(0);
-    // });
+    test("Launch the updated agent", async ({page}) => {
+        await page.goto("/dashboard/agents");
+        await expect(page.getByRole("heading", {name: "Agents"})).toBeVisible();
+        await get(page, agent.aName).click();
 
-    test.afterAll(async () => {
-        if (agentWorkspace) {
-            try {
-                execSync(`portabase stop "${agent.aName}"`, {
-                    cwd: agentWorkspace,
-                    stdio: "pipe",
-                    timeout: 30_000,
-                });
-            } catch {
-            }
+        await expect(page).toHaveURL(/\/dashboard\/agents\/.+/);
+        await expect(page.getByText(agent.aUpdatedName, {exact: true})).toBeVisible();
+        await expect(page.getByText("Registration & Setup")).toBeVisible();
 
-            try {
-                execSync(`portabase uninstall --force "${agent.aName}"`, {
-                    cwd: agentWorkspace,
-                    stdio: "pipe",
-                    timeout: 30_000,
-                });
-            } catch {
-            }
+        const commandInput = page.locator("input[readonly]").last();
+        await page.locator("input[readonly]").first().locator("xpath=following-sibling::button[1]").click();
+        const edgeKey = await commandInput.inputValue();
 
-            fs.rmSync(agentWorkspace, {recursive: true, force: true});
-            agentWorkspace = null;
-        }
+        await launch(edgeKey)
+
+        await expect(page.getByRole("heading", { name: "Managed Databases" })).toBeVisible();
     });
 });

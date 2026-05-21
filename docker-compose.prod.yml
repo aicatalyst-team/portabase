@@ -1,35 +1,36 @@
+name: portabase-prod
+
 services:
+
   app:
-#    build:
-#      context: .
-#      dockerfile: docker/dockerfile/Dockerfile
-#      target: prod
-    image: portabase/portabase:1
+    build:
+      context: .
+      dockerfile: docker/dockerfile/Dockerfile
+      target: prod
     ports:
       - '8887:80'
     environment:
       TZ: "Europe/Paris"
-    env_file:
-      - .env
     volumes:
-      - portabase-data:/data
+      - portabase-prod-data:/data
     depends_on:
       db:
         condition: service_healthy
-    container_name: portabase-app-prod
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost/api/health"]
+      test: [ "CMD-SHELL", "curl -f http://localhost/api/health" ]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 60s
+    extra_hosts:
+      - "localhost:host-gateway"
 
   db:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     ports:
       - "5433:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - portabase-prod-postgres-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=devdb
       - POSTGRES_USER=devuser
@@ -41,5 +42,5 @@ services:
       retries: 5
 
 volumes:
-  portabase-data:
-  postgres-data:
+  portabase-prod-data:
+  portabase-prod-postgres-data:
