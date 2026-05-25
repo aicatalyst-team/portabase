@@ -73,6 +73,15 @@ function checkRouteExists(pathname: string) {
     /^\/api\/config\/?$/,
     /^\/api\/health\/?$/,
     /^\/api\/google\/drive\/callback\/?$/,
+    // v1 external API
+    /^\/api\/v1\/agents\/?$/,
+    /^\/api\/v1\/agents\/[^/]+\/?$/,
+    /^\/api\/v1\/databases\/?$/,
+    /^\/api\/v1\/databases\/[^/]+\/?$/,
+    /^\/api\/v1\/databases\/[^/]+\/backup\/?$/,
+    /^\/api\/v1\/databases\/[^/]+\/backup\/[^/]+\/?$/,
+    /^\/api\/v1\/databases\/[^/]+\/restore\/?$/,
+    /^\/api\/v1\/databases\/[^/]+\/status\/?$/,
   ];
   return routePatterns.some((pattern) => pattern.test(pathname));
 }
