@@ -5,9 +5,10 @@ import { eq } from "drizzle-orm";
 import { ServerActionResult } from "@/types/action-type";
 import { z } from "zod";
 import { headers } from "next/headers";
-import {auth, deleteApiKey, getApiKeys, getPasskeys, revokePasskey} from "@/lib/auth/auth";
+import {auth, createApiKey, deleteApiKey, getApiKeys, getPasskeys, revokePasskey} from "@/lib/auth/auth";
 import { user } from "@/db/schema/02_user";
 import {userAction} from "@/lib/safe-actions/actions";
+import {ApiKey} from "@better-auth/api-key";
 
 const UpdateProfileSchema = z.object({
     name: z.string().optional(),
@@ -70,6 +71,32 @@ export const getApiKeysAction = userAction.action(async (): Promise<ServerAction
             success: false,
             actionError: {
                 message: "error_fetching_apikeys",
+                cause: error instanceof Error ? error.message : "Unknown error",
+            },
+        };
+    }
+});
+
+const CreateApiKeySchema = z.object({
+    name: z.string(),
+});
+
+
+export const createApiKeysAction = userAction.schema(CreateApiKeySchema).action(async ({parsedInput} ): Promise<ServerActionResult<ApiKey>> => {
+    try {
+        const apikey = await createApiKey(parsedInput.name);
+        return {
+            success: true,
+            value: apikey,
+            actionSuccess: {
+                message: "apikey_created",
+            },
+        };
+    } catch (error) {
+        return {
+            success: false,
+            actionError: {
+                message: "error_creating_apikeys",
                 cause: error instanceof Error ? error.message : "Unknown error",
             },
         };

@@ -669,6 +669,16 @@ export const getApiKeys = async () => {
     });
 };
 
+export const createApiKey = async (name: string) => {
+    return await auth.api.createApiKey({
+        body: {
+            name,
+            prefix: "sk_",
+        },
+        headers: await headers(),
+    });
+};
+
 
 export const deleteApiKey = async (keyId: string) => {
     await auth.api.deleteApiKey({

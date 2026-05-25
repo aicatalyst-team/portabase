@@ -40,6 +40,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { timeAgo } from "@/utils/date-formatting";
 import {
+    createApiKeysAction,
     deleteApiKeyAction,
     getApiKeysAction,
 } from "@/features/profile/profile.action";
@@ -157,20 +158,34 @@ export function ProfileAccount({ user }: ProfileAccountProps) {
 
     const { mutate: addApiKey, isPending: isAddingApikey } = useMutation({
         mutationFn: async () => {
-            const result = await authClient.apiKey.create({
-                name: apiKeyName || "My API Key",
-                prefix: "sk_"
-            });
 
-            if (result?.error) {
-                throw result.error;
+            // const permissions = {
+            //     organization: ["read", "read-write"],
+            // }
+            //
+            // const result = await authClient.apiKey.create({
+            //     name: apiKeyName || "My API Key",
+            //     prefix: "sk_",
+            //     permissions
+            // });
+            //
+            // if (result?.error) {
+            //     throw result.error;
+            // }
+
+            const result = await createApiKeysAction({
+                name: apiKeyName || "My API Key"
+            });
+            console.log(result);
+            if (!result?.data?.success) {
+                throw new Error("Failed to create API Key");
             }
 
             return result;
         },
 
         onSuccess: (result: any) => {
-            setCreatedApiKey(result.data.key);
+            setCreatedApiKey(result.data.value.key);
 
             toast.success("API Key created successfully");
 
