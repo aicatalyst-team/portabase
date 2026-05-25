@@ -3,7 +3,7 @@ import { withApiKey, ApiKeyContext } from "@/lib/api-v1/middleware";
 import { getAccessibleAgentIds } from "@/lib/api-v1/acl";
 import { db } from "@/db";
 import * as drizzleDb from "@/db";
-import { inArray, and, eq, count } from "drizzle-orm";
+import { inArray, eq, count } from "drizzle-orm";
 import { z } from "zod";
 import { slugify } from "@/utils/slugify";
 import { logger } from "@/lib/logger";
@@ -19,10 +19,7 @@ export const GET = withApiKey(async (_req: Request, ctx: ApiKeyContext) => {
     }
 
     const agents = await db.query.agent.findMany({
-      where: and(
-        inArray(drizzleDb.schemas.agent.id, agentIds),
-        eq(drizzleDb.schemas.agent.isArchived, false)
-      ),
+      where: inArray(drizzleDb.schemas.agent.id, agentIds),
     });
 
     return NextResponse.json({ data: agents });
@@ -61,32 +58,48 @@ export const POST = withApiKey(async (req: Request, ctx: ApiKeyContext) => {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const slug = slugify(name);
+    const createdAgent = await db.transaction(async (tx) => {
+      const slug = slugify(name);
 
-    const [existing] = await db
-      .select({ count: count() })
-      .from(drizzleDb.schemas.agent)
-      .where(eq(drizzleDb.schemas.agent.slug, slug));
+      const [existing] = await tx
+        .select({ count: count() })
+        .from(drizzleDb.schemas.agent)
+        .where(eq(drizzleDb.schemas.agent.slug, slug));
 
-    if (existing.count > 0) {
+      if (existing.count > 0) {
+        return null; // signal slug conflict
+      }
+
+      const [agent] = await tx
+        .insert(drizzleDb.schemas.agent)
+        .values({ name, description, slug, organizationId })
+        .returning();
+
+      if (!agent) throw new Error("Failed to create agent");
+
+      await tx.insert(drizzleDb.schemas.organizationAgent).values({
+        organizationId,
+        agentId: agent.id,
+      });
+
+      return agent;
+    });
+
+    if (createdAgent === null) {
       return NextResponse.json(
         { error: "An agent with this name already exists" },
         { status: 422 }
       );
     }
 
-    const [createdAgent] = await db
-      .insert(drizzleDb.schemas.agent)
-      .values({ name, description, slug, organizationId })
-      .returning();
-
-    await db.insert(drizzleDb.schemas.organizationAgent).values({
-      organizationId,
-      agentId: createdAgent.id,
-    });
-
     return NextResponse.json({ data: createdAgent }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === "23505") {
+      return NextResponse.json(
+        { error: "An agent with this name already exists" },
+        { status: 422 }
+      );
+    }
     log.error({ error }, "Error in POST /api/v1/agents");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
