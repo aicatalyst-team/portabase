@@ -35,6 +35,13 @@ export function withApiKey(handler: ApiKeyHandler) {
       const result = await auth.api.verifyApiKey({ body: { key } });
 
       if (!result?.valid || !result?.key) {
+
+        if (result.error?.code === "RATE_LIMITED") {
+          return NextResponse.json(
+            { error: result.error.message, details: (result.error as any).details ?? null },
+            { status: 429 }
+          );
+        }
         return NextResponse.json(
           { error: "Invalid or expired API key" },
           { status: 401 }
