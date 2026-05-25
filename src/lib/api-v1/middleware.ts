@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
-import { db } from "@/db";
 import * as drizzleDb from "@/db";
 import { eq } from "drizzle-orm";
 import { logger } from "@/lib/logger";
@@ -15,7 +14,7 @@ export type ApiKeyContext = {
 type ApiKeyHandler = (
   req: Request,
   ctx: ApiKeyContext,
-  params: Record<string, string>
+  params?: Record<string, string>
 ) => Promise<Response>;
 
 export function withApiKey(handler: ApiKeyHandler) {
@@ -44,7 +43,11 @@ export function withApiKey(handler: ApiKeyHandler) {
 
       const userId = result.key.referenceId as string;
 
-      const memberships = await db.query.member.findMany({
+      if (!userId) {
+        return NextResponse.json({ error: "Invalid or expired API key" }, { status: 401 });
+      }
+
+      const memberships = await drizzleDb.db.query.member.findMany({
         where: eq(drizzleDb.schemas.member.userId, userId),
         columns: { organizationId: true },
       });
