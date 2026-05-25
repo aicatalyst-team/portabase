@@ -35,7 +35,10 @@ export const GET = withApiKey(
           orderBy: [desc(drizzleDb.schemas.backup.createdAt)],
         }),
         db.query.restoration.findFirst({
-          where: eq(drizzleDb.schemas.restoration.databaseId, id),
+          where: and(
+            eq(drizzleDb.schemas.restoration.databaseId, id),
+            isNull(drizzleDb.schemas.restoration.deletedAt)
+          ),
           orderBy: [desc(drizzleDb.schemas.restoration.createdAt)],
         }),
       ]);

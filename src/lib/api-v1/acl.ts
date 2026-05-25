@@ -53,7 +53,10 @@ export async function getAccessibleDatabaseIds(userId: string): Promise<string[]
   if (agentIds.length === 0) return [];
 
   const databases = await db.query.database.findMany({
-    where: inArray(drizzleDb.schemas.database.agentId, agentIds),
+    where: and(
+      inArray(drizzleDb.schemas.database.agentId, agentIds),
+      isNull(drizzleDb.schemas.database.deletedAt)
+    ),
     columns: { id: true },
   });
 

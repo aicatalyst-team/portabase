@@ -3,7 +3,7 @@ import { withApiKey, ApiKeyContext } from "@/lib/api-v1/middleware";
 import { getAccessibleAgentIds } from "@/lib/api-v1/acl";
 import { db } from "@/db";
 import * as drizzleDb from "@/db";
-import { inArray, eq, count } from "drizzle-orm";
+import { inArray, eq, count, and, or, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { slugify } from "@/utils/slugify";
 import { logger } from "@/lib/logger";
@@ -19,7 +19,13 @@ export const GET = withApiKey(async (_req: Request, ctx: ApiKeyContext) => {
     }
 
     const agents = await db.query.agent.findMany({
-      where: inArray(drizzleDb.schemas.agent.id, agentIds),
+      where: and(
+        inArray(drizzleDb.schemas.agent.id, agentIds),
+        or(
+          eq(drizzleDb.schemas.agent.isArchived, false),
+          isNull(drizzleDb.schemas.agent.isArchived)
+        )
+      ),
     });
 
     return NextResponse.json({ data: agents });
