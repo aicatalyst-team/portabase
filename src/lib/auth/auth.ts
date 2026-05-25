@@ -22,7 +22,8 @@ import {passkey} from "@better-auth/passkey";
 import {getOidcProviders} from "./oidc";
 import {APIError} from "better-auth/api";
 import {getOAuthProviders} from "./oauth";
-import { logger } from "@/lib/logger";
+import {logger} from "@/lib/logger";
+import {apiKey} from "@better-auth/api-key"
 
 const log = logger.child({ module: "lib/auth" });
 
@@ -132,6 +133,7 @@ export const auth = betterAuth({
     },
 
     plugins: [
+        apiKey(),
         sso({
             defaultSSO: oidcProviders.map((p) => ({
                 oidcConfig: {
@@ -658,6 +660,23 @@ export const getOrganization = async ({
         console.error(e);
         return null;
     }
+};
+
+
+export const getApiKeys = async () => {
+    return await auth.api.listApiKeys({
+        headers: await headers(),
+    });
+};
+
+
+export const deleteApiKey = async (keyId: string) => {
+    await auth.api.deleteApiKey({
+        body: {
+            keyId: keyId,
+        },
+        headers: await headers(),
+    });
 };
 
 export const getPasskeys = async () => {
