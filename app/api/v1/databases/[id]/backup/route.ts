@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server";
-import { withApiKey, ApiKeyContext } from "@/lib/api-v1/middleware";
-import { getAccessibleDatabaseIds } from "@/lib/api-v1/acl";
+import { withApiKey } from "@/lib/api-v1/middleware";
 import { db } from "@/db";
 import * as drizzleDb from "@/db";
 import { eq, desc, isNull, and } from "drizzle-orm";
 import { logger } from "@/lib/logger";
+import {getAccessibleDatabaseIds} from "@/lib/api-v1/services/databases";
+import {ApiKeyContext, ApiKeyContextUser} from "@/lib/api-v1/types";
 
 const log = logger.child({ module: "api/v1/databases/[id]/backup" });
 
-async function resolveDatabaseAccess(id: string, userId: string) {
-  const accessibleIds = await getAccessibleDatabaseIds(userId);
+async function resolveDatabaseAccess(id: string, user: ApiKeyContextUser) {
+  const accessibleIds = await getAccessibleDatabaseIds(user);
   if (accessibleIds.includes(id)) return "ok";
   const exists = await db.query.database.findFirst({
     where: eq(drizzleDb.schemas.database.id, id),
@@ -22,9 +23,10 @@ export const GET = withApiKey(
   async (_req: Request, ctx: ApiKeyContext, params?: Record<string, string>) => {
     try {
       const id = params?.id;
+
       if (!id) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-      const access = await resolveDatabaseAccess(id, ctx.userId);
+      const access = await resolveDatabaseAccess(id, ctx.user);
       if (access === "forbidden") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       if (access === "not_found") return NextResponse.json({ error: "Not found" }, { status: 404 });
 
@@ -50,7 +52,7 @@ export const POST = withApiKey(
       const id = params?.id;
       if (!id) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-      const access = await resolveDatabaseAccess(id, ctx.userId);
+      const access = await resolveDatabaseAccess(id, ctx.user);
       if (access === "forbidden") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       if (access === "not_found") return NextResponse.json({ error: "Not found" }, { status: 404 });
 

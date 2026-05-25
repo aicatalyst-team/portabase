@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { withApiKey, ApiKeyContext } from "@/lib/api-v1/middleware";
-import { getAccessibleDatabaseIds } from "@/lib/api-v1/acl";
+import { withApiKey } from "@/lib/api-v1/middleware";
 import { db } from "@/db";
 import * as drizzleDb from "@/db";
 import { eq, desc, and, isNull } from "drizzle-orm";
 import { logger } from "@/lib/logger";
+import {ApiKeyContext} from "@/lib/api-v1/types";
+import {getAccessibleDatabaseIds} from "@/lib/api-v1/services/databases";
 
 const log = logger.child({ module: "api/v1/databases/[id]/status" });
 
@@ -14,7 +15,7 @@ export const GET = withApiKey(
       const id = params?.id;
       if (!id) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-      const accessibleIds = await getAccessibleDatabaseIds(ctx.userId);
+      const accessibleIds = await getAccessibleDatabaseIds(ctx.user);
       if (!accessibleIds.includes(id)) {
         const exists = await db.query.database.findFirst({
           where: eq(drizzleDb.schemas.database.id, id),
@@ -26,7 +27,13 @@ export const GET = withApiKey(
         );
       }
 
-      const [latestBackup, latestRestoration] = await Promise.all([
+      const [database, latestBackup, latestRestoration] = await Promise.all([
+        db.query.database.findFirst({
+          where: and(
+              eq(drizzleDb.schemas.database.id, id),
+              isNull(drizzleDb.schemas.database.deletedAt)
+          )
+        }),
         db.query.backup.findFirst({
           where: and(
             eq(drizzleDb.schemas.backup.databaseId, id),
@@ -43,8 +50,14 @@ export const GET = withApiKey(
         }),
       ]);
 
+      if (!database){
+        return NextResponse.json({ error: "Database not found" });
+      }
+
       return NextResponse.json({
         data: {
+          isWaitingForBackup: database.isWaitingForBackup,
+          lastContact: database.lastContact,
           latestBackup: latestBackup ?? null,
           latestRestoration: latestRestoration ?? null,
         },

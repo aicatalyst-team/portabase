@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { withApiKey, ApiKeyContext } from "@/lib/api-v1/middleware";
-import { getAccessibleDatabaseIds } from "@/lib/api-v1/acl";
+import { withApiKey } from "@/lib/api-v1/middleware";
 import { db } from "@/db";
 import * as drizzleDb from "@/db";
 import { eq, and, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
+import {ApiKeyContext} from "@/lib/api-v1/types";
+import {getAccessibleDatabaseIds} from "@/lib/api-v1/services/databases";
 
 const log = logger.child({ module: "api/v1/databases/[id]/restore" });
 
@@ -20,7 +21,7 @@ export const POST = withApiKey(
       const id = params?.id;
       if (!id) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-      const accessibleIds = await getAccessibleDatabaseIds(ctx.userId);
+      const accessibleIds = await getAccessibleDatabaseIds(ctx.user);
       if (!accessibleIds.includes(id)) {
         const exists = await db.query.database.findFirst({
           where: eq(drizzleDb.schemas.database.id, id),
@@ -63,7 +64,6 @@ export const POST = withApiKey(
         return NextResponse.json({ error: "Backup not found for this database" }, { status: 404 });
       }
 
-      // Validate backupStorage belongs to backup and is successful
       const backupStorage = await db.query.backupStorage.findFirst({
         where: and(
           eq(drizzleDb.schemas.backupStorage.id, backupStorageId),

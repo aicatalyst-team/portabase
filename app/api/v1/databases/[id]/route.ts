@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { withApiKey, ApiKeyContext } from "@/lib/api-v1/middleware";
-import { getAccessibleDatabaseIds } from "@/lib/api-v1/acl";
+import { withApiKey } from "@/lib/api-v1/middleware";
 import { db } from "@/db";
 import * as drizzleDb from "@/db";
 import { eq } from "drizzle-orm";
 import { logger } from "@/lib/logger";
+import {getAccessibleDatabaseIds} from "@/lib/api-v1/services/databases";
+import {ApiKeyContext} from "@/lib/api-v1/types";
 
 const log = logger.child({ module: "api/v1/databases/[id]" });
 
@@ -14,7 +15,7 @@ export const GET = withApiKey(
       const id = params?.id;
       if (!id) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-      const accessibleIds = await getAccessibleDatabaseIds(ctx.userId);
+      const accessibleIds = await getAccessibleDatabaseIds(ctx.user);
       if (!accessibleIds.includes(id)) {
         const exists = await db.query.database.findFirst({
           where: eq(drizzleDb.schemas.database.id, id),

@@ -3,13 +3,13 @@ import { auth } from "@/lib/auth/auth";
 import * as drizzleDb from "@/db";
 import { eq } from "drizzle-orm";
 import { logger } from "@/lib/logger";
+import {computeOrganizationPermissions} from "@/lib/acl/organization-acl";
+import {db} from "@/db";
+import {computeSystemPermissions} from "@/lib/acl/system-acl";
+import {ApiKeyContext} from "@/lib/api-v1/types";
 
 const log = logger.child({ module: "api-v1/middleware" });
 
-export type ApiKeyContext = {
-  userId: string;
-  orgIds: string[];
-};
 
 type ApiKeyHandler = (
   req: Request,
@@ -56,13 +56,39 @@ export function withApiKey(handler: ApiKeyHandler) {
 
       const memberships = await drizzleDb.db.query.member.findMany({
         where: eq(drizzleDb.schemas.member.userId, userId),
-        columns: { organizationId: true },
+        with: {
+          user: true
+        }
       });
 
-      const orgIds = memberships.map((m) => m.organizationId);
+      const organizations = await Promise.all(
+          memberships.map(async (m) => {
+            return {
+              id: m.organizationId,
+              permissions:  computeOrganizationPermissions(m),
+            };
+          })
+      );
+
+      const userFetched = await db.query.user.findFirst({
+        where: eq(drizzleDb.schemas.user.id, userId),
+      })
+
+
+      if (!userFetched) {
+        throw new Error("Unable to find user")
+      }
+
+      const userPermissions = computeSystemPermissions(userFetched)
+
+      const user = {
+        id: userFetched.id,
+        permissions: userPermissions,
+      }
+
       const resolvedParams = context?.params ? await context.params : {};
 
-      return handler(req, { userId, orgIds }, resolvedParams);
+      return handler(req, { user, organizations }, resolvedParams);
     } catch (err) {
       log.error({ error: err }, "Error in withApiKey middleware");
       return NextResponse.json(

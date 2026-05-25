@@ -1,5 +1,5 @@
-import type { User } from "@/db/schemas/user";
 import type { SystemRole } from "@/lib/acl/role";
+import {User} from "@/db/schema/02_user";
 
 export type SystemPermissions = {
 	role: SystemRole | null;

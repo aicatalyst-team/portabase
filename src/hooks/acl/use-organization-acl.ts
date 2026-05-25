@@ -1,7 +1,7 @@
 "use client";
 
-import type { MemberWithUser } from "@/db/schemas/organization";
 import { computeOrganizationPermissions } from "@/lib/acl/organization-acl";
+import {MemberWithUser} from "@/db/schema/03_organization";
 
 export const useOrganizationPermissions = (
 	activeMember: MemberWithUser | null,
