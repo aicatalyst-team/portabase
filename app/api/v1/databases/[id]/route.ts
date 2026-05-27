@@ -2,40 +2,43 @@ import { NextResponse } from "next/server";
 import { withApiKey } from "@/lib/api-v1/middleware";
 import { db } from "@/db";
 import * as drizzleDb from "@/db";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { logger } from "@/lib/logger";
-import {getAccessibleDatabaseIds} from "@/lib/api-v1/services/databases";
-import {ApiKeyContext} from "@/lib/api-v1/types";
+import { ApiKeyContext } from "@/lib/api-v1/types";
+import {requireDatabaseAccess} from "@/lib/api-v1/services/databases";
 
 const log = logger.child({ module: "api/v1/databases/[id]" });
 
 export const GET = withApiKey(
-  async (_req: Request, ctx: ApiKeyContext, params?: Record<string, string>) => {
-    try {
-      const id = params?.id;
-      if (!id) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    async (_req: Request, ctx: ApiKeyContext, params?: Record<string, string>) => {
+      try {
+        const guard = await requireDatabaseAccess(params, ctx.user);
 
-      const accessibleIds = await getAccessibleDatabaseIds(ctx.user);
-      if (!accessibleIds.includes(id)) {
-        const exists = await db.query.database.findFirst({
-          where: eq(drizzleDb.schemas.database.id, id),
-          columns: { id: true },
+        if (!guard.ok) {
+          return guard.response;
+        }
+
+        const { id } = guard.data;
+
+        const database = await db.query.database.findFirst({
+          where: and(
+              eq(drizzleDb.schemas.database.id, id),
+              isNull(drizzleDb.schemas.database.deletedAt)
+          ),
         });
+
+        if (!database) {
+          return NextResponse.json({ error: "Not found" }, { status: 404 });
+        }
+
+        return NextResponse.json({ data: database });
+      } catch (error) {
+        log.error({ error }, "Error in GET /api/v1/databases/[id]");
+
         return NextResponse.json(
-          { error: exists ? "Forbidden" : "Not found" },
-          { status: exists ? 403 : 404 }
+            { error: "Internal server error" },
+            { status: 500 }
         );
       }
-
-      const database = await db.query.database.findFirst({
-        where: eq(drizzleDb.schemas.database.id, id),
-      });
-
-      if (!database) return NextResponse.json({ error: "Not found" }, { status: 404 });
-      return NextResponse.json({ data: database });
-    } catch (error) {
-      log.error({ error }, "Error in GET /api/v1/databases/[id]");
-      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
-  }
 );

@@ -56,20 +56,7 @@ export const createAgentAction = userAction.schema(
         data: AgentSchema,
     })
 ).action(async ({parsedInput}) => {
-    // const slug = slugify(parsedInput.data.name);
-    // await verifySlugUniqueness(slug);
-    //
-    // const [createdAgent] = await db.insert(drizzleDb.schemas.agent).values({...parsedInput.data, slug: slug, organizationId: parsedInput.organizationId}).returning();
-    //
-    // if (createdAgent && parsedInput.organizationId){
-    //         await db.insert(drizzleDb.schemas.organizationAgent).values({
-    //             organizationId: parsedInput.organizationId,
-    //             agentId: createdAgent.id,
-    //         });
-    // }
     const createdAgent = await createAgentService(parsedInput);
-
-
     return {
         data: createdAgent,
     };

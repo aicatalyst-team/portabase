@@ -76,6 +76,7 @@ function checkRouteExists(pathname: string) {
     // v1 external API
     /^\/api\/v1\/agents\/?$/,
     /^\/api\/v1\/agents\/[^/]+\/?$/,
+    /^\/api\/v1\/agents\/[^/]+\/key\/?$/,
     /^\/api\/v1\/databases\/?$/,
     /^\/api\/v1\/databases\/[^/]+\/?$/,
     /^\/api\/v1\/databases\/[^/]+\/backup\/?$/,

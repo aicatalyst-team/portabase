@@ -1,8 +1,6 @@
 import {SystemPermissions} from "@/lib/acl/system-acl";
 import {OrganizationPermissions} from "@/lib/acl/organization-acl";
 
-
-
 export type ApiKeyContextUser = {
         id: string;
         permissions: SystemPermissions;
