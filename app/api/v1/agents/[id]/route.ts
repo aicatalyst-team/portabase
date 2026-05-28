@@ -42,6 +42,7 @@ export const DELETE = withApiKey(
             if (access === "forbidden") return NextResponse.json({error: "Forbidden"}, {status: 403});
             if (access === "not_found") return NextResponse.json({error: "Not found"}, {status: 404});
 
+
             const agent = await getAgent(id, {
                 includeDatabases: false,
                 includeOrganizations: true,
@@ -50,6 +51,16 @@ export const DELETE = withApiKey(
             if (!agent) return NextResponse.json({error: "Agent no found"}, {status: 404});
 
             const organizationIds = agent.organizations.map(org => org.organizationId)
+
+            const canDeleteGlobalAgent =
+                ctx.user.permissions.isAdmin || ctx.user.permissions.isSuperAdmin;
+
+            if (!agent.organizationId && !canDeleteGlobalAgent) {
+                return NextResponse.json(
+                    { error: "Forbidden" },
+                    { status: 403 }
+                );
+            }
 
             await deleteAgentService({
                 agentId: agent.id,

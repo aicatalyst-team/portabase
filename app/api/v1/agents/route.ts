@@ -69,6 +69,16 @@ export const POST = withApiKey(
           );
         }
 
+        const canCreateGlobalAgent =
+            ctx.user.permissions.isAdmin || ctx.user.permissions.isSuperAdmin;
+
+        if (!organizationId && !canCreateGlobalAgent) {
+          return NextResponse.json(
+              { error: "Forbidden" },
+              { status: 403 }
+          );
+        }
+
         const createdAgent = await createAgentService({
           organizationId,
           data: {

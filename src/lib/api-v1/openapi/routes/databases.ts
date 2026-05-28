@@ -66,7 +66,7 @@ export function registerDatabaseRoutes(registry: OpenAPIRegistry) {
     method: "get",
     path: "/databases",
     tags,
-    summary:"List databases",
+    summary: "List databases",
     security,
     responses: {
       200: {
@@ -92,7 +92,7 @@ export function registerDatabaseRoutes(registry: OpenAPIRegistry) {
     method: "get",
     path: "/databases/{id}",
     tags,
-    summary:"Get database by ID",
+    summary: "Get database by ID",
     security,
     request: { params: z.object({ id: UuidParam }) },
     responses: {
@@ -127,7 +127,7 @@ export function registerDatabaseRoutes(registry: OpenAPIRegistry) {
     method: "get",
     path: "/databases/{id}/status",
     tags,
-    summary:"Get database status",
+    summary: "Get database status",
     security,
     request: { params: z.object({ id: UuidParam }) },
     responses: {
@@ -169,7 +169,7 @@ export function registerDatabaseRoutes(registry: OpenAPIRegistry) {
     method: "get",
     path: "/databases/{id}/backup",
     tags,
-    summary:"List backups for a database",
+    summary: "List backups for a database",
     security,
     request: { params: z.object({ id: UuidParam }) },
     responses: {
@@ -204,7 +204,7 @@ export function registerDatabaseRoutes(registry: OpenAPIRegistry) {
     method: "post",
     path: "/databases/{id}/backup",
     tags,
-    summary:"Trigger a backup for a database",
+    summary: "Trigger a backup for a database",
     security,
     request: { params: z.object({ id: UuidParam }) },
     responses: {
@@ -241,7 +241,7 @@ export function registerDatabaseRoutes(registry: OpenAPIRegistry) {
     method: "get",
     path: "/databases/{id}/backup/{backupId}",
     tags,
-    summary:"Get a specific backup with storage details",
+    summary: "Get a specific backup with storage details",
     security,
     request: {
       params: z.object({ id: UuidParam, backupId: UuidParam }),
@@ -278,7 +278,7 @@ export function registerDatabaseRoutes(registry: OpenAPIRegistry) {
     method: "post",
     path: "/databases/{id}/restore",
     tags,
-    summary:"Restore a database from a backup",
+    summary: "Restore a database from a backup",
     security,
     request: {
       params: z.object({ id: UuidParam }),
