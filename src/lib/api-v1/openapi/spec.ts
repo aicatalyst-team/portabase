@@ -20,5 +20,6 @@ export function buildSpec() {
         "Authenticate all requests using the x-api-key header with an API key generated from the Portabase dashboard.",
     },
     servers: [{ url: "/api/v1" }],
+    security: [{ apiKeyAuth: [] }],
   });
 }
