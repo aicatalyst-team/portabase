@@ -1,10 +1,5 @@
 import {NextResponse} from "next/server";
 import {withApiKey} from "@/lib/api-v1/middleware";
-import {db} from "@/db";
-import * as drizzleDb from "@/db";
-import {eq, and, or, isNull} from "drizzle-orm";
-import {withUpdatedAt} from "@/db/utils";
-import {v4 as uuidv4} from "uuid";
 import {logger} from "@/lib/logger";
 import {ApiKeyContext} from "@/lib/api-v1/types";
 import {getAgent, resolveAgentAccess} from "@/lib/api-v1/services/agents";

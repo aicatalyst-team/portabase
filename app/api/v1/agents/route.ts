@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { withApiKey } from "@/lib/api-v1/middleware";
 import { db } from "@/db";
 import * as drizzleDb from "@/db";
-import { inArray, eq, count, and, or, isNull } from "drizzle-orm";
+import { inArray, eq, and, or, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import {createAgentService} from "@/features/agents/agents.action";
 import { ActionError } from "@/lib/safe-actions/actions";
 import {getAccessibleAgentIds} from "@/lib/api-v1/services/agents";
 import {ApiKeyContext} from "@/lib/api-v1/types";
+import {parseJsonBody} from "@/lib/api-v1/validation/json-body";
 
 const log = logger.child({ module: "api/v1/agents" });
 
@@ -45,28 +46,14 @@ const CreateAgentSchema = z.object({
 export const POST = withApiKey(
     async (req: Request, ctx: ApiKeyContext) => {
       try {
-        const body = await req.json().catch(() => null);
 
-        if (!body) {
-          return NextResponse.json(
-              { error: "Invalid JSON body" },
-              { status: 422 }
-          );
+        const body = await parseJsonBody(req, CreateAgentSchema);
+
+        if (!body.ok) {
+          return body.response;
         }
 
-        const parsed = CreateAgentSchema.safeParse(body);
-
-        if (!parsed.success) {
-          return NextResponse.json(
-              {
-                error: parsed.error.issues[0]?.message ??
-                    "Invalid payload",
-              },
-              { status: 422 }
-          );
-        }
-
-        const { name, organizationId } = parsed.data;
+        const { name, organizationId } = body.data;
 
         const org = ctx.organizations.find(
             (org) => org.id === organizationId

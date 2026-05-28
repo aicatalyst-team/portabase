@@ -2,7 +2,6 @@ import { db } from "@/db";
 import * as drizzleDb from "@/db";
 import { eq, inArray, and, or, isNull } from "drizzle-orm";
 import {ApiKeyContextUser} from "@/lib/api-v1/types";
-import {notFound} from "next/navigation";
 import {AgentWith} from "@/db/schema/08_agent";
 
 export async function getAccessibleAgentIds(
