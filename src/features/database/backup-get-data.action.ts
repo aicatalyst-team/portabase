@@ -36,7 +36,8 @@ export const getDatabaseDataAction = userAction
                     with: {
                         storageChannel: true
                     }
-                }
+                },
+                logs: true
             },
             orderBy: (b, {desc}) => [desc(b.createdAt)],
         }) as BackupWith[];

@@ -9,6 +9,7 @@ import {getActiveMember, getOrganization} from "@/lib/auth/auth";
 import {BackupModalProvider} from "@/features/database/backup-modal-context";
 import {DatabaseContent} from "@/features/database/database-content";
 import {getHealthLast12hLogs} from "@/db/services/healthcheck";
+import {LogsModalProvider} from "@/features/logs/logs-modal-context";
 
 export default async function RoutePage(props: PageParams<{
     projectId: string;
@@ -34,7 +35,7 @@ export default async function RoutePage(props: PageParams<{
             project: true,
             retentionPolicy: true,
             alertPolicies: true,
-            storagePolicies: true
+            storagePolicies: true,
         }
     });
 
@@ -50,7 +51,8 @@ export default async function RoutePage(props: PageParams<{
                 with: {
                     storageChannel: true
                 }
-            }
+            },
+            logs: true
         },
         orderBy: (b, {desc}) => [desc(b.createdAt)],
     });
@@ -84,7 +86,7 @@ export default async function RoutePage(props: PageParams<{
         notFound();
     }
 
-    const databaseHealthLogs = dbItem ? await getHealthLast12hLogs({ id: dbItem.id }) : []
+    const databaseHealthLogs = dbItem ? await getHealthLast12hLogs({id: dbItem.id}) : []
 
 
     const successRate = totalBackups > 0 ? (successfulBackups / totalBackups) * 100 : null;
@@ -93,23 +95,25 @@ export default async function RoutePage(props: PageParams<{
 
     return (
         <Page>
-            <BackupModalProvider>
-                <DatabaseContent
-                    activeMember={activeMember}
-                    settings={settings}
-                    database={dbItem}
-                    databaseHealthLogs={databaseHealthLogs}
-                    isAlreadyRestore={isAlreadyRestore}
-                    restorations={restorations}
-                    backups={backups}
-                    totalBackups={totalBackups}
-                    availableBackups={availableBackups}
-                    successRate={successRate}
-                    organizationId={organization.id}
-                    activeOrganizationChannels={[]}
-                    activeOrganizationStorageChannels={[]}
-                />
-            </BackupModalProvider>
+            <LogsModalProvider>
+                <BackupModalProvider>
+                    <DatabaseContent
+                        activeMember={activeMember}
+                        settings={settings}
+                        database={dbItem}
+                        databaseHealthLogs={databaseHealthLogs}
+                        isAlreadyRestore={isAlreadyRestore}
+                        restorations={restorations}
+                        backups={backups}
+                        totalBackups={totalBackups}
+                        availableBackups={availableBackups}
+                        successRate={successRate}
+                        organizationId={organization.id}
+                        activeOrganizationChannels={[]}
+                        activeOrganizationStorageChannels={[]}
+                    />
+                </BackupModalProvider>
+            </LogsModalProvider>
         </Page>
     );
 }

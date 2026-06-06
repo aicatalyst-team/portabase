@@ -23,6 +23,7 @@ import {BackupButton} from "@/features/database/backup-button";
 import {HealthModal} from "@/features/database/health-modal";
 import {HealthcheckLog} from "@/db/schema/15_healthcheck-log";
 import {Badge} from "@/components/ui/badge";
+import {LogsModal} from "@/features/logs/logs-modal";
 
 export type DatabaseContentProps = {
     settings: Setting;
@@ -156,6 +157,7 @@ export const DatabaseContent = (props: DatabaseContentProps) => {
                     availableBackups={stats.availableBackups}
                     totalBackups={stats.totalBackups}
                 />
+                <LogsModal/>
                 <DatabaseBackupActionsModal/>
                 <DatabaseTabs
                     activeMember={props.activeMember}
