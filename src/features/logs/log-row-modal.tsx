@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Minus, Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 import { LevelType } from "@/features/logs/types"
 import { JobLog } from "@/db/schema/17_job-log"
 import { formatLocalizedDate } from "@/utils/date-formatting"
@@ -19,24 +20,19 @@ function TypeBadge({ entry }: { entry: JobLog }) {
     const isCommand = entry.entryType === "command"
     const label = isCommand ? "Command" : levelLabel[entry.level]
     const styles = isCommand
-        ? "bg-secondary text-secondary-foreground"
+        ? "border-transparent bg-secondary text-secondary-foreground"
         : entry.level === "error"
-            ? "bg-destructive/20 text-destructive"
+            ? "border-transparent bg-destructive/20 text-destructive"
             : entry.level === "warn"
-                ? "bg-amber-500/20 text-amber-600 dark:text-amber-300"
+                ? "border-transparent bg-amber-500/20 text-amber-600 dark:text-amber-300"
                 : entry.level === "debug"
-                    ? "bg-muted text-muted-foreground"
-                    : "bg-sky-500/20 text-sky-600 dark:text-sky-300"
+                    ? "border-transparent bg-muted text-muted-foreground"
+                    : "border-transparent bg-sky-500/20 text-sky-600 dark:text-sky-300"
 
     return (
-        <span
-            className={cn(
-                "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
-                styles,
-            )}
-        >
+        <Badge variant="outline" className={cn("rounded-full", styles)}>
             {label}
-        </span>
+        </Badge>
     )
 }
 

@@ -428,6 +428,13 @@
       "when": 1780771191196,
       "tag": "0060_shiny_sersi",
       "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1780822414802,
+      "tag": "0061_illegal_mole_man",
+      "breakpoints": true
     }
   ]
 }

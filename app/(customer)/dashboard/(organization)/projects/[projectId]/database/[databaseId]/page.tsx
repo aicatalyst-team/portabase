@@ -59,6 +59,9 @@ export default async function RoutePage(props: PageParams<{
 
     const restorations = await db.query.restoration.findMany({
         where: eq(drizzleDb.schemas.restoration.databaseId, dbItem.id),
+        with: {
+            logs: true
+        },
         orderBy: (r, {desc}) => [desc(r.createdAt)],
     });
 

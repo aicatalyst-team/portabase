@@ -68,7 +68,7 @@ export const retentionPolicy = pgTable("retention_policies", {
 export const restoration = pgTable("restorations", {
     id: uuid("id").primaryKey().defaultRandom(),
     status: statusEnum("status").default("waiting").notNull(),
-
+    durationMs: bigint("duration_ms", { mode: "number" }),
     backupStorageId: uuid("backup_storage_id")
         .references(() => backupStorage.id, {onDelete: "cascade"}),
     backupId: uuid("backup_id")
@@ -136,8 +136,6 @@ export type DatabaseWith = Database & {
     retentionPolicy?: RetentionPolicy | null;
     alertPolicies?: AlertPolicy[] | null;
     storagePolicies?: StoragePolicy[] | null;
-    logs?: JobLog[] | null;
-
 };
 
 
@@ -145,7 +143,11 @@ export type BackupWith = Backup & {
     restorations?: Restoration[] | null;
     storages?: BackupStorage[] | null;
     logs?: JobLog[] | null;
-
 };
+
+export type RestorationWith = Restoration & {
+    logs?: JobLog[] | null;
+};
+
 
 
