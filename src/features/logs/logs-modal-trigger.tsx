@@ -1,4 +1,4 @@
-import {FileText, Logs} from "lucide-react";
+import {FileText} from "lucide-react";
 import {JobLog} from "@/db/schema/17_job-log";
 import {Button} from "@/components/ui/button";
 import {useLogsModal} from "@/features/logs/logs-modal-context";

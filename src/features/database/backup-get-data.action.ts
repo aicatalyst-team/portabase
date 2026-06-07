@@ -4,7 +4,7 @@ import {z} from "zod";
 import {db} from "@/db";
 import {eq} from "drizzle-orm";
 import * as drizzleDb from "@/db";
-import {BackupWith, Restoration, RestorationWith} from "@/db/schema/07_database";
+import {BackupWith, RestorationWith} from "@/db/schema/07_database";
 import {getOrganizationChannels} from "@/db/services/notification-channel";
 import {getOrganizationStorageChannels} from "@/db/services/storage-channel";
 import {getHealthLast12hLogs} from "@/db/services/healthcheck";

@@ -2,7 +2,7 @@
 
 import {ColumnDef} from "@tanstack/react-table";
 import {StatusBadge} from "@/components/common/status-badge";
-import {Backup, BackupWith, DatabaseWith} from "@/db/schema/07_database";
+import {BackupWith, DatabaseWith} from "@/db/schema/07_database";
 import {Setting} from "@/db/schema/01_setting";
 import {cn} from "@/lib/utils";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
