@@ -184,11 +184,13 @@ export function ProfileSecurity({
                     <ResetPasswordProfileProviderModal
                       open={isPasswordDialogOpen}
                       onOpenChange={setIsPasswordDialogOpen}
+                      disabled={isSuperAdminAndDemo}
                     />
                   ) : (
                     <SetPasswordProfileProviderModal
                       open={isPasswordDialogOpen}
                       onOpenChange={setIsPasswordDialogOpen}
+                      disabled={isSuperAdminAndDemo}
                     />
                   )}
                 </div>
@@ -222,15 +224,17 @@ export function ProfileSecurity({
                     <ViewBackupCodesModal
                       open={isBackupCodesDialogOpen}
                       onOpenChange={setIsBackupCodesDialogOpen}
+                      disabled={isSuperAdminAndDemo}
                     />
                     <Disable2FAProfileProviderModal
                       open={isDisable2FADialogOpen}
                       onOpenChange={setIsDisable2FADialogOpen}
+                      disabled={isSuperAdminAndDemo}
                     />
                   </div>
                 ) : (
                   <Setup2FAProfileProviderModal
-                    disabled={!credentialAccount}
+                    disabled={!credentialAccount || isSuperAdminAndDemo}
                     open={isSetup2FADialogOpen}
                     onOpenChange={setIsSetup2FADialogOpen}
                   />
@@ -253,8 +257,8 @@ export function ProfileSecurity({
             </div>
 
             <Dialog open={isAddPasskeyOpen} onOpenChange={setIsAddPasskeyOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
+              <DialogTrigger asChild disabled={isSuperAdminAndDemo}>
+                <Button variant="outline" size="sm" disabled={isSuperAdminAndDemo}>
                   <Plus className="mr-2 h-4 w-4" />
                   Add Passkey
                 </Button>
@@ -310,6 +314,7 @@ export function ProfileSecurity({
                   passkey={pk}
                   onRevoke={(id) => revokePasskey(id)}
                   isRevoking={isRevokingPasskey}
+                  disabled={isSuperAdminAndDemo}
                 />
               ))
             ) : (
@@ -330,7 +335,7 @@ export function ProfileSecurity({
               size="sm"
               className="text-destructive hover:text-destructive hover:bg-destructive/10"
               onClick={() => revokeOthers()}
-              disabled={isRevokingOthers || (sessions?.length || 0) <= 1}
+              disabled={isRevokingOthers || (sessions?.length || 0) <= 1 || isSuperAdminAndDemo}
             >
               {isRevokingOthers && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -349,6 +354,7 @@ export function ProfileSecurity({
                 isRevoking={isRevoking}
                 currentSession={currentSession}
                 providers={providers}
+                disabled={isSuperAdminAndDemo}
               />
             ))
           ) : (
@@ -368,12 +374,14 @@ function SessionRow({
   isRevoking,
   currentSession,
   providers,
+  disabled,
 }: {
   session: Session;
   onRevoke: (token: string) => void;
   isRevoking: boolean;
   currentSession: Session;
   providers: AuthProviderConfig[];
+  disabled?: boolean;
 }) {
   const deviceInfo = getDeviceDetails(session.userAgent);
   const provider = providers.find((p) => p.id === (session as any).providerId);
@@ -438,7 +446,7 @@ function SessionRow({
           size="icon"
           className="h-8 w-8 text-muted-foreground hover:text-destructive"
           onClick={() => onRevoke(session.token)}
-          disabled={isRevoking}
+          disabled={isRevoking || disabled}
         >
           {isRevoking ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -456,10 +464,12 @@ function PasskeyRow({
   passkey,
   onRevoke,
   isRevoking,
+  disabled,
 }: {
   passkey: any;
   onRevoke: (id: string) => void;
   isRevoking: boolean;
+  disabled?: boolean;
 }) {
   return (
     <div className="flex items-center justify-between p-4">
@@ -481,7 +491,7 @@ function PasskeyRow({
         size="icon"
         className="h-8 w-8 text-muted-foreground hover:text-destructive"
         onClick={() => onRevoke(passkey.id)}
-        disabled={isRevoking}
+        disabled={isRevoking || disabled}
       >
         {isRevoking ? (
           <Loader2 className="h-4 w-4 animate-spin" />

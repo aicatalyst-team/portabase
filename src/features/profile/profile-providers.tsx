@@ -19,6 +19,7 @@ import { Icon } from "@iconify/react";
 import Image from "next/image";
 import type { AuthProviderConfig } from "@/lib/auth/config";
 import type { Account } from "@/db/schema/02_user";
+import {useAcl} from "@/lib/acl/acl-context";
 
 interface ProfileProviderProps {
   accounts: Account[];
@@ -30,6 +31,8 @@ export function ProfileProviders({
   providers,
 }: ProfileProviderProps) {
   const router = useRouter();
+  const {isSuperAdminAndDemo} = useAcl()
+
   const totalConnected = accounts.length;
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
 
