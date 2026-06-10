@@ -12,6 +12,9 @@ import {
     SettingsNotificationSection
 } from "@/features/settings/notification-section";
 import {NotificationChannelWith} from "@/db/schema/09_notification-channel";
+import {useAcl} from "@/lib/acl/acl-context";
+import {Alert, AlertDescription} from "@/components/ui/alert";
+import {AlertTriangle} from "lucide-react";
 
 export type SettingsTabsProps = {
     settings: Setting
@@ -21,6 +24,7 @@ export type SettingsTabsProps = {
 };
 
 export const SettingsTabs = ({settings, storageChannels, notificationChannels}: SettingsTabsProps) => {
+    const {isDemoEnabled} = useAcl();
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -66,6 +70,19 @@ export const SettingsTabs = ({settings, storageChannels, notificationChannels}: 
         }
     ]
 
+
+    if (isDemoEnabled) {
+        return (
+            <div className="h-full mt-3">
+                <Alert variant="default">
+                    <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5"/>
+                    <AlertDescription>
+                        System settings are not available in demo mode.
+                    </AlertDescription>
+                </Alert>
+            </div>
+        );
+    }
 
     return (
         <div className="h-full mt-3">

@@ -18,6 +18,7 @@ import {
     OrganizationAddMemberModal
 } from "@/features/organizations/organization-add-member-modal";
 import {cn} from "@/lib/utils";
+import {useAcl} from "@/lib/acl/acl-context";
 
 type OrganizationManagementProps = {
     organization: OrganizationWithMembersAndUsers;
@@ -26,6 +27,8 @@ type OrganizationManagementProps = {
 
 export const OrganizationManagement = ({organization, users}: OrganizationManagementProps) => {
 
+    const {isDemoEnabled} = useAcl();
+    const isDemoBlocked = isDemoEnabled && organization.slug === "default";
     const router = useRouter();
     const searchParams = useSearchParams();
     const [tab, setTab] = useState<string>(() => searchParams.get("tab") ?? "members");
@@ -51,7 +54,7 @@ export const OrganizationManagement = ({organization, users}: OrganizationManage
                     </div>
                 </div>
                 <div className="flex items-center space-x-2 mt-3 md:mt-0">
-                    <OrganizationAddMemberModal organization={organization} users={users}/>
+                    <OrganizationAddMemberModal organization={organization} users={users} disabled={isDemoBlocked}/>
                 </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -93,7 +96,7 @@ export const OrganizationManagement = ({organization, users}: OrganizationManage
                             <div className="space-y-4">
                                 {organization.members.map((member: MemberWithUser) => (
                                     <OrganizationMemberCard key={member.id} member={member}
-                                                            organization={organization}/>
+                                                            organization={organization} disabled={isDemoBlocked}/>
                                 ))}
                             </div>
                         </CardContent>
@@ -106,7 +109,7 @@ export const OrganizationManagement = ({organization, users}: OrganizationManage
                             <CardDescription>Organization configuration settings.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <UpdateOrganizationForm defaultValues={organization}/>
+                            <UpdateOrganizationForm defaultValues={organization} disabled={isDemoBlocked}/>
                         </CardContent>
                     </Card>
                 </TabsContent>
