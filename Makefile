@@ -60,3 +60,5 @@ e2e-manual:
 	@pnpm playwright test --ui || (docker compose -f docker-compose.e2e.yml down --volumes && exit 1)
 	@docker compose -f docker-compose.e2e.yml down --volumes
 	@echo "Finished E2E testing successfully."
+api-test:
+	pnpm test:api
