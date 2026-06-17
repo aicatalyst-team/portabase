@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useOnboarding } from "@onboardjs/react";
+import { Check, Database } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -40,16 +41,34 @@ export const StepProjectCreate = () => {
             <div className="flex flex-col gap-2">
                 <Label>Databases</Label>
                 <div className="flex flex-col gap-2">
-                    {mockDatabases.map((db) => (
-                        <button
-                            key={db.id}
-                            type="button"
-                            onClick={() => toggleDb(db.id)}
-                            className={`text-left rounded-md border p-2 text-sm ${databaseIds.includes(db.id) ? "border-primary bg-primary/10" : "border-white/10"}`}
-                        >
-                            {db.name} <span className="text-muted-foreground">({db.engine})</span>
-                        </button>
-                    ))}
+                    {mockDatabases.map((db) => {
+                        const isSelected = databaseIds.includes(db.id);
+                        return (
+                            <button
+                                key={db.id}
+                                type="button"
+                                onClick={() => toggleDb(db.id)}
+                                className={`flex items-center gap-3 rounded-lg border p-3 text-sm transition-colors text-left ${
+                                    isSelected
+                                        ? "border-primary/20 bg-primary/10 text-primary"
+                                        : "border-border hover:bg-accent/50 hover:border-primary/20"
+                                }`}
+                            >
+                                <div className="size-9 rounded-md border bg-muted/50 shadow-sm flex items-center justify-center shrink-0">
+                                    <Database className="size-4 text-muted-foreground" />
+                                </div>
+                                <div className="flex flex-col gap-0.5 flex-1">
+                                    <span className="font-medium">{db.name}</span>
+                                    <span className="text-xs text-muted-foreground">{db.engine}</span>
+                                </div>
+                                {isSelected && (
+                                    <div className="size-5 rounded-full bg-primary flex items-center justify-center ml-auto">
+                                        <Check className="size-3 text-primary-foreground" strokeWidth={3} />
+                                    </div>
+                                )}
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
             <Button type="button" onClick={onContinue} disabled={!name.trim()}>
