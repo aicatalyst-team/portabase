@@ -1,8 +1,13 @@
 import { redirect } from "next/navigation";
 import { getCurrentOrganizationSlug } from "@/features/organizations/organization-cookie";
 import { currentUser } from "@/lib/auth/current-user";
+import { isOnboardingDone } from "@/features/onboarding/onboarding-cookie";
 
 export default async function Index() {
+    if (!(await isOnboardingDone())) {
+        redirect("/welcome");
+    }
+
     const user = await currentUser();
     if (user) {
         const currentOrganizationSlug = await getCurrentOrganizationSlug();

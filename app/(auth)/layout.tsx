@@ -1,6 +1,7 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth/current-user";
+import { isOnboardingDone } from "@/features/onboarding/onboarding-cookie";
 import { AuthLogoSection } from "@/features/auth/auth-logo-section";
 import { Heart } from "lucide-react";
 
@@ -9,6 +10,10 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
+  if (!(await isOnboardingDone())) {
+    redirect("/welcome");
+  }
+
   const user = await currentUser();
 
   if (user && !user.banned && user.role !== "pending") {
