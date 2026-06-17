@@ -115,6 +115,42 @@ size-5 rounded-full bg-primary flex items-center justify-center ml-auto
 
 ---
 
+## 3. Conditional Step Graph — Skip Agent Steps When No Agents
+
+### Rule
+
+If the user skips or submits `agent-create` with zero agents (`flowData.agents` empty or undefined), skip `agent-waiting`, `project-create`, and `db-settings` — jump directly to `finish`.
+
+### Step Graph Change
+
+`onboarding-steps.tsx` — `agent-create` entry:
+
+```ts
+{
+    id: "agent-create",
+    component: StepAgentCreate,
+    isSkippable: true,
+    nextStep: (ctx) => {
+        const agents = ctx.flowData?.agents as unknown[] | undefined;
+        return agents && agents.length > 0 ? "agent-waiting" : "finish";
+    },
+}
+```
+
+All other steps unchanged.
+
+### Rationale
+
+- `agent-waiting` pings the agent — no agent to ping
+- `project-create` groups databases under an agent project — no agent, no project
+- `db-settings` configures agent DB retention — no project selected, empty state anyway
+
+### Files
+
+- `src/features/onboarding/onboarding-steps.tsx` — update `agent-create.nextStep`
+
+---
+
 ## Out of Scope
 
 - Server actions / real DB persistence during onboarding (fake data only)
@@ -132,3 +168,5 @@ size-5 rounded-full bg-primary flex items-center justify-center ml-auto
 4. All toggle cards across steps use design-system tokens (no `border-white/10`, no hardcoded bg)
 5. `step-defaults.tsx` selects still work (reads `id` + `label` from channels)
 6. `pnpm exec tsc --noEmit` — no new errors in onboarding files
+7. Skip agent-create with 0 agents → jumps to finish (agent-waiting, project-create, db-settings not shown)
+8. Create agents → normal flow through agent-waiting → project-create → db-settings → finish
