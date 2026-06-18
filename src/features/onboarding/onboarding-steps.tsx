@@ -16,106 +16,109 @@ import { StepDbSettings } from "@/features/onboarding/steps/step-db-settings";
 import { StepFinish } from "@/features/onboarding/steps/step-finish";
 
 export const onboardingSteps: OnboardingStep[] = [
-    {
-        id: "login",
-        component: StepLogin,
-        isSkippable: false,
-        nextStep: "account-info",
+  {
+    id: "login",
+    component: StepLogin,
+    isSkippable: false,
+    nextStep: (ctx: any) =>
+      ctx.flowData?.meta?.hasExistingUsers ? "preferences" : "account-info",
+  },
+  {
+    id: "account-info",
+    component: StepAccountInfo,
+    isSkippable: false,
+    nextStep: (ctx: any) =>
+      ctx.flowData?.meta?.passkeyEnabled ? "preferences" : "security",
+  },
+  {
+    id: "security",
+    component: StepSecurity,
+    isSkippable: true,
+    skipToStep: "preferences",
+    nextStep: "preferences",
+  },
+  {
+    id: "preferences",
+    component: StepPreferences,
+    isSkippable: true,
+    skipToStep: "org-create",
+    nextStep: "org-create",
+  },
+  {
+    id: "org-create",
+    component: StepOrgCreate,
+    isSkippable: false,
+    nextStep: "invite-members",
+  },
+  {
+    id: "invite-members",
+    component: StepInviteMembers,
+    isSkippable: true,
+    skipToStep: "notifier",
+    nextStep: "notifier",
+  },
+  {
+    id: "notifier",
+    component: StepNotifier,
+    isSkippable: true,
+    skipToStep: "storage",
+    nextStep: "storage",
+  },
+  {
+    id: "storage",
+    component: StepStorage,
+    isSkippable: true,
+    skipToStep: "defaults",
+    nextStep: "defaults",
+  },
+  {
+    id: "defaults",
+    component: StepDefaults,
+    isSkippable: true,
+    skipToStep: "agent-create",
+    nextStep: "agent-create",
+  },
+  {
+    id: "agent-create",
+    component: StepAgentCreate,
+    isSkippable: true,
+    skipToStep: "finish",
+    nextStep: (ctx: any) => {
+      const agents = ctx.flowData?.agents as unknown[] | undefined;
+      return agents && agents.length > 0 ? "agent-key" : "finish";
     },
-    {
-        id: "account-info",
-        component: StepAccountInfo,
-        isSkippable: false,
-        nextStep: "security",
-    },
-    {
-        id: "security",
-        component: StepSecurity,
-        isSkippable: true,
-        skipToStep: "preferences",
-        nextStep: "preferences",
-    },
-    {
-        id: "preferences",
-        component: StepPreferences,
-        isSkippable: true,
-        skipToStep: "org-create",
-        nextStep: "org-create",
-    },
-    {
-        id: "org-create",
-        component: StepOrgCreate,
-        isSkippable: false,
-        nextStep: "invite-members",
-    },
-    {
-        id: "invite-members",
-        component: StepInviteMembers,
-        isSkippable: true,
-        skipToStep: "notifier",
-        nextStep: "notifier",
-    },
-    {
-        id: "notifier",
-        component: StepNotifier,
-        isSkippable: true,
-        skipToStep: "storage",
-        nextStep: "storage",
-    },
-    {
-        id: "storage",
-        component: StepStorage,
-        isSkippable: true,
-        skipToStep: "defaults",
-        nextStep: "defaults",
-    },
-    {
-        id: "defaults",
-        component: StepDefaults,
-        isSkippable: true,
-        skipToStep: "agent-create",
-        nextStep: "agent-create",
-    },
-    {
-        id: "agent-create",
-        component: StepAgentCreate,
-        isSkippable: true,
-        skipToStep: "finish",
-        nextStep: (ctx: any) => {
-            const agents = ctx.flowData?.agents as unknown[] | undefined;
-            return agents && agents.length > 0 ? "agent-key" : "finish";
-        },
-    },
-    {
-        id: "agent-key",
-        component: StepAgentKey,
-        isSkippable: false,
-        nextStep: "agent-waiting",
-    },
-    {
-        id: "agent-waiting",
-        component: StepAgentWaiting,
-        isSkippable: false,
-        nextStep: "project-create",
-    },
-    {
-        id: "project-create",
-        component: StepProjectCreate,
-        isSkippable: true,
-        skipToStep: "db-settings",
-        nextStep: "db-settings",
-    },
-    {
-        id: "db-settings",
-        component: StepDbSettings,
-        isSkippable: true,
-        skipToStep: "finish",
-        nextStep: "finish",
-    },
-    {
-        id: "finish",
-        component: StepFinish,
-        isSkippable: false,
-        nextStep: null,
-    },
+  },
+  {
+    id: "agent-key",
+    component: StepAgentKey,
+    isSkippable: false,
+    nextStep: "agent-waiting",
+  },
+  {
+    id: "agent-waiting",
+    component: StepAgentWaiting,
+    isSkippable: true,
+    skipToStep: "project-create",
+    nextStep: "project-create",
+  },
+  {
+    id: "project-create",
+    component: StepProjectCreate,
+    isSkippable: true,
+    skipToStep: "db-settings",
+    nextStep: "db-settings",
+  },
+  {
+    id: "db-settings",
+    component: StepDbSettings,
+    isSkippable: true,
+    skipToStep: "finish",
+    nextStep: "finish",
+  },
+  {
+    id: "finish",
+    component: StepFinish,
+    isSkippable: false,
+    nextStep: null,
+  },
 ];
