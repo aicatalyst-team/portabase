@@ -13,18 +13,6 @@ export const StepOrgCreate = () => {
     const { next, updateContext, state } = useOnboarding();
     const existingOrg = state?.context.flowData.org;
     const [name, setName] = useState(existingOrg?.name ?? "");
-    const [logoDataUrl, setLogoDataUrl] = useState<string | undefined>(existingOrg?.logoDataUrl);
-
-    const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        if (file.size > 2 * 1024 * 1024) return;
-        if (!file.type.startsWith("image/")) return;
-        const reader = new FileReader();
-        reader.onerror = () => setLogoDataUrl(undefined);
-        reader.onload = () => setLogoDataUrl(reader.result as string);
-        reader.readAsDataURL(file);
-    };
 
     const mutation = useMutation({
         mutationFn: async () => {
@@ -39,7 +27,7 @@ export const StepOrgCreate = () => {
             await updateContext({
                 flowData: {
                     ...state?.context.flowData,
-                    org: { id: org.id, name: org.name, logoDataUrl },
+                    org: { id: org.id, name: org.name },
                 },
             });
             await next();
@@ -64,14 +52,6 @@ export const StepOrgCreate = () => {
                     placeholder="Acme Inc."
                 />
             </div>
-            <label className="text-sm underline cursor-pointer w-fit">
-                Upload logo
-                <input type="file" accept="image/*" className="hidden" onChange={onFileChange} />
-            </label>
-            {logoDataUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={logoDataUrl} alt="" className="size-12 rounded-md object-cover" />
-            )}
             <Button
                 type="button"
                 onClick={() => mutation.mutate()}
