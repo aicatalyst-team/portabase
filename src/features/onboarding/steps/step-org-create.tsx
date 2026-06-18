@@ -2,14 +2,18 @@
 
 import { useState } from "react";
 import { useOnboarding } from "@onboardjs/react";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { createOrganizationAction } from "@/features/organizations/organization.action";
 
 export const StepOrgCreate = () => {
     const { next, updateContext, state } = useOnboarding();
-    const [name, setName] = useState("");
-    const [logoDataUrl, setLogoDataUrl] = useState<string | undefined>(undefined);
+    const existingOrg = state?.context.flowData.org;
+    const [name, setName] = useState(existingOrg?.name ?? "");
+    const [logoDataUrl, setLogoDataUrl] = useState<string | undefined>(existingOrg?.logoDataUrl);
 
     const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -22,11 +26,28 @@ export const StepOrgCreate = () => {
         reader.readAsDataURL(file);
     };
 
-    const onContinue = async () => {
-        if (!name.trim()) return;
-        await updateContext({ flowData: { ...state?.context.flowData, org: { name: name.trim(), logoDataUrl } } });
-        await next();
-    };
+    const mutation = useMutation({
+        mutationFn: async () => {
+            if (!name.trim()) return;
+            const result = await createOrganizationAction({ name: name.trim() });
+            if (!result?.data?.success) {
+                const data = result?.data;
+                throw new Error((!data?.success && data?.actionError?.message) ? data.actionError.message : "Failed to create organisation");
+            }
+            const org = result.data.value;
+            if (!org) throw new Error("Failed to create organisation");
+            await updateContext({
+                flowData: {
+                    ...state?.context.flowData,
+                    org: { id: org.id, name: org.name, logoDataUrl },
+                },
+            });
+            await next();
+        },
+        onError: (err: Error) => {
+            toast.error(err.message);
+        },
+    });
 
     return (
         <div className="flex flex-col gap-4">
@@ -36,14 +57,27 @@ export const StepOrgCreate = () => {
             </div>
             <div className="flex flex-col gap-2">
                 <Label htmlFor="org-name">Organisation name</Label>
-                <Input id="org-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Acme Inc." />
+                <Input
+                    id="org-name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Acme Inc."
+                />
             </div>
             <label className="text-sm underline cursor-pointer w-fit">
                 Upload logo
                 <input type="file" accept="image/*" className="hidden" onChange={onFileChange} />
             </label>
-            <Button type="button" onClick={onContinue} disabled={!name.trim()}>
-                Continue
+            {logoDataUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logoDataUrl} alt="" className="size-12 rounded-md object-cover" />
+            )}
+            <Button
+                type="button"
+                onClick={() => mutation.mutate()}
+                disabled={!name.trim() || mutation.isPending}
+            >
+                {mutation.isPending ? "Creating…" : "Continue"}
             </Button>
         </div>
     );
