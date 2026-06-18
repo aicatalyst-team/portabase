@@ -19,13 +19,15 @@ import { storageProviders } from "@/features/channel/channels-storage-helper";
 import { renderChannelForm } from "@/features/channel/channels-helpers";
 import { StorageChannelFormSchema } from "@/features/channel/channel-form.schema";
 import { OnboardingChannel } from "@/features/onboarding/onboarding.types";
+import { addStorageChannelAction } from "@/features/channel/storages/channel.action";
 
 type Phase = { kind: "grid" } | { kind: "configuring"; provider: string };
 
 export const StepStorage = () => {
     const { next, updateContext, state } = useOnboarding();
     const [phase, setPhase] = useState<Phase>({ kind: "grid" });
-    const [channels, setChannels] = useState<OnboardingChannel[]>([]);
+    const existingStorages = (state?.context.flowData.storages ?? []) as OnboardingChannel[];
+    const [channels, setChannels] = useState<OnboardingChannel[]>(existingStorages);
     const [pending, setPending] = useState(false);
 
     const form = useZodForm({ schema: StorageChannelFormSchema });
@@ -42,8 +44,39 @@ export const StepStorage = () => {
 
     const onContinue = async () => {
         setPending(true);
-        await updateContext({ flowData: { ...state?.context.flowData, storages: channels } });
-        await next();
+        try {
+            const orgId = (state?.context.flowData.org as any)?.id as string | undefined;
+            const persistedChannels: OnboardingChannel[] = [];
+
+            for (const ch of channels) {
+                const alreadyPersisted = existingStorages.some((s) => s.id === ch.id && ch.id.length === 36);
+                if (alreadyPersisted) {
+                    persistedChannels.push(ch);
+                    continue;
+                }
+                const result = await addStorageChannelAction({
+                    organizationId: orgId,
+                    data: { provider: ch.provider as any, name: ch.name, config: ch.config as any, enabled: true },
+                });
+                const inner = result?.data;
+                if (inner?.success && inner.value) {
+                    persistedChannels.push({
+                        id: inner.value.id,
+                        provider: ch.provider,
+                        label: ch.label,
+                        name: ch.name,
+                        config: ch.config,
+                    });
+                }
+            }
+
+            await updateContext({
+                flowData: { ...state?.context.flowData, storages: persistedChannels },
+            });
+            await next();
+        } finally {
+            setPending(false);
+        }
     };
 
     if (phase.kind === "configuring") {

@@ -19,13 +19,15 @@ import { notificationProviders } from "@/features/channel/channels-notification-
 import { renderChannelForm } from "@/features/channel/channels-helpers";
 import { NotificationChannelFormSchema } from "@/features/channel/channel-form.schema";
 import { OnboardingChannel } from "@/features/onboarding/onboarding.types";
+import { addNotificationChannelAction } from "@/features/channel/notifications/channel.action";
 
 type Phase = { kind: "grid" } | { kind: "configuring"; provider: string };
 
 export const StepNotifier = () => {
     const { next, updateContext, state } = useOnboarding();
     const [phase, setPhase] = useState<Phase>({ kind: "grid" });
-    const [channels, setChannels] = useState<OnboardingChannel[]>([]);
+    const existingNotifiers = (state?.context.flowData.notifiers ?? []) as OnboardingChannel[];
+    const [channels, setChannels] = useState<OnboardingChannel[]>(existingNotifiers);
     const [pending, setPending] = useState(false);
 
     const form = useZodForm({ schema: NotificationChannelFormSchema });
@@ -43,8 +45,40 @@ export const StepNotifier = () => {
 
     const onContinue = async () => {
         setPending(true);
-        await updateContext({ flowData: { ...state?.context.flowData, notifiers: channels } });
-        await next();
+        try {
+            const orgId = (state?.context.flowData.org as any)?.id as string | undefined;
+            const persistedChannels: OnboardingChannel[] = [];
+
+            for (const ch of channels) {
+                // Skip channels already persisted (have a real UUID from previous continue)
+                const alreadyPersisted = existingNotifiers.some((n) => n.id === ch.id && n.id.length === 36);
+                if (alreadyPersisted) {
+                    persistedChannels.push(ch);
+                    continue;
+                }
+                const result = await addNotificationChannelAction({
+                    organizationId: orgId,
+                    data: { provider: ch.provider as any, name: ch.name, config: ch.config as any, enabled: true },
+                });
+                const inner = result?.data;
+                if (inner?.success && inner.value) {
+                    persistedChannels.push({
+                        id: inner.value.id,
+                        provider: ch.provider,
+                        label: ch.label,
+                        name: ch.name,
+                        config: ch.config,
+                    });
+                }
+            }
+
+            await updateContext({
+                flowData: { ...state?.context.flowData, notifiers: persistedChannels },
+            });
+            await next();
+        } finally {
+            setPending(false);
+        }
     };
 
     if (phase.kind === "configuring") {
