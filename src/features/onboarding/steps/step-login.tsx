@@ -1,10 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import { useOnboarding } from "@onboardjs/react";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Globe, Mail } from "lucide-react";
+import { Globe, Mail, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -17,7 +18,7 @@ import {
     FormControl,
     FormMessage,
 } from "@/components/ui/form";
-import { signIn } from "@/lib/auth/auth-client";
+import { signIn, useSession } from "@/lib/auth/auth-client";
 import type { OnboardingMeta } from "@/features/onboarding/onboarding.types";
 
 const LoginSchema = z.object({
@@ -30,8 +31,30 @@ type LoginValues = z.infer<typeof LoginSchema>;
 export const StepLogin = () => {
     const { next, state } = useOnboarding();
     const meta = state?.context.flowData.meta as OnboardingMeta | undefined;
+    const { data: session } = useSession();
+
+    const passkeyEnabled = meta?.passkeyEnabled ?? false;
+    const emailPasswordEnabled = meta?.emailPasswordEnabled ?? true;
+    const hasAnySsoProvider = (meta?.ssoProviders?.length ?? 0) > 0;
+    const hasAnyAuthMethod = emailPasswordEnabled || passkeyEnabled || hasAnySsoProvider;
+
+    // Auto-advance if already authenticated
+    useEffect(() => {
+        if (session?.user) {
+            next();
+        }
+    }, [session?.user?.id]);
 
     const form = useZodForm({ schema: LoginSchema });
+
+    const passkeyMutation = useMutation({
+        mutationFn: async () => {
+            const result = await (signIn as any).passkey();
+            if (result?.error) throw new Error(result.error.message ?? "Passkey sign in failed");
+            await next();
+        },
+        onError: (err: Error) => { toast.error(err.message); },
+    });
 
     const loginMutation = useMutation({
         mutationFn: async (values: LoginValues) => {
@@ -41,22 +64,37 @@ export const StepLogin = () => {
             });
             if (result.error) throw new Error(result.error.message ?? "Sign in failed");
             await next();
-            return result.data;
         },
-        onError: (err: Error) => {
-            toast.error(err.message);
-        },
+        onError: (err: Error) => { toast.error(err.message); },
     });
 
     const handleSso = async (providerId: string) => {
         try {
-            await signIn.social({ provider: providerId as any });
+            await signIn.social({ provider: providerId as any, callbackURL: "/welcome" });
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "SSO sign in failed");
         }
     };
 
-    // Case 1: No existing users — registration flow (SSO or continue to account-info)
+    // No auth methods configured
+    if (!hasAnyAuthMethod) {
+        return (
+            <div className="flex flex-col gap-4">
+                <div>
+                    <h1 className="text-2xl font-semibold">No authentication configured</h1>
+                    <p className="text-sm text-muted-foreground mt-1">
+                        Enable at least one authentication method in your environment variables to continue.
+                    </p>
+                </div>
+                <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm text-yellow-400">
+                    Set <code className="font-mono">AUTH_EMAIL_PASSWORD_ENABLED=true</code>,{" "}
+                    <code className="font-mono">AUTH_PASSKEY_ENABLED=true</code>, or configure an SSO provider.
+                </div>
+            </div>
+        );
+    }
+
+    // New user registration flow
     if (!meta?.hasExistingUsers) {
         return (
             <div className="flex flex-col gap-4">
@@ -66,9 +104,9 @@ export const StepLogin = () => {
                         Set up your instance by creating the first account.
                     </p>
                 </div>
-                {meta?.ssoProviders && meta.ssoProviders.length > 0 && (
+                {hasAnySsoProvider && (
                     <div className="flex flex-col gap-2">
-                        {meta.ssoProviders.map((provider) => (
+                        {meta?.ssoProviders.map((provider) => (
                             <button
                                 key={provider.id}
                                 type="button"
@@ -83,15 +121,17 @@ export const StepLogin = () => {
                         ))}
                     </div>
                 )}
-                <Button type="button" onClick={() => next()}>
-                    <Mail className="size-4 mr-2" />
-                    Register with email
-                </Button>
+                {emailPasswordEnabled && (
+                    <Button type="button" onClick={() => next()}>
+                        <Mail className="size-4 mr-2" />
+                        Register with email
+                    </Button>
+                )}
             </div>
         );
     }
 
-    // Case 2 & 3: Login form (default user mode or session expired resume)
+    // Existing user login flow
     return (
         <div className="flex flex-col gap-4">
             <div>
@@ -102,9 +142,9 @@ export const StepLogin = () => {
                         : "Your session expired. Sign in to continue where you left off."}
                 </p>
             </div>
-            {meta?.ssoProviders && meta.ssoProviders.length > 0 && !meta.defaultUserMode && (
+            {hasAnySsoProvider && !meta?.defaultUserMode && (
                 <div className="flex flex-col gap-2">
-                    {meta.ssoProviders.map((provider) => (
+                    {meta?.ssoProviders.map((provider) => (
                         <button
                             key={provider.id}
                             type="button"
@@ -119,43 +159,56 @@ export const StepLogin = () => {
                     ))}
                 </div>
             )}
-            <Form
-                form={form}
-                className="flex flex-col gap-4"
-                onSubmit={async (values) => loginMutation.mutateAsync(values)}
-            >
-                <FormField
-                    control={form.control}
-                    name="email"
-                    defaultValue=""
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                                <Input placeholder="your@email.com" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="password"
-                    defaultValue=""
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <FormControl>
-                                <PasswordInput placeholder="Your password" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <Button type="submit" disabled={loginMutation.isPending}>
-                    Sign in
+            {passkeyEnabled && (
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => passkeyMutation.mutate()}
+                    disabled={passkeyMutation.isPending}
+                >
+                    <KeyRound className="size-4 mr-2" />
+                    Sign in with passkey
                 </Button>
-            </Form>
+            )}
+            {emailPasswordEnabled && (
+                <Form
+                    form={form}
+                    className="flex flex-col gap-4"
+                    onSubmit={async (values) => loginMutation.mutateAsync(values)}
+                >
+                    <FormField
+                        control={form.control}
+                        name="email"
+                        defaultValue=""
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Email</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="your@email.com" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="password"
+                        defaultValue=""
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Password</FormLabel>
+                                <FormControl>
+                                    <PasswordInput placeholder="Your password" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <Button type="submit" disabled={loginMutation.isPending}>
+                        Sign in
+                    </Button>
+                </Form>
+            )}
         </div>
     );
 };
