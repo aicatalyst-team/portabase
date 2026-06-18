@@ -4,17 +4,22 @@ import { useRouter } from "next/navigation";
 import { OnboardingProvider } from "@onboardjs/react";
 import { onboardingSteps } from "@/features/onboarding/onboarding-steps";
 import { OnboardingShell } from "@/features/onboarding/onboarding-shell";
-import { markOnboardingDone } from "@/features/onboarding/onboarding-cookie";
+import type { OnboardingFlowData } from "@/features/onboarding/onboarding.types";
 
-export const OnboardingClient = ({ initialStepId }: { initialStepId: string }) => {
+type Props = {
+    initialStepId: string;
+    initialFlowData: Partial<OnboardingFlowData>;
+};
+
+export const OnboardingClient = ({ initialStepId, initialFlowData }: Props) => {
     const router = useRouter();
 
     return (
         <OnboardingProvider
             steps={onboardingSteps}
             initialStepId={initialStepId}
+            initialContext={{ flowData: initialFlowData }}
             onFlowComplete={async () => {
-                await markOnboardingDone();
                 router.push("/dashboard/home");
             }}
         >

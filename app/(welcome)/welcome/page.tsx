@@ -1,15 +1,18 @@
 import { redirect } from "next/navigation";
-import { currentUser } from "@/lib/auth/current-user";
-import { isOnboardingDone } from "@/features/onboarding/onboarding-cookie";
+import { resolveOnboardingState } from "@/features/onboarding/onboarding-state";
 import { OnboardingClient } from "./onboarding-client";
 
 export default async function WelcomePage() {
-    if (await isOnboardingDone()) {
-        redirect("/dashboard/home");
+    const result = await resolveOnboardingState();
+
+    if ("redirect" in result) {
+        redirect(result.redirect);
     }
 
-    const user = await currentUser();
-    const initialStepId = user ? "org-create" : "sso-gate";
-
-    return <OnboardingClient initialStepId={initialStepId} />;
+    return (
+        <OnboardingClient
+            initialStepId={result.stepId}
+            initialFlowData={result.flowData}
+        />
+    );
 }
