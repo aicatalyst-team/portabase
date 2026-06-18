@@ -1,89 +1,120 @@
 "use client";
 
-import { useState } from "react";
 import { useOnboarding } from "@onboardjs/react";
-import { Check, Moon, Sun } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
+import type { OnboardingAccountData, OnboardingMeta } from "@/features/onboarding/onboarding.types";
 
-const MAX_AVATAR_SIZE_BYTES = 2 * 1024 * 1024;
+const AVATAR_COLORS = [
+    { name: "indigo",   hex: "#4f46e5" },
+    { name: "violet",  hex: "#7c3aed" },
+    { name: "rose",    hex: "#e11d48" },
+    { name: "orange",  hex: "#ea580c" },
+    { name: "amber",   hex: "#d97706" },
+    { name: "emerald", hex: "#059669" },
+    { name: "cyan",    hex: "#0891b2" },
+    { name: "zinc",    hex: "#52525b" },
+];
+
+const THEME_OPTIONS = [
+    { value: "dark", label: "Dark" },
+    { value: "light", label: "Light" },
+] as const;
 
 export const StepPreferences = () => {
     const { next, updateContext, state } = useOnboarding();
-    const [theme, setTheme] = useState<"light" | "dark">("dark");
-    const [avatarDataUrl, setAvatarDataUrl] = useState<string | undefined>(undefined);
+    const preferences = state?.context.flowData.preferences ?? { theme: "dark" as const };
+    const account = state?.context.flowData.account as OnboardingAccountData | undefined;
 
-    const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        if (!file.type.startsWith("image/")) {
-            toast.error("Please select an image file.");
-            return;
-        }
-        if (file.size > MAX_AVATAR_SIZE_BYTES) {
-            toast.error("Image is too large. Please select a file under 2MB.");
-            return;
-        }
-        const reader = new FileReader();
-        reader.onload = () => setAvatarDataUrl(reader.result as string);
-        reader.onerror = () => toast.error("Failed to read the selected image. Please try again.");
-        reader.readAsDataURL(file);
+    const initials = account
+        ? `${account.firstName[0] ?? ""}${account.lastName[0] ?? ""}`.toUpperCase()
+        : "PB";
+
+    const selectedAvatarUrl = preferences.avatarUrl;
+
+    const selectAvatar = async (color: string) => {
+        const url = `/api/avatar?initials=${initials}&color=${encodeURIComponent(color)}`;
+        await updateContext({
+            flowData: {
+                ...state?.context.flowData,
+                preferences: { ...preferences, avatarUrl: url },
+            },
+        });
+    };
+
+    const selectTheme = async (theme: "dark" | "light") => {
+        await updateContext({
+            flowData: {
+                ...state?.context.flowData,
+                preferences: { ...preferences, theme },
+            },
+        });
     };
 
     const onContinue = async () => {
-        await updateContext({ flowData: { ...state?.context.flowData, preferences: { theme, avatarDataUrl } } });
         await next();
     };
 
-    const themeOptions: { value: "light" | "dark"; label: string; Icon: typeof Sun }[] = [
-        { value: "light", label: "Light", Icon: Sun },
-        { value: "dark", label: "Dark", Icon: Moon },
-    ];
-
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
             <div>
-                <h1 className="text-2xl font-semibold">Make yourself at home</h1>
-                <p className="text-sm text-muted-foreground mt-1">Pick your theme and add a profile photo.</p>
+                <h1 className="text-2xl font-semibold">Your preferences</h1>
+                <p className="text-sm text-muted-foreground mt-1">Optional — personalise your workspace.</p>
             </div>
-            <div className="flex items-center gap-4">
-                <Avatar className="size-12">
-                    <AvatarImage src={avatarDataUrl} alt="" />
-                    <AvatarFallback>?</AvatarFallback>
-                </Avatar>
-                <label className="text-sm underline cursor-pointer">
-                    Upload image
-                    <input type="file" accept="image/*" className="hidden" onChange={onFileChange} />
-                </label>
-            </div>
-            <div className="flex gap-2">
-                {themeOptions.map(({ value, label, Icon }) => {
-                    const isActive = theme === value;
-                    return (
+
+            {/* Theme */}
+            <div className="flex flex-col gap-2">
+                <p className="text-sm font-medium">Theme</p>
+                <div className="flex gap-2">
+                    {THEME_OPTIONS.map((opt) => (
                         <button
-                            key={value}
+                            key={opt.value}
                             type="button"
-                            onClick={() => setTheme(value)}
-                            className={`flex items-center gap-2 rounded-lg border p-3 text-sm transition-colors flex-1 ${
-                                isActive
-                                    ? "border-primary/20 bg-primary/10 text-primary"
+                            onClick={() => selectTheme(opt.value)}
+                            className={cn(
+                                "flex-1 rounded-lg border p-3 text-sm transition-colors",
+                                preferences.theme === opt.value
+                                    ? "border-primary/40 bg-primary/10 text-primary"
                                     : "border-border hover:bg-accent/50 hover:border-primary/20"
-                            }`}
-                        >
-                            <div className="size-7 rounded-md border bg-muted/50 flex items-center justify-center shrink-0">
-                                <Icon className="size-4" />
-                            </div>
-                            <span className="flex-1 text-left">{label}</span>
-                            {isActive && (
-                                <div className="size-5 rounded-full bg-primary flex items-center justify-center">
-                                    <Check className="size-3 text-primary-foreground" strokeWidth={3} />
-                                </div>
                             )}
+                        >
+                            {opt.label}
                         </button>
-                    );
-                })}
+                    ))}
+                </div>
             </div>
+
+            {/* Avatar picker */}
+            <div className="flex flex-col gap-2">
+                <p className="text-sm font-medium">Avatar</p>
+                <div className="grid grid-cols-8 gap-2">
+                    {AVATAR_COLORS.map((c) => {
+                        const url = `/api/avatar?initials=${initials}&color=${encodeURIComponent(c.hex)}`;
+                        const isSelected = selectedAvatarUrl === url;
+                        return (
+                            <button
+                                key={c.name}
+                                type="button"
+                                onClick={() => selectAvatar(c.hex)}
+                                className={cn(
+                                    "rounded-full overflow-hidden transition-all",
+                                    isSelected ? "ring-2 ring-primary ring-offset-2 ring-offset-zinc-900" : "opacity-70 hover:opacity-100"
+                                )}
+                            >
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={url}
+                                    alt={c.name}
+                                    width={40}
+                                    height={40}
+                                    className="size-10 rounded-full"
+                                />
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+
             <Button type="button" onClick={onContinue}>
                 Continue
             </Button>
