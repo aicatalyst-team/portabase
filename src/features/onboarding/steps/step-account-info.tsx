@@ -4,94 +4,154 @@ import { useOnboarding } from "@onboardjs/react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
-import { useZodForm, Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import {
+    useZodForm,
+    Form,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormControl,
+    FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 import { signUp } from "@/lib/auth/auth-client";
+import { updateAccountAction } from "@/features/onboarding/actions/update-account.action";
+import type { OnboardingMeta } from "@/features/onboarding/onboarding.types";
 
-const AccountStepSchema = z.object({
-    name: z.string().min(1, "Name is required"),
+const BaseSchema = z.object({
+    firstName: z.string().min(1, "First name required"),
+    lastName: z.string().min(1, "Last name required"),
     email: z.string().email("Invalid email"),
+});
+
+const WithPasswordSchema = BaseSchema.extend({
     password: z.string().min(8, "Min. 8 characters"),
 });
 
-type AccountStepType = z.infer<typeof AccountStepSchema>;
-
 export const StepAccountInfo = () => {
     const { next, updateContext, state } = useOnboarding();
-    const form = useZodForm({ schema: AccountStepSchema });
+    const meta = state?.context.flowData.meta as OnboardingMeta | undefined;
+    const existingAccount = state?.context.flowData.account;
+    const isUpdateMode = !!existingAccount;
+    const passkeyEnabled = meta?.passkeyEnabled ?? false;
+
+    const schema = passkeyEnabled ? BaseSchema : WithPasswordSchema;
+    const form = useZodForm({ schema }) as unknown as ReturnType<typeof useZodForm<typeof WithPasswordSchema>>;
 
     const mutation = useMutation({
-        mutationFn: async (values: AccountStepType) => {
-            await signUp.email(
-                { name: values.name, email: values.email, password: values.password },
-                {
-                    onSuccess: async () => {
-                        await updateContext({
-                            flowData: { ...state?.context.flowData, account: { name: values.name, email: values.email } },
-                        });
-                        await next();
+        mutationFn: async (values: z.infer<typeof WithPasswordSchema>) => {
+            if (isUpdateMode) {
+                const result = await updateAccountAction({
+                    firstName: values.firstName,
+                    lastName: values.lastName,
+                });
+                if (!result?.data) throw new Error("Failed to update account");
+                await updateContext({
+                    flowData: {
+                        ...state?.context.flowData,
+                        account: { firstName: values.firstName, lastName: values.lastName, email: values.email },
                     },
-                    onError: (error) => {
-                        toast.error(error.error.message);
-                    },
-                }
-            );
+                });
+                await next();
+            } else {
+                await signUp.email(
+                    {
+                        name: `${values.firstName} ${values.lastName}`,
+                        email: values.email,
+                        password: values.password ?? "",
+                    } as any,
+                    {
+                        onSuccess: async () => {
+                            await updateContext({
+                                flowData: {
+                                    ...state?.context.flowData,
+                                    account: { firstName: values.firstName, lastName: values.lastName, email: values.email },
+                                },
+                            });
+                            await next();
+                        },
+                        onError: (error) => {
+                            toast.error(error.error.message);
+                        },
+                    }
+                );
+            }
         },
     });
 
     return (
         <div className="flex flex-col gap-4">
             <div>
-                <h1 className="text-2xl font-semibold">Create your account</h1>
+                <h1 className="text-2xl font-semibold">
+                    {isUpdateMode ? "Update your account" : "Create your account"}
+                </h1>
                 <p className="text-sm text-muted-foreground mt-1">This step can&apos;t be skipped.</p>
             </div>
-            <Form form={form} className="flex flex-col gap-4" onSubmit={async (values) => mutation.mutateAsync(values)}>
-                <FormField
-                    control={form.control}
-                    name="name"
-                    defaultValue=""
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Name</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Your name" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+            <Form form={form} className="flex flex-col gap-4" onSubmit={async (values) => mutation.mutateAsync(values as any)}>
+                <div className="grid grid-cols-2 gap-3">
+                    <FormField
+                        control={form.control}
+                        name="firstName"
+                        defaultValue={existingAccount?.firstName ?? ""}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>First name</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="John" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="lastName"
+                        defaultValue={existingAccount?.lastName ?? ""}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Last name</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Doe" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
                 <FormField
                     control={form.control}
                     name="email"
-                    defaultValue=""
+                    defaultValue={existingAccount?.email ?? ""}
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
-                                <Input placeholder="example@portabase.io" {...field} />
+                                <Input placeholder="john@example.com" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="password"
-                    defaultValue=""
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <FormControl>
-                                <PasswordInput placeholder="Your password" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                {!passkeyEnabled && !isUpdateMode && (
+                    <FormField
+                        control={form.control}
+                        name="password"
+                        defaultValue=""
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Password</FormLabel>
+                                <FormControl>
+                                    <PasswordInput placeholder="Min. 8 characters" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                )}
                 <Button type="submit" disabled={mutation.isPending}>
-                    Create account
+                    {isUpdateMode ? "Update account" : "Create account"}
                 </Button>
             </Form>
         </div>
