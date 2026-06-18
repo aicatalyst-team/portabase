@@ -35,23 +35,25 @@ export const StepLogin = () => {
 
     const loginMutation = useMutation({
         mutationFn: async (values: LoginValues) => {
-            const result = await signIn.email(
-                { email: values.email, password: values.password },
-                {
-                    onSuccess: async () => {
-                        await next();
-                    },
-                    onError: (error) => {
-                        toast.error(error.error.message);
-                    },
-                }
-            );
-            return result;
+            const result = await signIn.email({
+                email: values.email,
+                password: values.password,
+            });
+            if (result.error) throw new Error(result.error.message ?? "Sign in failed");
+            await next();
+            return result.data;
+        },
+        onError: (err: Error) => {
+            toast.error(err.message);
         },
     });
 
     const handleSso = async (providerId: string) => {
-        await signIn.social({ provider: providerId as any });
+        try {
+            await signIn.social({ provider: providerId as any });
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "SSO sign in failed");
+        }
     };
 
     // Case 1: No existing users — registration flow (SSO or continue to account-info)
