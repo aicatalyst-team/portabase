@@ -1,6 +1,5 @@
-// src/features/onboarding/onboarding-steps.tsx
 import { OnboardingStep } from "@onboardjs/react";
-import { StepSsoGate } from "@/features/onboarding/steps/step-sso-gate";
+import { StepLogin } from "@/features/onboarding/steps/step-login";
 import { StepAccountInfo } from "@/features/onboarding/steps/step-account-info";
 import { StepSecurity } from "@/features/onboarding/steps/step-security";
 import { StepPreferences } from "@/features/onboarding/steps/step-preferences";
@@ -10,18 +9,17 @@ import { StepNotifier } from "@/features/onboarding/steps/step-notifier";
 import { StepStorage } from "@/features/onboarding/steps/step-storage";
 import { StepDefaults } from "@/features/onboarding/steps/step-defaults";
 import { StepAgentCreate } from "@/features/onboarding/steps/step-agent-create";
+import { StepAgentKey } from "@/features/onboarding/steps/step-agent-key";
 import { StepAgentWaiting } from "@/features/onboarding/steps/step-agent-waiting";
 import { StepProjectCreate } from "@/features/onboarding/steps/step-project-create";
 import { StepDbSettings } from "@/features/onboarding/steps/step-db-settings";
 import { StepFinish } from "@/features/onboarding/steps/step-finish";
-import { mockSsoConfig } from "@/features/onboarding/onboarding.mock";
 
 export const onboardingSteps: OnboardingStep[] = [
     {
-        id: "sso-gate",
-        component: StepSsoGate,
-        isSkippable: !mockSsoConfig.forced as true,
-        skipToStep: undefined,
+        id: "login",
+        component: StepLogin,
+        isSkippable: false,
         nextStep: "account-info",
     },
     {
@@ -34,14 +32,14 @@ export const onboardingSteps: OnboardingStep[] = [
         id: "security",
         component: StepSecurity,
         isSkippable: true,
-        skipToStep: undefined,
+        skipToStep: "preferences",
         nextStep: "preferences",
     },
     {
         id: "preferences",
         component: StepPreferences,
         isSkippable: true,
-        skipToStep: undefined,
+        skipToStep: "org-create",
         nextStep: "org-create",
     },
     {
@@ -54,39 +52,45 @@ export const onboardingSteps: OnboardingStep[] = [
         id: "invite-members",
         component: StepInviteMembers,
         isSkippable: true,
-        skipToStep: undefined,
+        skipToStep: "notifier",
         nextStep: "notifier",
     },
     {
         id: "notifier",
         component: StepNotifier,
         isSkippable: true,
-        skipToStep: undefined,
+        skipToStep: "storage",
         nextStep: "storage",
     },
     {
         id: "storage",
         component: StepStorage,
         isSkippable: true,
-        skipToStep: undefined,
+        skipToStep: "defaults",
         nextStep: "defaults",
     },
     {
         id: "defaults",
         component: StepDefaults,
         isSkippable: true,
-        skipToStep: undefined,
+        skipToStep: "agent-create",
         nextStep: "agent-create",
     },
     {
         id: "agent-create",
         component: StepAgentCreate,
         isSkippable: true,
-        skipToStep: undefined,
+        skipToStep: "finish",
         nextStep: (ctx: any) => {
             const agents = ctx.flowData?.agents as unknown[] | undefined;
-            return agents && agents.length > 0 ? "agent-waiting" : "finish";
+            return agents && agents.length > 0 ? "agent-key" : "finish";
         },
+    },
+    {
+        id: "agent-key",
+        component: StepAgentKey,
+        isSkippable: false,
+        nextStep: "agent-waiting",
     },
     {
         id: "agent-waiting",
@@ -98,14 +102,14 @@ export const onboardingSteps: OnboardingStep[] = [
         id: "project-create",
         component: StepProjectCreate,
         isSkippable: true,
-        skipToStep: undefined,
+        skipToStep: "db-settings",
         nextStep: "db-settings",
     },
     {
         id: "db-settings",
         component: StepDbSettings,
         isSkippable: true,
-        skipToStep: undefined,
+        skipToStep: "finish",
         nextStep: "finish",
     },
     {
