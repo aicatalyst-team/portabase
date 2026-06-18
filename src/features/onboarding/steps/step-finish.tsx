@@ -2,13 +2,23 @@
 
 import { useEffect, useRef } from "react";
 import { useOnboarding } from "@onboardjs/react";
+import { useMutation } from "@tanstack/react-query";
 import confetti from "canvas-confetti";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { markOnboardingDoneAction } from "@/features/onboarding/actions/onboarding-mark-done.action";
 
 export const StepFinish = () => {
     const { next } = useOnboarding();
     const fired = useRef(false);
+
+    const mutation = useMutation({
+        mutationFn: async () => {
+            const result = await markOnboardingDoneAction({});
+            if (!result?.data) throw new Error("Failed to mark onboarding done");
+            return result.data;
+        },
+    });
 
     useEffect(() => {
         if (fired.current) return;
@@ -21,7 +31,14 @@ export const StepFinish = () => {
             <CheckCircle2 className="size-16 text-green-500" />
             <h1 className="text-2xl font-semibold">You&apos;re all set!</h1>
             <p className="text-sm text-muted-foreground">Your workspace is ready to use.</p>
-            <Button type="button" onClick={async () => { await next(); }}>
+            <Button
+                type="button"
+                disabled={mutation.isPending}
+                onClick={async () => {
+                    await mutation.mutateAsync();
+                    await next();
+                }}
+            >
                 Go to dashboard
             </Button>
         </div>

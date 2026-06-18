@@ -20,6 +20,7 @@ export const setting = pgTable("settings", {
     defaultStorageChannelId: uuid('default_storage_channel_id')
         .references(() => storageChannel.id, {onDelete: "set null"}),
     encryption: boolean("encryption").default(false),
+    onboarding: boolean("onboarding").default(false).notNull(),
     ...timestamps
 });
 
