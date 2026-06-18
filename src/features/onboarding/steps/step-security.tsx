@@ -2,10 +2,12 @@
 
 import { useOnboarding } from "@onboardjs/react";
 import { KeyRound, ShieldCheck } from "lucide-react";
-import { mockSsoConfig } from "@/features/onboarding/onboarding.mock";
+import type { OnboardingMeta } from "@/features/onboarding/onboarding.types";
 
 export const StepSecurity = () => {
     const { next, updateContext, state } = useOnboarding();
+    const meta = state?.context.flowData.meta as OnboardingMeta | undefined;
+    const passkeyEnabled = meta?.passkeyEnabled ?? false;
 
     const choose = async (method: "passkey" | "two-factor") => {
         await updateContext({ flowData: { ...state?.context.flowData, security: { method } } });
@@ -17,12 +19,12 @@ export const StepSecurity = () => {
             <div>
                 <h1 className="text-2xl font-semibold">Secure your account</h1>
                 <p className="text-sm text-muted-foreground mt-1">
-                    {mockSsoConfig.passkeyEnabled
+                    {passkeyEnabled
                         ? "Set up a passkey for faster, safer sign-in."
                         : "Set up two-factor authentication to protect your account."}
                 </p>
             </div>
-            {mockSsoConfig.passkeyEnabled ? (
+            {passkeyEnabled ? (
                 <button
                     type="button"
                     onClick={() => choose("passkey")}
