@@ -28,11 +28,11 @@ export const StepOrgCreate = () => {
 
     const mutation = useMutation({
         mutationFn: async () => {
-            if (!name.trim()) return;
+            if (!name.trim()) throw new Error("Organisation name is required");
             const result = await createOrganizationAction({ name: name.trim() });
             if (!result?.data?.success) {
-                const data = result?.data;
-                throw new Error((!data?.success && data?.actionError?.message) ? data.actionError.message : "Failed to create organisation");
+                const errorData = result?.data as { success: false; actionError?: any };
+                throw new Error(errorData?.actionError?.message ?? "Failed to create organisation");
             }
             const org = result.data.value;
             if (!org) throw new Error("Failed to create organisation");
