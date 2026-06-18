@@ -4,8 +4,6 @@ import { currentUser } from "@/lib/auth/current-user";
 import { getOrganization } from "@/lib/auth/auth";
 import { getOrganizationAgents } from "@/db/services/agent";
 import type { AgentWith } from "@/db/schema/08_agent";
-import { getOrganizationChannels } from "@/db/services/notification-channel";
-import { getOrganizationStorageChannels } from "@/db/services/storage-channel";
 import { db } from "@/db";
 import * as drizzleDb from "@/db";
 import { eq } from "drizzle-orm";
