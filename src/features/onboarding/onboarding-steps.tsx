@@ -82,10 +82,15 @@ export const onboardingSteps: OnboardingStep[] = [
     id: "agent-create",
     component: StepAgentCreate,
     isSkippable: true,
-    skipToStep: "finish",
+    skipToStep: (ctx: any) => {
+      const hasProject = !!ctx.flowData?.project;
+      return hasProject ? "project-create" : "finish";
+    },
     nextStep: (ctx: any) => {
       const agents = ctx.flowData?.agents as unknown[] | undefined;
-      return agents && agents.length > 0 ? "agent-key" : "finish";
+      const hasProject = !!ctx.flowData?.project;
+      if (agents && agents.length > 0) return "agent-key";
+      return hasProject ? "project-create" : "finish";
     },
   },
   {
