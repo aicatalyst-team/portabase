@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useOnboarding } from "@onboardjs/react";
-import { Check, Database } from "lucide-react";
+import { Check, Database, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,15 +29,20 @@ export const StepProjectCreate = () => {
   const [databaseIds, setDatabaseIds] = useState<string[]>(
     existingProject?.databaseIds ?? [],
   );
+  const [loadingDbId, setLoadingDbId] = useState<string | null>(null);
 
   const mutation = useCreateProject();
 
   const toggleDb = (id: string) => {
+    setLoadingDbId(id);
     const newDbIds = databaseIds.includes(id)
       ? databaseIds.filter((v) => v !== id)
       : [...databaseIds, id];
     setDatabaseIds(newDbIds);
-    mutation.mutate({ name: name || "My project", description, databaseIds: newDbIds });
+    mutation.mutate(
+      { name: name || "My project", description, databaseIds: newDbIds },
+      { onSettled: () => setLoadingDbId(null) }
+    );
   };
 
   return (
@@ -74,17 +79,19 @@ export const StepProjectCreate = () => {
           <div className="flex flex-col gap-2">
             {databases.map((db) => {
               const isSelected = databaseIds.includes(db.id);
+              const isCurrentLoading = loadingDbId === db.id;
+              
               return (
                 <button
                   key={db.id}
                   type="button"
                   disabled={mutation.isPending}
                   onClick={() => toggleDb(db.id)}
-                  className={`flex items-center gap-3 rounded-lg border p-3 text-sm transition-colors text-left ${
+                  className={`flex items-center gap-3 rounded-lg border p-3 text-sm transition-all text-left ${
                     isSelected
                       ? "border-primary/20 bg-primary/10 text-primary"
                       : "border-border hover:bg-accent/50 hover:border-primary/20"
-                  } ${mutation.isPending ? "opacity-50 cursor-not-allowed" : ""}`}
+                  }`}
                 >
                   <div className="size-9 rounded-md border bg-muted/50 shadow-sm flex items-center justify-center shrink-0">
                     <Database className="size-4 text-muted-foreground" />
@@ -95,14 +102,18 @@ export const StepProjectCreate = () => {
                       {db.engine}
                     </span>
                   </div>
-                  {isSelected && (
+                  {isCurrentLoading ? (
+                    <div className="size-5 rounded-full flex items-center justify-center ml-auto">
+                      <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : isSelected ? (
                     <div className="size-5 rounded-full bg-primary flex items-center justify-center ml-auto">
                       <Check
                         className="size-3 text-primary-foreground"
                         strokeWidth={3}
                       />
                     </div>
-                  )}
+                  ) : null}
                 </button>
               );
             })}
