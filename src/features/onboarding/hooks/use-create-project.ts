@@ -12,7 +12,7 @@ import type { OnboardingProjectData } from "@/features/onboarding/types";
 type ProjectInput = { name: string; description: string; databaseIds: string[] };
 
 export const useCreateProject = () => {
-  const { state, updateContext, next } = useOnboarding();
+  const { state, updateContext } = useOnboarding();
 
   return useMutation({
     mutationFn: async ({ name, description, databaseIds }: ProjectInput) => {
@@ -56,7 +56,6 @@ export const useCreateProject = () => {
           },
         });
       }
-      await next();
     },
     onError: (err: Error) => toast.error(err.message),
   });

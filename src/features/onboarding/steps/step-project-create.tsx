@@ -8,90 +8,119 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useCreateProject } from "@/features/onboarding/hooks/use-create-project";
-import type { OnboardingDatabase, OnboardingProjectData } from "@/features/onboarding/types";
+import type {
+  OnboardingDatabase,
+  OnboardingProjectData,
+} from "@/features/onboarding/types";
 
 export const StepProjectCreate = () => {
-    const { state } = useOnboarding();
-    const existingProject = state?.context.flowData.project as OnboardingProjectData | undefined;
-    const databases = (state?.context.flowData.databases ?? []) as OnboardingDatabase[];
-    const isUpdateMode = !!existingProject;
+  const { state, next } = useOnboarding();
+  const existingProject = state?.context.flowData.project as
+    | OnboardingProjectData
+    | undefined;
+  const databases = (state?.context.flowData.databases ??
+    []) as OnboardingDatabase[];
+  const isUpdateMode = !!existingProject;
 
-    const [name, setName] = useState(existingProject?.name ?? "");
-    const [description, setDescription] = useState(existingProject?.description ?? "");
-    const [databaseIds, setDatabaseIds] = useState<string[]>(existingProject?.databaseIds ?? []);
+  const [name, setName] = useState(existingProject?.name ?? "");
+  const [description, setDescription] = useState(
+    existingProject?.description ?? "",
+  );
+  const [databaseIds, setDatabaseIds] = useState<string[]>(
+    existingProject?.databaseIds ?? [],
+  );
 
-    const mutation = useCreateProject();
+  const mutation = useCreateProject();
 
-    const toggleDb = (id: string) =>
-        setDatabaseIds((prev) => (prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]));
+  const toggleDb = (id: string) => {
+    const newDbIds = databaseIds.includes(id)
+      ? databaseIds.filter((v) => v !== id)
+      : [...databaseIds, id];
+    setDatabaseIds(newDbIds);
+    mutation.mutate({ name: name || "My project", description, databaseIds: newDbIds });
+  };
 
-    return (
-        <div className="flex flex-col gap-4">
-            <div>
-                <h1 className="text-2xl font-semibold">
-                    {isUpdateMode ? "Update project" : "Create a project"}
-                </h1>
-                <p className="text-sm text-muted-foreground mt-1">Optional — group databases under a project.</p>
-            </div>
-            <div className="flex flex-col gap-2">
-                <Label htmlFor="project-name">Project name</Label>
-                <Input
-                    id="project-name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="My project"
-                />
-            </div>
-            <div className="flex flex-col gap-2">
-                <Label htmlFor="project-description">Description</Label>
-                <Textarea
-                    id="project-description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                />
-            </div>
-            {databases.length > 0 && (
-                <div className="flex flex-col gap-2">
-                    <Label>Databases</Label>
-                    <div className="flex flex-col gap-2">
-                        {databases.map((db) => {
-                            const isSelected = databaseIds.includes(db.id);
-                            return (
-                                <button
-                                    key={db.id}
-                                    type="button"
-                                    onClick={() => toggleDb(db.id)}
-                                    className={`flex items-center gap-3 rounded-lg border p-3 text-sm transition-colors text-left ${
-                                        isSelected
-                                            ? "border-primary/20 bg-primary/10 text-primary"
-                                            : "border-border hover:bg-accent/50 hover:border-primary/20"
-                                    }`}
-                                >
-                                    <div className="size-9 rounded-md border bg-muted/50 shadow-sm flex items-center justify-center shrink-0">
-                                        <Database className="size-4 text-muted-foreground" />
-                                    </div>
-                                    <div className="flex flex-col gap-0.5 flex-1">
-                                        <span className="font-medium">{db.name}</span>
-                                        <span className="text-xs text-muted-foreground">{db.engine}</span>
-                                    </div>
-                                    {isSelected && (
-                                        <div className="size-5 rounded-full bg-primary flex items-center justify-center ml-auto">
-                                            <Check className="size-3 text-primary-foreground" strokeWidth={3} />
-                                        </div>
-                                    )}
-                                </button>
-                            );
-                        })}
+  return (
+    <div className="flex flex-col gap-4">
+      <div>
+        <h1 className="text-2xl font-semibold">
+          {isUpdateMode ? "Update project" : "Create a project"}
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Optional — group databases under a project.
+        </p>
+      </div>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="project-name">Project name</Label>
+        <Input
+          id="project-name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="My project"
+        />
+      </div>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="project-description">Description</Label>
+        <Textarea
+          id="project-description"
+          value={description}
+          style={{ resize: "none" }}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+      </div>
+      {databases.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <Label>Databases</Label>
+          <div className="flex flex-col gap-2">
+            {databases.map((db) => {
+              const isSelected = databaseIds.includes(db.id);
+              return (
+                <button
+                  key={db.id}
+                  type="button"
+                  disabled={mutation.isPending}
+                  onClick={() => toggleDb(db.id)}
+                  className={`flex items-center gap-3 rounded-lg border p-3 text-sm transition-colors text-left ${
+                    isSelected
+                      ? "border-primary/20 bg-primary/10 text-primary"
+                      : "border-border hover:bg-accent/50 hover:border-primary/20"
+                  } ${mutation.isPending ? "opacity-50 cursor-not-allowed" : ""}`}
+                >
+                  <div className="size-9 rounded-md border bg-muted/50 shadow-sm flex items-center justify-center shrink-0">
+                    <Database className="size-4 text-muted-foreground" />
+                  </div>
+                  <div className="flex flex-col gap-0.5 flex-1">
+                    <span className="font-medium">{db.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {db.engine}
+                    </span>
+                  </div>
+                  {isSelected && (
+                    <div className="size-5 rounded-full bg-primary flex items-center justify-center ml-auto">
+                      <Check
+                        className="size-3 text-primary-foreground"
+                        strokeWidth={3}
+                      />
                     </div>
-                </div>
-            )}
-            <Button
-                type="button"
-                onClick={() => mutation.mutate({ name, description, databaseIds })}
-                disabled={!name.trim() || mutation.isPending}
-            >
-                {mutation.isPending ? "Saving…" : "Continue"}
-            </Button>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
-    );
+      )}
+      <Button
+        type="button"
+        onClick={() =>
+          mutation.mutate(
+            { name: name || "My project", description, databaseIds },
+            { onSuccess: () => next() },
+          )
+        }
+        disabled={!name.trim() && !existingProject}
+      >
+        {mutation.isPending ? "Saving…" : "Continue"}
+      </Button>
+    </div>
+  );
 };
