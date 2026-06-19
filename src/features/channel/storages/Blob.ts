@@ -19,14 +19,11 @@ type BlobConfig = {
 
 async function getBlobClient(config: BlobConfig) {
     if (config.connectionString) {
-        return BlobServiceClient.fromConnectionString(co
-nfig.connectionString);
+        return BlobServiceClient.fromConnectionString(config.connectionString);
     }
 
-    const url = config.endpointUrl ?? `https://${config.
-accountName}.blob.core.windows.net`;
-    const credential = new StorageSharedKeyCredential(co
-nfig.accountName, config.accountKey!);
+    const url = config.endpointUrl ?? `https://${config.accountName}.blob.core.windows.net`;
+    const credential = new StorageSharedKeyCredential(config.accountName, config.accountKey!);
     return new BlobServiceClient(url, credential);
 }
 
