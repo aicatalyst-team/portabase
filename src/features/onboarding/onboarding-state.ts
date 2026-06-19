@@ -118,6 +118,21 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
       : {}),
   };
 
+  if (project) {
+    meta.resumeStepId = "finish";
+    return { stepId: "finish", flowData: fullData };
+  }
+
+  if (agents && agents.length > 0) {
+    const firstAgent = agents[0];
+    const agentConnected = firstAgent?.lastContact
+      ? Date.now() - new Date(firstAgent.lastContact).getTime() < 60_000
+      : false;
+    const stepId = agentConnected ? "project-create" : "agent-key";
+    meta.resumeStepId = stepId;
+    return { stepId, flowData: fullData };
+  }
+
   if (notifiers.length === 0) {
     meta.resumeStepId = "notifier";
     return { stepId: "notifier", flowData: fullData };
@@ -128,21 +143,6 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
     return { stepId: "storage", flowData: fullData };
   }
 
-  if (!agents || agents.length === 0) {
-    meta.resumeStepId = "agent-create";
-    return { stepId: "agent-create", flowData: fullData };
-  }
-
-  if (!project) {
-    const firstAgent = agents[0];
-    const agentConnected = firstAgent?.lastContact
-      ? Date.now() - new Date(firstAgent.lastContact).getTime() < 60_000
-      : false;
-    const stepId = agentConnected ? "project-create" : "agent-create";
-    meta.resumeStepId = stepId;
-    return { stepId, flowData: fullData };
-  }
-
-  meta.resumeStepId = "finish";
-  return { stepId: "finish", flowData: fullData };
+  meta.resumeStepId = "agent-create";
+  return { stepId: "agent-create", flowData: fullData };
 }
