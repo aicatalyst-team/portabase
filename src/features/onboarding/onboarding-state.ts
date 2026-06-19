@@ -119,6 +119,10 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
   };
 
   if (project) {
+    if (databases.length === 0) {
+      meta.resumeStepId = "db-settings";
+      return { stepId: "db-settings", flowData: fullData };
+    }
     meta.resumeStepId = "finish";
     return { stepId: "finish", flowData: fullData };
   }
