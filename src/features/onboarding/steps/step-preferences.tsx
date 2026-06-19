@@ -51,7 +51,8 @@ export const StepPreferences = () => {
   const selectTheme = async (theme: ThemeKey) => {
     // Apply immediately to the UI
     setTheme(theme);
-    //mettre à jour aussi en db!
+    // Persist to DB so it survives page reload
+    await authClient.updateUser({ theme });
     await updateContext({
       flowData: {
         ...state?.context.flowData,
