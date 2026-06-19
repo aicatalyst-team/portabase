@@ -57,12 +57,13 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
 
   const orgData = { id: org.id, name: org.name };
 
-  const [notifierChannels, storageChannels, agents, project] = await Promise.all([
-    getOrganizationChannels(org.id),
-    getOrganizationStorageChannels(org.id),
-    getOrganizationAgents(org.id),
-    getOrganizationProject(org.id),
-  ]);
+  const [notifierChannels, storageChannels, agents, project] =
+    await Promise.all([
+      getOrganizationChannels(org.id),
+      getOrganizationStorageChannels(org.id),
+      getOrganizationAgents(org.id),
+      getOrganizationProject(org.id),
+    ]);
 
   const notifiers = notifierChannels.map((n) => ({
     id: n.id,
@@ -106,13 +107,20 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
     agents: agentData,
     databases,
     ...(project
-      ? { project: { id: project.id, name: project.name, description: "", databaseIds: [] } }
+      ? {
+          project: {
+            id: project.id,
+            name: project.name,
+            description: "",
+            databaseIds: [],
+          },
+        }
       : {}),
   };
 
   if (notifiers.length === 0) {
-    meta.resumeStepId = "invite-members";
-    return { stepId: "invite-members", flowData: fullData };
+    meta.resumeStepId = "notifier";
+    return { stepId: "notifier", flowData: fullData };
   }
 
   if (storages.length === 0) {
@@ -121,8 +129,8 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
   }
 
   if (!agents || agents.length === 0) {
-    meta.resumeStepId = "defaults";
-    return { stepId: "defaults", flowData: fullData };
+    meta.resumeStepId = "agent-create";
+    return { stepId: "agent-create", flowData: fullData };
   }
 
   if (!project) {
