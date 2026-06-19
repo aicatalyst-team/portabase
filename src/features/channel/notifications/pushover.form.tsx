@@ -59,7 +59,7 @@ export const NotifierPushoverForm = ({form}: NotifierPushoverFormProps) => {
                         <FormLabel>Message Priority</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value ?? "0"}>
                             <FormControl>
-                                <SelectTrigger>
+                                <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Select priority"/>
                                 </SelectTrigger>
                             </FormControl>

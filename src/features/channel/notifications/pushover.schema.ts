@@ -1,11 +1,11 @@
 import {z} from "zod";
 
 export const PUSHOVER_PRIORITIES = [
-    {value: "-2", label: "Lowest — no sound, no vibration, no alert"},
-    {value: "-1", label: "Low — quiet notification, no sound"},
-    {value: "0", label: "Normal — default sound and alert"},
-    {value: "1", label: "High — bypass quiet hours"},
-    {value: "2", label: "Emergency — repeat until acknowledged"},
+    {value: "-2", label: "Lowest - no sound, no vibration, no alert"},
+    {value: "-1", label: "Low - quiet notification, no sound"},
+    {value: "0", label: "Normal - default sound and alert"},
+    {value: "1", label: "High - bypass quiet hours"},
+    {value: "2", label: "Emergency - repeat until acknowledged"},
 ] as const;
 
 export const PushoverChannelConfigSchema = z.object({
