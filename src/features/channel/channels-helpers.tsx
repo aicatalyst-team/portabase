@@ -38,6 +38,9 @@ import {
 import {
     StorageGoogleDriveForm
 } from "@/features/channel/storages/google-drive/google-drive.form";
+import {
+    StorageBlobForm
+} from "@/features/channel/storages/Blob.form";
 
 export type ChannelKind = "notification" | "storage";
 
@@ -101,6 +104,8 @@ export const renderChannelForm = (provider: string | undefined, form: UseFormRet
             return <StorageS3Form form={form}/>
         case "google-drive":
             return <StorageGoogleDriveForm form={form}/>
+        case "blob":
+            return <StorageBlobForm form={form}/>
         case "local":
             return <></>
         default:
