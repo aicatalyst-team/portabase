@@ -62,10 +62,33 @@ export type OnboardingDatabase = {
   engine: "postgres" | "mysql" | "mongodb";
 };
 
+export type OnboardingNotificationPolicy = {
+  channelId: string;
+  eventKinds: string[];
+  enabled: boolean;
+};
+
+export type OnboardingStoragePolicy = {
+  channelId: string;
+  enabled: boolean;
+};
+
 export type OnboardingDbSettings = {
-  retentionDays: number;
-  notifierId?: string;
-  storageId?: string;
+  retention?: {
+    type?: "count" | "days" | "gfs";
+    count: number;
+    days: number;
+    gfs: {
+      daily: number;
+      weekly: number;
+      monthly: number;
+      yearly: number;
+    };
+  };
+  backupMethod?: "manual" | "automatic";
+  backupCron?: string;
+  notificationPolicies?: OnboardingNotificationPolicy[];
+  storagePolicies?: OnboardingStoragePolicy[];
 };
 
 export type OnboardingProjectData = {
