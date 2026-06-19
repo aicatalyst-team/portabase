@@ -5,7 +5,7 @@ import { type PropsWithChildren, Suspense } from "react";
 
 import { Toaster } from "@/components/ui/sonner";
 import { ErrorLayout } from "@/components/common/error-layout";
-import { ThemeMetaUpdaterRoot } from "@/features/theme/theme-meta-updater-root";
+import { ThemeMetaUpdater } from "@/features/theme/theme-meta-updater";
 import { ThemeProvider } from "@/features/theme/theme-provider";
 
 export type ProviderProps = PropsWithChildren<{}>;
@@ -15,7 +15,7 @@ export const Providers = (props: ProviderProps) => {
   return (
     <Suspense fallback={null}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <ThemeMetaUpdaterRoot />
+        <ThemeMetaUpdater />
         <QueryClientProvider client={queryClient}>
           <ErrorLayout>
             <Toaster />
