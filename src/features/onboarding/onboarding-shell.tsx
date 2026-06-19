@@ -50,6 +50,12 @@ export const OnboardingShell = () => {
                 let prevId = STEP_ORDER[currentIndex - 1];
                 if (currentStepId === "project-create") {
                   prevId = "agent-create";
+                } else if (currentStepId === "agent-create") {
+                  const notifiers = (state.context.flowData.notifiers as unknown[]) || [];
+                  const storages = (state.context.flowData.storages as unknown[]) || [];
+                  if (notifiers.length === 0 && storages.length === 0) {
+                    prevId = "storage";
+                  }
                 }
                 if (prevId) goToStep(prevId);
               }}
