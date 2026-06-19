@@ -6,7 +6,7 @@ import { useOnboarding } from "@onboardjs/react";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Globe, Mail, KeyRound } from "lucide-react";
+import { Globe, Mail, KeyRound, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -83,16 +83,23 @@ export const StepLogin = () => {
     // No auth methods configured
     if (!hasAnyAuthMethod) {
         return (
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col items-center justify-center text-center py-8 gap-4">
+                <div className="p-4 rounded-full bg-yellow-500/10 mb-2">
+                    <ShieldAlert className="size-8 text-yellow-500" />
+                </div>
                 <div>
-                    <h1 className="text-2xl font-semibold">No authentication configured</h1>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        Enable at least one authentication method in your environment variables to continue.
+                    <h1 className="text-2xl font-semibold">Configuration needed</h1>
+                    <p className="text-sm text-muted-foreground mt-2 max-w-[280px] mx-auto">
+                        Please enable an authentication method in your environment variables to continue.
                     </p>
                 </div>
-                <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm text-yellow-400">
-                    Set <code className="font-mono">AUTH_EMAIL_PASSWORD_ENABLED=true</code>,{" "}
-                    <code className="font-mono">AUTH_PASSKEY_ENABLED=true</code>, or configure an SSO provider.
+                <div className="text-left mt-2 rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm text-yellow-600 dark:text-yellow-400 max-w-sm w-full">
+                    <p className="font-medium mb-2">Set at least one of these:</p>
+                    <ul className="space-y-1">
+                        <li>• <code className="font-mono text-xs">AUTH_EMAIL_PASSWORD_ENABLED=true</code></li>
+                        <li>• <code className="font-mono text-xs">AUTH_PASSKEY_ENABLED=true</code></li>
+                        <li>• Or configure an SSO provider</li>
+                    </ul>
                 </div>
             </div>
         );
