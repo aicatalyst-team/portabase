@@ -35,12 +35,19 @@ export async function sendPushover(
         body.expire = 3600;
     }
 
-    const res = await fetch("https://api.pushover.net/1/messages.json", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(10_000),
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10_000);
+    let res: Response;
+    try {
+        res = await fetch("https://api.pushover.net/1/messages.json", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(body),
+            signal: controller.signal,
+        });
+    } finally {
+        clearTimeout(timeout);
+    }
 
     const json = await res.json().catch(() => null);
 
