@@ -5,7 +5,7 @@ export const BlobChannelConfigSchema = z.object({
     accountKey: z.string().optional(),
     connectionString: z.string().optional(),
     containerName: z.string().min(1, "Container name is required"),
-    endpointUrl: z.string().optional(),
+    endpointUrl: z.string().url("Endpoint URL must be a valid URL").optional(),
 }).refine(
     (data) => data.accountKey || data.connectionString,
     {message: "Either account key or connection string is required"}

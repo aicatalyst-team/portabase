@@ -128,11 +128,14 @@ export async function pingBlob(config: BlobConfig): Promise<StorageResult> {
             provider: "blob",
             response: "Container does not exist"
         };
-        const key = `${BASE_DIR}ping.txt`;
+        const key = `${BASE_DIR}ping-${Date.now()}-${Math.random().toString(36).slice(2)}.txt`;
         const blockBlobClient = containerClient.getBlockBlobClient(key);
-        await blockBlobClient.upload(Buffer.from("ping"), 4);
-        await blockBlobClient.download();
-        await blockBlobClient.delete();
+        try {
+            await blockBlobClient.upload(Buffer.from("ping"), 4);
+            await blockBlobClient.download();
+        } finally {
+            await blockBlobClient.delete().catch(() => undefined);
+        }
 
         return {
             success: true,

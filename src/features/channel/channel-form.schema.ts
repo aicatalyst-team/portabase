@@ -18,7 +18,7 @@ const BaseChannelFormSchema = z.object({
     name: z
         .string()
         .min(5, "Name must be at least 5 characters long")
-        .max(40, "Name  e at most 40 characters long"),
+        .max(40, "Name must be at most 40 characters long"),
     enabled: z.boolean().default(true),
 });
 
