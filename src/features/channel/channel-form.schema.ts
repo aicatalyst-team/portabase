@@ -9,6 +9,7 @@ import {WebhookChannelConfigSchema} from "@/features/channel/notifications/webho
 import {NextcloudChannelConfigSchema} from "@/features/channel/notifications/nextcloud.schema";
 import {S3ChannelConfigSchema} from "@/features/channel/storages/s3.schema";
 import {GoogleDriveChannelConfigSchema} from "@/features/channel/storages/google-drive/google-drive.schema";
+import { BlobChannelConfigSchema } from "@/features/channel/storages/Blob.schema";
 import {LocalChannelConfigSchema} from "@/features/channel/storages/local.schema";
 import {TeamsChannelConfigSchema} from "@/features/channel/notifications/teams.schema";
 
@@ -17,7 +18,7 @@ const BaseChannelFormSchema = z.object({
     name: z
         .string()
         .min(5, "Name must be at least 5 characters long")
-        .max(40, "Name must be at most 40 characters long"),
+        .max(40, "Name  e at most 40 characters long"),
     enabled: z.boolean().default(true),
 });
 
@@ -68,6 +69,10 @@ export const StorageChannelFormSchema = z.discriminatedUnion("provider", [
     BaseChannelFormSchema.extend({
         provider: z.literal("google-drive"),
         config: GoogleDriveChannelConfigSchema,
+    }),
+    BaseChannelFormSchema.extend({
+        provider: z.literal("blob"),
+        config: BlobChannelConfigSchema,
     }),
     BaseChannelFormSchema.extend({
         provider: z.literal("local"),
