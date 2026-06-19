@@ -8,6 +8,7 @@ import {sendGotify} from "@/features/channel/notifications/gotify";
 import {sendNtfy} from "@/features/channel/notifications/ntfy";
 import {sendWebhook} from "@/features/channel/notifications/webhook";
 import {sendNextcloud} from "@/features/channel/notifications/nextcloud";
+import {sendPushover} from "@/features/channel/notifications/pushover";
 
 const handlers: Record<
     ProviderKind,
@@ -21,6 +22,7 @@ const handlers: Record<
     ntfy: sendNtfy,
     webhook: sendWebhook,
     nextcloud: sendNextcloud,
+    pushover: sendPushover,
 };
 
 export async function dispatchViaProvider(
