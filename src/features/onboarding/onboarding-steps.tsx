@@ -68,8 +68,16 @@ export const onboardingSteps: OnboardingStep[] = [
     id: "storage",
     component: StepStorage,
     isSkippable: true,
-    skipToStep: "defaults",
-    nextStep: "defaults",
+    skipToStep: (ctx: any) => {
+      const notifiers = (ctx.flowData?.notifiers as unknown[]) || [];
+      const storages = (ctx.flowData?.storages as unknown[]) || [];
+      return notifiers.length === 0 && storages.length === 0 ? "agent-create" : "defaults";
+    },
+    nextStep: (ctx: any) => {
+      const notifiers = (ctx.flowData?.notifiers as unknown[]) || [];
+      const storages = (ctx.flowData?.storages as unknown[]) || [];
+      return notifiers.length === 0 && storages.length === 0 ? "agent-create" : "defaults";
+    },
   },
   {
     id: "defaults",
