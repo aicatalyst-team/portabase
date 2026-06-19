@@ -2,7 +2,17 @@ import {getOrganization} from "@/lib/auth/auth";
 import {db} from "@/db";
 import {and, eq} from "drizzle-orm";
 import * as drizzleDb from "@/db";
+import {project} from "@/db/schema/06_project";
 
+
+export async function getOrganizationProject(organizationId: string) {
+    return db.query.project.findFirst({
+        where: eq(project.organizationId, organizationId),
+        with: {
+            databases: true
+        }
+    });
+}
 
 export const getOrganizationProjectDatabases = async ({organizationSlug, projectId}: {
     organizationSlug: string, projectId: string

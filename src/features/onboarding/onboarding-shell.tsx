@@ -60,9 +60,9 @@ export const OnboardingShell = () => {
                       prevId = "storage";
                     }
                   } else if (currentStepId === "finish") {
-                    const databases =
-                      (state.context.flowData.databases as unknown[]) || [];
-                    if (databases.length === 0) {
+                    const agents = (state.context.flowData.agents as any[]) || [];
+                    const isAgentConnected = agents.some((a) => a.connected);
+                    if (!isAgentConnected) {
                       prevId = "project-create";
                     }
                   }

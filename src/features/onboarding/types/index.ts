@@ -51,6 +51,7 @@ export type OnboardingAgent = {
   id: string;
   name: string;
   edgeKey?: string;
+  connected?: boolean;
   notifierId?: string;
   storageId?: string;
 };

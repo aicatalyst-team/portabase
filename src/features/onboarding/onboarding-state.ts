@@ -93,6 +93,9 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
       id: a.id,
       name: a.name,
       edgeKey: await generateEdgeKey(getServerUrl(), a.id),
+      connected: a.lastContact
+        ? Date.now() - new Date(a.lastContact).getTime() < 60_000
+        : false,
     }))
   );
 
@@ -120,7 +123,7 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
             id: project.id,
             name: project.name,
             description: "",
-            databaseIds: [],
+            databaseIds: (project as any).databases?.map((db: any) => db.id) ?? [],
           },
         }
       : {}),
@@ -131,10 +134,22 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
       meta.resumeStepId = "agent-create";
       return { stepId: "agent-create", flowData: fullData };
     }
-    if (databases.length === 0) {
-      meta.resumeStepId = "db-settings";
-      return { stepId: "db-settings", flowData: fullData };
+
+    const firstAgent = agents[0];
+    const agentConnected = firstAgent?.lastContact
+      ? Date.now() - new Date(firstAgent.lastContact).getTime() < 60_000
+      : false;
+
+    if (agentConnected && (project as any).databases?.length === 0) {
+      meta.resumeStepId = "project-create";
+      return { stepId: "project-create", flowData: fullData };
     }
+
+    if (!agentConnected) {
+      meta.resumeStepId = "finish";
+      return { stepId: "finish", flowData: fullData };
+    }
+
     meta.resumeStepId = "finish";
     return { stepId: "finish", flowData: fullData };
   }
