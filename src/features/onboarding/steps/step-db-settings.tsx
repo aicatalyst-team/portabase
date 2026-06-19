@@ -408,7 +408,7 @@ const NotificationsSection = ({
             const selected = notifiers.find((n) => n.id === policy.channelId);
 
             return (
-              <Card key={index} className="p-4 flex flex-col gap-3">
+              <Card key={policy.channelId || index} className="p-4 flex flex-col gap-3">
                 <div className="flex items-end gap-2">
                   <div className="flex-1 flex flex-col gap-1.5">
                     <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
@@ -594,7 +594,7 @@ const StorageSection = ({
             const selected = storages.find((s) => s.id === policy.channelId);
 
             return (
-              <Card key={index} className="p-4 flex items-end gap-2">
+              <Card key={policy.channelId || index} className="p-4 flex items-end gap-2">
                 <div className="flex-1 flex flex-col gap-1.5">
                   <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                     Storage Channel
@@ -804,7 +804,7 @@ export const StepDbSettings = () => {
     const handleApplyToAll = async () => {
       const otherDbIds = databaseIds.filter((id) => id !== dbId);
       for (const targetId of otherDbIds) {
-        const result = await applyOnboardingDbSettingsAction({
+        await applyMutation.mutateAsync({
           databaseId: targetId,
           section: "all",
           retention: settings.retention,
@@ -813,10 +813,6 @@ export const StepDbSettings = () => {
           notificationPolicies: settings.notificationPolicies as any,
           storagePolicies: settings.storagePolicies,
         });
-        if (!result?.data?.success) {
-          toast.error(`Failed to apply settings to one or more databases.`);
-          return;
-        }
       }
       const updatedSettings = { ...dbSettings };
       otherDbIds.forEach((id) => {
@@ -939,16 +935,14 @@ export const StepDbSettings = () => {
             isPending={applyMutation.isPending}
             onBack={back}
             onSave={async (retention) => {
-              const result = await applyOnboardingDbSettingsAction({
+              await applyMutation.mutateAsync({
                 databaseId: dbId,
                 section: "retention",
                 retention,
               });
-              if (result?.data?.success) {
-                await updateDbSettings(dbId, { retention });
-                toast.success("Retention policy saved.");
-                setPhase({ kind: "db", dbId });
-              }
+              await updateDbSettings(dbId, { retention });
+              toast.success("Retention policy saved.");
+              setPhase({ kind: "db", dbId });
             }}
           />
         )}
@@ -959,17 +953,15 @@ export const StepDbSettings = () => {
             isPending={applyMutation.isPending}
             onBack={back}
             onSave={async (backupMethod, backupCron) => {
-              const result = await applyOnboardingDbSettingsAction({
+              await applyMutation.mutateAsync({
                 databaseId: dbId,
                 section: "scheduling",
                 backupMethod,
                 backupCron,
               });
-              if (result?.data?.success) {
-                await updateDbSettings(dbId, { backupMethod, backupCron });
-                toast.success("Schedule saved.");
-                setPhase({ kind: "db", dbId });
-              }
+              await updateDbSettings(dbId, { backupMethod, backupCron });
+              toast.success("Schedule saved.");
+              setPhase({ kind: "db", dbId });
             }}
           />
         )}
@@ -981,16 +973,14 @@ export const StepDbSettings = () => {
             isPending={applyMutation.isPending}
             onBack={back}
             onSave={async (notificationPolicies) => {
-              const result = await applyOnboardingDbSettingsAction({
+              await applyMutation.mutateAsync({
                 databaseId: dbId,
                 section: "notifications",
                 notificationPolicies: notificationPolicies as any,
               });
-              if (result?.data?.success) {
-                await updateDbSettings(dbId, { notificationPolicies });
-                toast.success("Notification policies saved.");
-                setPhase({ kind: "db", dbId });
-              }
+              await updateDbSettings(dbId, { notificationPolicies });
+              toast.success("Notification policies saved.");
+              setPhase({ kind: "db", dbId });
             }}
           />
         )}
@@ -1002,16 +992,14 @@ export const StepDbSettings = () => {
             isPending={applyMutation.isPending}
             onBack={back}
             onSave={async (storagePolicies) => {
-              const result = await applyOnboardingDbSettingsAction({
+              await applyMutation.mutateAsync({
                 databaseId: dbId,
                 section: "storage",
                 storagePolicies,
               });
-              if (result?.data?.success) {
-                await updateDbSettings(dbId, { storagePolicies });
-                toast.success("Storage policies saved.");
-                setPhase({ kind: "db", dbId });
-              }
+              await updateDbSettings(dbId, { storagePolicies });
+              toast.success("Storage policies saved.");
+              setPhase({ kind: "db", dbId });
             }}
           />
         )}
