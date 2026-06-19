@@ -2,46 +2,28 @@
 
 import { useState } from "react";
 import { useOnboarding } from "@onboardjs/react";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { createOrganizationAction } from "@/features/organizations/organization.action";
+import { useCreateOrg } from "@/features/onboarding/hooks/use-create-org";
 
 export const StepOrgCreate = () => {
-    const { next, updateContext, state } = useOnboarding();
+    const { state } = useOnboarding();
     const existingOrg = state?.context.flowData.org;
+    const isEditMode = !!existingOrg;
     const [name, setName] = useState(existingOrg?.name ?? "");
 
-    const mutation = useMutation({
-        mutationFn: async () => {
-            if (!name.trim()) throw new Error("Organisation name is required");
-            const result = await createOrganizationAction({ name: name.trim() });
-            if (!result?.data?.success) {
-                const errorData = result?.data as { success: false; actionError?: any };
-                throw new Error(errorData?.actionError?.message ?? "Failed to create organisation");
-            }
-            const org = result.data.value;
-            if (!org) throw new Error("Failed to create organisation");
-            await updateContext({
-                flowData: {
-                    ...state?.context.flowData,
-                    org: { id: org.id, name: org.name },
-                },
-            });
-            await next();
-        },
-        onError: (err: Error) => {
-            toast.error(err.message);
-        },
-    });
+    const mutation = useCreateOrg();
 
     return (
         <div className="flex flex-col gap-4">
             <div>
-                <h1 className="text-2xl font-semibold">Create your organisation</h1>
-                <p className="text-sm text-muted-foreground mt-1">This step can&apos;t be skipped.</p>
+                <h1 className="text-2xl font-semibold">
+                    {isEditMode ? "Edit your organisation" : "Create your organisation"}
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                    {isEditMode ? "Rename your organisation." : "This step can't be skipped."}
+                </p>
             </div>
             <div className="flex flex-col gap-2">
                 <Label htmlFor="org-name">Organisation name</Label>
@@ -54,10 +36,12 @@ export const StepOrgCreate = () => {
             </div>
             <Button
                 type="button"
-                onClick={() => mutation.mutate()}
+                onClick={() => mutation.mutate(name)}
                 disabled={!name.trim() || mutation.isPending}
             >
-                {mutation.isPending ? "Creating…" : "Continue"}
+                {mutation.isPending
+                    ? isEditMode ? "Saving…" : "Creating…"
+                    : "Continue"}
             </Button>
         </div>
     );
