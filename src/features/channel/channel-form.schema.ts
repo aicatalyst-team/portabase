@@ -7,6 +7,7 @@ import {GotifyChannelConfigSchema} from "@/features/channel/notifications/gotify
 import {NtfyChannelConfigSchema} from "@/features/channel/notifications/ntfy.schema";
 import {WebhookChannelConfigSchema} from "@/features/channel/notifications/webhook.schema";
 import {NextcloudChannelConfigSchema} from "@/features/channel/notifications/nextcloud.schema";
+import {PushoverChannelConfigSchema} from "@/features/channel/notifications/pushover.schema";
 import {S3ChannelConfigSchema} from "@/features/channel/storages/s3.schema";
 import {GoogleDriveChannelConfigSchema} from "@/features/channel/storages/google-drive/google-drive.schema";
 import {LocalChannelConfigSchema} from "@/features/channel/storages/local.schema";
@@ -57,6 +58,10 @@ export const NotificationChannelFormSchema = z.discriminatedUnion("provider", [
     BaseChannelFormSchema.extend({
         provider: z.literal("teams"),
         config: TeamsChannelConfigSchema,
+    }),
+    BaseChannelFormSchema.extend({
+        provider: z.literal("pushover"),
+        config: PushoverChannelConfigSchema,
     }),
 ]);
 

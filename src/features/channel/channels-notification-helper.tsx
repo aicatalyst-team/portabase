@@ -14,7 +14,8 @@ export const notificationProviders: ProviderIconTypes[] = [
     {value: "ntfy", label: "ntfy.sh", icon: NtfyIcon},
     {value: "webhook", label: "Webhook", icon: WebhookIcon},
     {value: "nextcloud", label: "Nextcloud Talk", icon: NextcloudIcon},
-    {value: "teams", label: "Microsoft Teams", icon: MSTeamsIcon}
+    {value: "teams", label: "Microsoft Teams", icon: MSTeamsIcon},
+    {value: "pushover", label: "Pushover", icon: PushoverIcon},
 ]
 
 
@@ -553,6 +554,23 @@ export function NextcloudIcon(props: SVGProps<SVGSVGElement>) {
                     fill: "#fff",
                 }}
             />
+        </svg>
+    );
+}
+
+export function PushoverIcon(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 100 100"
+            {...props}
+        >
+            <rect width="100" height="100" rx="22" fill="#249DF1"/>
+            <path
+                d="M28 72V28h16.5c5.5 0 9.8 1.3 12.8 3.8 3 2.5 4.5 6 4.5 10.4 0 4.5-1.5 8-4.5 10.5-3 2.5-7.3 3.8-12.8 3.8H38V72H28zm10-23.8h6c2.8 0 4.9-.6 6.3-1.9 1.4-1.3 2.1-3.1 2.1-5.4 0-2.3-.7-4-2.1-5.3-1.4-1.3-3.5-1.9-6.3-1.9H38v14.5z"
+                fill="white"
+            />
+            <circle cx="72" cy="68" r="8" fill="white" opacity="0.9"/>
         </svg>
     );
 }
