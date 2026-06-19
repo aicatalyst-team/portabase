@@ -27,10 +27,10 @@ export const StepDefaults = () => {
   const existingDefaults = (state?.context.flowData.defaults ??
     {}) as OnboardingDefaultsData;
   const [notifierId, setNotifierId] = useState<string | undefined>(
-    existingDefaults.notifierId,
+    existingDefaults.notifierId || undefined,
   );
   const [storageId, setStorageId] = useState<string | undefined>(
-    existingDefaults.storageId,
+    existingDefaults.storageId || undefined,
   );
 
 
@@ -83,7 +83,7 @@ export const StepDefaults = () => {
       <div className="flex flex-col gap-2">
         <Label>Default notifier</Label>
         <Select
-          value={notifierId}
+          value={notifiers.some((n) => n.id === notifierId) ? notifierId : undefined}
           onValueChange={selectNotifier}
           disabled={notifiers.length === 0}
         >
@@ -108,7 +108,7 @@ export const StepDefaults = () => {
       <div className="flex flex-col gap-2">
         <Label>Default storage</Label>
         <Select
-          value={storageId}
+          value={storages.some((s) => s.id === storageId) ? storageId : undefined}
           onValueChange={selectStorage}
           disabled={storages.length === 0}
         >
