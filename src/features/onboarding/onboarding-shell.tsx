@@ -62,7 +62,8 @@ export const OnboardingShell = () => {
                   } else if (currentStepId === "finish") {
                     const agents = (state.context.flowData.agents as any[]) || [];
                     const isAgentConnected = agents.some((a) => a.connected);
-                    if (!isAgentConnected) {
+                    const databaseIds = (state.context.flowData.project as any)?.databaseIds || [];
+                    if (!isAgentConnected || databaseIds.length === 0) {
                       prevId = "project-create";
                     }
                   }

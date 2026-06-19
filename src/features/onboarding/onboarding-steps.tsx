@@ -121,12 +121,14 @@ export const onboardingSteps: OnboardingStep[] = [
     skipToStep: (ctx: any) => {
       const agents = (ctx.flowData?.agents as any[]) || [];
       const isAgentConnected = agents.some((a) => a.connected);
-      return !isAgentConnected ? "finish" : "db-settings";
+      const databaseIds = (ctx.flowData?.project?.databaseIds as string[]) || [];
+      return !isAgentConnected || databaseIds.length === 0 ? "finish" : "db-settings";
     },
     nextStep: (ctx: any) => {
       const agents = (ctx.flowData?.agents as any[]) || [];
       const isAgentConnected = agents.some((a) => a.connected);
-      return !isAgentConnected ? "finish" : "db-settings";
+      const databaseIds = (ctx.flowData?.project?.databaseIds as string[]) || [];
+      return !isAgentConnected || databaseIds.length === 0 ? "finish" : "db-settings";
     },
   },
   {
