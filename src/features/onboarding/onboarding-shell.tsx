@@ -10,7 +10,7 @@ import { AuthLogoSection } from "../auth/auth-logo-section";
 import { STEP_ORDER } from "@/features/onboarding/constants/steps";
 
 export const OnboardingShell = () => {
-  const { state, previous, skip, next, renderStep } = useOnboarding();
+  const { state, previous, skip, next, goToStep, renderStep } = useOnboarding();
 
   const currentStepId = String(state?.currentStep?.id ?? "");
   const currentIndex = STEP_ORDER.indexOf(currentStepId);
@@ -28,7 +28,6 @@ export const OnboardingShell = () => {
 
   const isGoingBack = currentIndex < latestIndex;
 
-  // Steps that are one-way: disable Back both when ON them and when they'd be the destination
   const BLOCKED_STEPS = ["login", "account-info", "security"];
   const prevStepId = STEP_ORDER[currentIndex - 1] ?? "";
   const canGoBack =
@@ -47,7 +46,13 @@ export const OnboardingShell = () => {
             <Button
               type="button"
               variant="ghost"
-              onClick={() => previous()}
+              onClick={() => {
+                let prevId = STEP_ORDER[currentIndex - 1];
+                if (currentStepId === "project-create") {
+                  prevId = "agent-create";
+                }
+                if (prevId) goToStep(prevId);
+              }}
               disabled={!canGoBack || state.isLoading}
             >
               Back
