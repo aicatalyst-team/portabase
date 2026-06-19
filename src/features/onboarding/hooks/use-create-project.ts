@@ -16,13 +16,15 @@ export const useCreateProject = () => {
 
   return useMutation({
     mutationFn: async ({ name, description, databaseIds }: ProjectInput) => {
+      const trimmed = name.trim();
+      if (!trimmed) throw new Error("Project name is required");
       const orgId = (state?.context.flowData.org as any)?.id as string | undefined;
       if (!orgId) throw new Error("No organisation ID found");
       const existingProject = state?.context.flowData.project as OnboardingProjectData | undefined;
 
       if (existingProject?.id) {
         const result = await updateProjectAction({
-          data: { name, databases: databaseIds },
+          data: { name: trimmed, databases: databaseIds },
           organizationId: orgId,
           projectId: existingProject.id,
         });
@@ -33,12 +35,12 @@ export const useCreateProject = () => {
         await updateContext({
           flowData: {
             ...state?.context.flowData,
-            project: { id: existingProject.id, name, description, databaseIds },
+            project: { id: existingProject.id, name: trimmed, description, databaseIds },
           },
         });
       } else {
         const result = await createProjectAction({
-          data: { name, databases: databaseIds },
+          data: { name: trimmed, databases: databaseIds },
           organizationId: orgId,
         });
         const createData = result?.data;

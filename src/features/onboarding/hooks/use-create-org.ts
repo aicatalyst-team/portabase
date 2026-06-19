@@ -23,18 +23,18 @@ export const useCreateOrg = () => {
           organizationId: existingOrg.id,
           data: { name: trimmed, slug: slugify(trimmed), users: [] },
         });
-        if (!result?.data?.success) {
-          const err = result?.data as { success: false; actionError?: any };
-          throw new Error(err?.actionError?.message ?? "Failed to update organisation");
+        const updateData = result?.data;
+        if (!updateData?.success) {
+          throw new Error(updateData?.actionError?.message ?? "Failed to update organisation");
         }
         await updateContext({
           flowData: { ...state?.context.flowData, org: { id: existingOrg.id, name: trimmed } },
         });
       } else {
         const result = await createOrganizationAction({ name: trimmed });
-        if (!result?.data?.success) {
-          const err = result?.data as { success: false; actionError?: any };
-          throw new Error(err?.actionError?.message ?? "Failed to create organisation");
+        const createData = result?.data;
+        if (!createData?.success) {
+          throw new Error(createData?.actionError?.message ?? "Failed to create organisation");
         }
         const org = result.data.value;
         if (!org) throw new Error("Failed to create organisation");
