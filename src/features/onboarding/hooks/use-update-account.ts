@@ -12,15 +12,13 @@ import type { OnboardingMeta } from "@/features/onboarding/types";
 
 type AccountInput = z.infer<typeof WithPasswordSchema>;
 
-export const useUpdateAccount = (refetchSession: () => Promise<any>) => {
+export const useUpdateAccount = (refetchSession: () => Promise<any>, selectedMethod: "passkey" | "password" = "password") => {
   const { state, updateContext, next } = useOnboarding();
 
   return useMutation({
     mutationFn: async (values: AccountInput) => {
-      const meta = state?.context.flowData.meta as OnboardingMeta | undefined;
       const existingAccount = state?.context.flowData.account;
       const isUpdateMode = !!existingAccount;
-      const passkeyEnabled = meta?.passkeyEnabled ?? false;
 
       if (isUpdateMode) {
         const result = await updateAccountAction({
@@ -38,7 +36,7 @@ export const useUpdateAccount = (refetchSession: () => Promise<any>) => {
         return;
       }
 
-      if (passkeyEnabled) {
+      if (selectedMethod === "passkey") {
         const name = `${values.firstName} ${values.lastName}`;
         const context = await generatePasskeyContextAction(name, values.email);
         const result = await passkey.addPasskey({ name: values.email, context });

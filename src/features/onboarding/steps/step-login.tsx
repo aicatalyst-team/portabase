@@ -125,10 +125,10 @@ export const StepLogin = () => {
                         ))}
                     </div>
                 )}
-                {emailPasswordEnabled && (
+                {(emailPasswordEnabled || passkeyEnabled) && (
                     <Button type="button" onClick={() => next()}>
-                        <Mail className="size-4 mr-2" />
-                        Register with email
+                        {passkeyEnabled && !emailPasswordEnabled ? <KeyRound className="size-4 mr-2" /> : <Mail className="size-4 mr-2" />}
+                        {emailPasswordEnabled && passkeyEnabled ? "Register account" : passkeyEnabled ? "Register with passkey" : "Register with email"}
                     </Button>
                 )}
             </div>
