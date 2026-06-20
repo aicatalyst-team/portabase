@@ -24,6 +24,9 @@ import {
     NotifierNextcloudForm
 } from "@/features/channel/notifications/nextcloud.form";
 import {
+    NotifierPushoverForm
+} from "@/features/channel/notifications/pushover.form";
+import {
     notificationProviders,
 } from "@/features/channel/channels-notification-helper";
 import {
@@ -100,6 +103,8 @@ export const renderChannelForm = (provider: string | undefined, form: UseFormRet
             return <NotifierNextcloudForm form={form}/>;
         case "teams":
             return <NotifierTeamsForm form={form}/>;
+        case "pushover":
+            return <NotifierPushoverForm form={form}/>;
         case "s3":
             return <StorageS3Form form={form}/>
         case "google-drive":

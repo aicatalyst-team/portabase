@@ -79,7 +79,8 @@ export const NotificationLogModal = ({
 
   // @ts-expect-error — payload type is not fully typed yet
   const payloadError = notificationLog.payload?.error;
-  const troubleshooting = getTroubleshootingForError(payloadError);
+  const dispatchError = !notificationLog.success ? notificationLog.error : null;
+  const troubleshooting = getTroubleshootingForError(payloadError || dispatchError);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -130,6 +131,24 @@ export const NotificationLogModal = ({
             <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-primary rounded-full border-2 border-background z-10" />
                 )}
           </div>
+
+          {dispatchError && (
+            <>
+              <div className="w-px h-6 bg-border mx-auto -my-4 relative z-0" />
+              <div className="relative border border-destructive/30 rounded-xl bg-card shadow-sm flex flex-col">
+                <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-destructive rounded-full border-2 border-background z-10" />
+                <div className="bg-destructive/10 border-b border-destructive/10 px-4 py-2.5 flex items-center gap-2 rounded-t-xl">
+                  <div className="p-1 bg-destructive/20 rounded-md">
+                    <AlertCircle className="w-4 h-4 text-destructive" />
+                  </div>
+                  <span className="font-semibold text-sm text-destructive">Dispatch Error</span>
+                </div>
+                <div className="p-4">
+                  <span className="text-sm font-mono text-destructive break-all">{dispatchError}</span>
+                </div>
+              </div>
+            </>
+          )}
 
           <div className="w-px h-6 bg-border mx-auto -my-4 relative z-0" />
 

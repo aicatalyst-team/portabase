@@ -1,6 +1,6 @@
 {
-  "id": "93d81732-8e94-4c2e-be9d-79c7bacc398e",
-  "prevId": "679bcdd7-cf48-43d5-965d-0814b49196e1",
+  "id": "53c89cd2-a05d-4dd5-b954-790eabf5eff7",
+  "prevId": "93d81732-8e94-4c2e-be9d-79c7bacc398e",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -2876,7 +2876,8 @@
       "values": [
         "local",
         "s3",
-        "google-drive"
+        "google-drive",
+        "blob"
       ]
     },
     "public.backup_storage_status": {
