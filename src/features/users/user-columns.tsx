@@ -11,9 +11,10 @@ import {UserActionsCell} from "@/features/users/user-actions-cell";
 
 type UsersListColumnsProps = {
     isPasswordAuthEnabled: boolean;
+    avatarUrls?: Record<string, string | undefined>;
 }
 
-export function usersListColumns({ isPasswordAuthEnabled }: UsersListColumnsProps): ColumnDef<User>[] {
+export function usersListColumns({ isPasswordAuthEnabled, avatarUrls }: UsersListColumnsProps): ColumnDef<User>[] {
 
     return [
         {
@@ -27,7 +28,7 @@ export function usersListColumns({ isPasswordAuthEnabled }: UsersListColumnsProp
                             <TooltipTrigger>
                                 <div className="flex flex-row items-center gap-x-2">
                                     <Avatar>
-                                        <AvatarImage src={row.original.image ?? ""} alt={row.original.name}/>
+                                        <AvatarImage src={avatarUrls?.[row.original.id] ?? row.original.image ?? ""} alt={row.original.name}/>
                                         <AvatarFallback>
                                             {row.original.name
                                                 .split(" ")

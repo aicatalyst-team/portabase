@@ -1,4 +1,3 @@
-// src/features/onboarding/hooks/use-remove-storage.ts
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
@@ -12,13 +11,21 @@ export const useRemoveStorage = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const orgId = (state?.context.flowData.org as any)?.id as string | undefined;
-      const result = await removeStorageChannelAction({ organizationId: orgId, id });
-      if (result?.data?.success === false) throw new Error("Failed to remove storage");
+      const orgId = (state?.context.flowData.org as any)?.id as
+        | string
+        | undefined;
+      const result = await removeStorageChannelAction({
+        organizationId: orgId,
+        id,
+      });
+      if (result?.data?.success === false)
+        throw new Error("Failed to remove storage");
       const storages = (
         (state?.context.flowData.storages ?? []) as OnboardingChannel[]
       ).filter((c) => c.id !== id);
-      await updateContext({ flowData: { ...state?.context.flowData, storages } });
+      await updateContext({
+        flowData: { ...state?.context.flowData, storages },
+      });
     },
     onError: (err: Error) => toast.error(err.message),
   });

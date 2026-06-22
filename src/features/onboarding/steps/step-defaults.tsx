@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { HardDrive } from "lucide-react";
 import { useOnboarding } from "@onboardjs/react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -12,12 +11,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
+import type {
+  AvatarMode,
   OnboardingChannel,
   OnboardingDefaultsData,
 } from "@/features/onboarding/types";
+import { getChannelIcon } from "@/features/channel/channels-helpers";
 import { updateNotificationSettingsAction } from "@/features/settings/notification.action";
 import { updateStorageSettingsAction } from "@/features/settings/storage.action";
+import { updateAvatarModeAction } from "@/features/settings/avatar.action";
+import { AvatarModeSelector } from "@/features/settings/avatar-mode-selector";
+import { DicebearStylePicker } from "@/features/settings/dicebear-style-picker";
 
 export const StepDefaults = () => {
   const { next, updateContext, state } = useOnboarding();
@@ -27,11 +31,18 @@ export const StepDefaults = () => {
     []) as OnboardingChannel[];
   const existingDefaults = (state?.context.flowData.defaults ??
     {}) as OnboardingDefaultsData;
+
   const [notifierId, setNotifierId] = useState<string | undefined>(
     existingDefaults.notifierId || undefined,
   );
   const [storageId, setStorageId] = useState<string | undefined>(
     existingDefaults.storageId || undefined,
+  );
+  const [avatarMode, setAvatarMode] = useState<AvatarMode>(
+    existingDefaults.avatarMode ?? "internal",
+  );
+  const [dicebearStyle, setDicebearStyle] = useState<string>(
+    existingDefaults.dicebearStyle ?? "thumbs",
   );
 
   const selectNotifier = async (value: string) => {
@@ -43,22 +54,12 @@ export const StepDefaults = () => {
     await updateContext({
       flowData: {
         ...state?.context.flowData,
-        defaults: { notifierId: value, storageId },
+        defaults: { notifierId: value, storageId, avatarMode },
       },
     });
   };
 
   const selectStorage = async (value: string) => {
-    if (value === "filesystem") {
-      setStorageId(undefined);
-      await updateContext({
-        flowData: {
-          ...state?.context.flowData,
-          defaults: { notifierId, storageId: undefined },
-        },
-      });
-      return;
-    }
     setStorageId(value);
     await updateStorageSettingsAction({
       name: "system",
@@ -67,7 +68,37 @@ export const StepDefaults = () => {
     await updateContext({
       flowData: {
         ...state?.context.flowData,
-        defaults: { notifierId, storageId: value },
+        defaults: { notifierId, storageId: value, avatarMode },
+      },
+    });
+  };
+
+  const selectAvatarMode = async (mode: AvatarMode) => {
+    setAvatarMode(mode);
+    await updateAvatarModeAction({
+      name: "system",
+      avatarMode: mode,
+      dicebearStyle,
+    });
+    await updateContext({
+      flowData: {
+        ...state?.context.flowData,
+        defaults: { notifierId, storageId, avatarMode: mode, dicebearStyle },
+      },
+    });
+  };
+
+  const selectDicebearStyle = async (style: string) => {
+    setDicebearStyle(style);
+    await updateAvatarModeAction({
+      name: "system",
+      avatarMode: "dicebear",
+      dicebearStyle: style,
+    });
+    await updateContext({
+      flowData: {
+        ...state?.context.flowData,
+        defaults: { notifierId, storageId, avatarMode, dicebearStyle: style },
       },
     });
   };
@@ -76,26 +107,28 @@ export const StepDefaults = () => {
     await updateContext({
       flowData: {
         ...state?.context.flowData,
-        defaults: { notifierId, storageId },
+        defaults: { notifierId, storageId, avatarMode, dicebearStyle },
       },
     });
     await next();
   };
+
+  const selectedNotifier = notifiers.find((n) => n.id === notifierId);
+  const selectedStorage = storages.find((s) => s.id === storageId);
 
   return (
     <div className="flex flex-col gap-4">
       <div>
         <h1 className="text-2xl font-semibold">Set your defaults</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Optional — choose the default notifier and storage for new agents.
+          Optional — choose the default notifier, storage and avatar mode.
         </p>
       </div>
+
       <div className="flex flex-col gap-2">
         <Label>Default notifier</Label>
         <Select
-          value={
-            notifiers.some((n) => n.id === notifierId) ? notifierId : undefined
-          }
+          value={selectedNotifier ? notifierId : undefined}
           onValueChange={selectNotifier}
           disabled={notifiers.length === 0}
         >
@@ -106,43 +139,88 @@ export const StepDefaults = () => {
                   ? "No notifier connected"
                   : "Choose a notifier"
               }
-            />
+            >
+              {selectedNotifier && (
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="text-muted-foreground scale-90 shrink-0">
+                    {getChannelIcon(selectedNotifier.provider)}
+                  </div>
+                  <span className="truncate font-medium">
+                    {selectedNotifier.name}
+                  </span>
+                </div>
+              )}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {notifiers.map((n) => (
               <SelectItem key={n.id} value={n.id}>
-                {n.label}
+                <div className="flex items-center gap-2 w-full min-w-0">
+                  <div className="text-muted-foreground scale-90 shrink-0">
+                    {getChannelIcon(n.provider)}
+                  </div>
+                  <span className="font-medium truncate min-w-0">{n.name}</span>
+                  <span className="text-xs text-muted-foreground ml-2 capitalize shrink-0">
+                    ({n.provider})
+                  </span>
+                </div>
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
+
       <div className="flex flex-col gap-2">
         <Label>Default storage</Label>
         <Select
-          value={
-            storages.some((s) => s.id === storageId) ? storageId : "filesystem"
-          }
+          value={selectedStorage ? storageId : undefined}
           onValueChange={selectStorage}
+          disabled={storages.length === 0}
         >
           <SelectTrigger>
-            <SelectValue />
+            <SelectValue
+              placeholder={
+                storages.length === 0
+                  ? "No storage connected"
+                  : "Choose a storage"
+              }
+            >
+              {selectedStorage && (
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="text-muted-foreground scale-90 shrink-0">
+                    {getChannelIcon(selectedStorage.provider)}
+                  </div>
+                  <span className="truncate font-medium">
+                    {selectedStorage.name}
+                  </span>
+                </div>
+              )}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={"filesystem"}>
-              <div className="flex items-center gap-2">
-                <HardDrive className="size-4 text-muted-foreground" />
-                <span>Filesystem</span>
-              </div>
-            </SelectItem>
             {storages.map((s) => (
               <SelectItem key={s.id} value={s.id}>
-                {s.label}
+                <div className="flex items-center gap-2 w-full min-w-0">
+                  <div className="text-muted-foreground scale-90 shrink-0">
+                    {getChannelIcon(s.provider)}
+                  </div>
+                  <span className="font-medium truncate min-w-0">{s.name}</span>
+                  <span className="text-xs text-muted-foreground ml-2 capitalize shrink-0">
+                    ({s.provider})
+                  </span>
+                </div>
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
+
+      <AvatarModeSelector value={avatarMode} onChange={selectAvatarMode} />
+
+      {avatarMode === "dicebear" && (
+        <DicebearStylePicker value={dicebearStyle} onChange={selectDicebearStyle} />
+      )}
+
       <Button type="button" onClick={onContinue}>
         Continue
       </Button>

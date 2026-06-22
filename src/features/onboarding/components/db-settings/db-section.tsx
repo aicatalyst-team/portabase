@@ -16,10 +16,10 @@ import type {
 import type { useApplyDbSettings } from "@/features/onboarding/hooks/use-apply-db-settings";
 
 const SECTION_LABELS: Record<SectionKind, string> = {
-  retention:     "Retention Policy",
-  scheduling:    "Scheduling",
+  retention: "Retention Policy",
+  scheduling: "Scheduling",
   notifications: "Notifications",
-  storage:       "Storage",
+  storage: "Storage",
 };
 
 type DbSectionProps = {
@@ -32,7 +32,10 @@ type DbSectionProps = {
   storages: OnboardingChannel[];
   onBack: () => void;
   onSaved: () => void;
-  updateDbSettings: (dbId: string, patch: Partial<OnboardingDbSettings>) => Promise<void>;
+  updateDbSettings: (
+    dbId: string,
+    patch: Partial<OnboardingDbSettings>,
+  ) => Promise<void>;
 };
 
 export const DbSection = ({
@@ -51,7 +54,9 @@ export const DbSection = ({
     <div className="flex items-center gap-3 p-3 bg-secondary/30 rounded-lg border border-border">
       <p className="flex-1 text-sm font-medium">
         {SECTION_LABELS[section]}{" "}
-        <span className="text-muted-foreground font-normal">— {db?.name ?? dbId}</span>
+        <span className="text-muted-foreground font-normal">
+          — {db?.name ?? dbId}
+        </span>
       </p>
       <Button type="button" variant="ghost" size="sm" onClick={onBack}>
         <ArrowLeft className="size-4 mr-1" />
@@ -63,9 +68,12 @@ export const DbSection = ({
       <RetentionSection
         initial={settings.retention}
         isPending={applyMutation.isPending}
-        onBack={onBack}
         onSave={async (retention) => {
-          await applyMutation.mutateAsync({ databaseId: dbId, section: "retention", retention });
+          await applyMutation.mutateAsync({
+            databaseId: dbId,
+            section: "retention",
+            retention,
+          });
           await updateDbSettings(dbId, { retention });
           toast.success("Retention policy saved.");
           onSaved();
@@ -75,11 +83,18 @@ export const DbSection = ({
 
     {section === "scheduling" && (
       <SchedulingSection
-        initial={{ backupMethod: settings.backupMethod, backupCron: settings.backupCron }}
+        initial={{
+          backupMethod: settings.backupMethod,
+          backupCron: settings.backupCron,
+        }}
         isPending={applyMutation.isPending}
-        onBack={onBack}
         onSave={async (backupMethod, backupCron) => {
-          await applyMutation.mutateAsync({ databaseId: dbId, section: "scheduling", backupMethod, backupCron });
+          await applyMutation.mutateAsync({
+            databaseId: dbId,
+            section: "scheduling",
+            backupMethod,
+            backupCron,
+          });
           await updateDbSettings(dbId, { backupMethod, backupCron });
           toast.success("Schedule saved.");
           onSaved();
@@ -92,9 +107,12 @@ export const DbSection = ({
         initial={settings.notificationPolicies ?? []}
         notifiers={notifiers}
         isPending={applyMutation.isPending}
-        onBack={onBack}
         onSave={async (notificationPolicies) => {
-          await applyMutation.mutateAsync({ databaseId: dbId, section: "notifications", notificationPolicies });
+          await applyMutation.mutateAsync({
+            databaseId: dbId,
+            section: "notifications",
+            notificationPolicies,
+          });
           await updateDbSettings(dbId, { notificationPolicies });
           toast.success("Notification policies saved.");
           onSaved();
@@ -107,9 +125,12 @@ export const DbSection = ({
         initial={settings.storagePolicies ?? []}
         storages={storages}
         isPending={applyMutation.isPending}
-        onBack={onBack}
         onSave={async (storagePolicies) => {
-          await applyMutation.mutateAsync({ databaseId: dbId, section: "storage", storagePolicies });
+          await applyMutation.mutateAsync({
+            databaseId: dbId,
+            section: "storage",
+            storagePolicies,
+          });
           await updateDbSettings(dbId, { storagePolicies });
           toast.success("Storage policies saved.");
           onSaved();

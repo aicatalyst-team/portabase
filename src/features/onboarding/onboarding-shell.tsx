@@ -28,7 +28,7 @@ export const OnboardingShell = () => {
 
   const isGoingBack = currentIndex < latestIndex;
 
-  const BLOCKED_STEPS = ["login", "account-info", "security"];
+  const BLOCKED_STEPS = ["security"];
   const prevStepId = STEP_ORDER[currentIndex - 1] ?? "";
   const canGoBack =
     !BLOCKED_STEPS.includes(currentStepId) &&
@@ -38,7 +38,7 @@ export const OnboardingShell = () => {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 gap-4">
       <AuthLogoSection />
-      <div className="w-full max-w-4xl rounded-2xl bg-card border border-border shadow-2xl overflow-hidden flex flex-col md:flex-row min-h-[560px]">
+      <div className="w-full max-w-4xl rounded-2xl bg-card border border-border shadow-2xl overflow-hidden flex flex-col md:flex-row min-h-140">
         <div className="flex-1 flex flex-col gap-6 p-8">
           <OnboardingStepper />
           <div className="flex-1">{renderStep()}</div>
@@ -60,11 +60,18 @@ export const OnboardingShell = () => {
                       prevId = "storage";
                     }
                   } else if (currentStepId === "finish") {
-                    const agents = (state.context.flowData.agents as any[]) || [];
-                    const isAgentConnected = agents.some((a) => a.connected);
-                    const databaseIds = (state.context.flowData.project as any)?.databaseIds || [];
-                    if (!isAgentConnected || databaseIds.length === 0) {
-                      prevId = "project-create";
+                    const agents =
+                      (state.context.flowData.agents as any[]) || [];
+                    if (agents.length === 0) {
+                      prevId = "agent-create";
+                    } else {
+                      const isAgentConnected = agents.some((a) => a.connected);
+                      const databaseIds =
+                        (state.context.flowData.project as any)?.databaseIds ||
+                        [];
+                      if (!isAgentConnected || databaseIds.length === 0) {
+                        prevId = "project-create";
+                      }
                     }
                   }
                   if (prevId) goToStep(prevId);

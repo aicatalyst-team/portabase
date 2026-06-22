@@ -54,7 +54,14 @@ export const EmailForm = (props: EmailFormProps) => {
                 return;
             }
             toast.success(`Success updating email informations`);
-            form.reset(data);
+            form.reset({
+                smtpPassword: data.smtpPassword ?? undefined,
+                smtpFrom: data.smtpFrom ?? undefined,
+                smtpHost: data.smtpHost ?? undefined,
+                smtpPort: data.smtpPort ?? undefined,
+                smtpUser: data.smtpUser ?? undefined,
+                smtpSecure: data.smtpSecure ?? undefined,
+            });
             router.refresh();
         },
     });

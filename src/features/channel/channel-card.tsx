@@ -34,6 +34,7 @@ export const ChannelCard = (props: ChannelCardProps) => {
 
     const isOwned = data.organizationId ? true : !organization;
     const isLocalSystem = data.provider == "local";
+    const isSystemChannel = data.organizationId === null;
 
     return (
         <div className="block transition-all duration-200 rounded-xl">
@@ -69,7 +70,7 @@ export const ChannelCard = (props: ChannelCardProps) => {
                                     channel={data}
                                     kind={kind}
                                 />
-                                {!isLocalSystem && (
+                                {!isLocalSystem && !isSystemChannel && (
                                     <DeleteChannelButton
                                         kind={kind}
                                         organizationId={organization?.id}

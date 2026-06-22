@@ -8,13 +8,18 @@ import {updateImageUserAction} from "@/features/profile/avatar.action";
 import {useRouter} from "next/navigation";
 import {User} from "@/db/schema/02_user";
 import React, {ChangeEvent} from "react";
+import type {AvatarMode} from "@/features/onboarding/types";
 
 export type AvatarWithUploadProps = {
     user: User;
+    avatarMode?: AvatarMode;
+    avatarUrl?: string;
 };
 
 export const AvatarWithUpload = (props: AvatarWithUploadProps) => {
     const user = props.user;
+    const canUpload = !props.avatarMode || props.avatarMode === "internal";
+    const src = props.avatarUrl ?? user.image ?? undefined;
     const router = useRouter();
 
     const submitImage = useMutation({
@@ -71,23 +76,25 @@ export const AvatarWithUpload = (props: AvatarWithUploadProps) => {
         <div className="relative ">
 
             <Avatar className="w-24 h-24 lg:w-32 lg:h-32 border-4 border-muted/20">
-                <AvatarImage className="object-cover" src={user.image || undefined}/>
+                <AvatarImage className="object-cover" src={src}/>
                 <AvatarFallback className="text-3xl">{(user.name?.charAt(0) ?? user.email?.charAt(0) ?? "?").toUpperCase()}</AvatarFallback>
             </Avatar>
 
-            <div
-                onClick={() => {
-                    const fileInput = document.createElement("input");
-                    fileInput.type = "file";
-                    fileInput.accept = ".jpg,.jpeg,.png,.webp";
-                    fileInput.onchange = (e: Event) =>
-                        handleImageUpload(e as unknown as React.ChangeEvent<HTMLInputElement>);
-                    fileInput.click();
-                }}
-                className="cursor-pointer absolute inset-0 flex justify-center items-center opacity-0 transition-opacity hover:opacity-30 hover:bg-gray-500 hover:bg-opacity-50 rounded-full w-24 h-24 lg:w-32 lg:h-32"
-            >
-                <UploadIcon className="w-12 h-12 lg:w-16 lg:h-16 text-primary"/>
-            </div>
+            {canUpload && (
+                <div
+                    onClick={() => {
+                        const fileInput = document.createElement("input");
+                        fileInput.type = "file";
+                        fileInput.accept = ".jpg,.jpeg,.png,.webp";
+                        fileInput.onchange = (e: Event) =>
+                            handleImageUpload(e as unknown as React.ChangeEvent<HTMLInputElement>);
+                        fileInput.click();
+                    }}
+                    className="cursor-pointer absolute inset-0 flex justify-center items-center opacity-0 transition-opacity hover:opacity-30 hover:bg-gray-500 hover:bg-opacity-50 rounded-full w-24 h-24 lg:w-32 lg:h-32"
+                >
+                    <UploadIcon className="w-12 h-12 lg:w-16 lg:h-16 text-primary"/>
+                </div>
+            )}
         </div>
     );
 };

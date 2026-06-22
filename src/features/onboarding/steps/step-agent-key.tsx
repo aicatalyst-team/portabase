@@ -1,17 +1,22 @@
 "use client";
 
+import { useState } from "react";
 import { useOnboarding } from "@onboardjs/react";
-import { Loader2 } from "lucide-react";
+import { Server } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CodeSnippet } from "@/components/common/code-snippet";
+import { AgentCardKey } from "@/features/agents/agent-card-key";
 import type { OnboardingAgent } from "@/features/onboarding/types";
+import { cn } from "@/lib/utils";
 
 export const StepAgentKey = () => {
   const { next, state } = useOnboarding();
   const agents = (state?.context.flowData.agents ?? []) as OnboardingAgent[];
+  const [selectedId, setSelectedId] = useState<string>(agents[0]?.id ?? "");
+
+  const selected = agents.find((a) => a.id === selectedId) ?? agents[0];
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <div>
         <h1 className="text-2xl font-semibold">Connect your agent</h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -19,33 +24,40 @@ export const StepAgentKey = () => {
           agent to connect.
         </p>
       </div>
-      {agents.map((agent) => (
-        <AgentKeyBlock key={agent.id} agent={agent} />
-      ))}
+
+      {agents.length > 1 && (
+        <div className="flex flex-col gap-1.5">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
+            Agents
+          </p>
+          <div className="flex flex-col gap-1.5 max-h-36 overflow-y-auto scrollbar-hide">
+            {agents.map((agent) => (
+              <button
+                key={agent.id}
+                type="button"
+                onClick={() => setSelectedId(agent.id)}
+                className={cn(
+                  "flex items-center gap-2.5 rounded-lg border px-3 py-2 text-sm transition-all text-left",
+                  selectedId === agent.id
+                    ? "border-primary/20 bg-primary/10 text-primary"
+                    : "border-border hover:bg-accent/50 hover:border-primary/20",
+                )}
+              >
+                <Server className="size-3.5 shrink-0" />
+                <span className="font-medium truncate">{agent.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {selected?.edgeKey && (
+        <AgentCardKey edgeKey={selected.edgeKey} agentName={selected.name} />
+      )}
+
       <Button type="button" onClick={() => next()}>
         I&apos;ve run the command →
       </Button>
-    </div>
-  );
-};
-
-const AgentKeyBlock = ({ agent }: { agent: OnboardingAgent }) => {
-  if (!agent.edgeKey) {
-    return (
-      <div className="flex items-center gap-2 text-sm text-muted-foreground p-4 rounded-lg border border-border bg-muted/50">
-        <Loader2 className="size-4 animate-spin" />
-        Generating key for {agent.name}…
-      </div>
-    );
-  }
-
-  const command = `portabase agent "${agent.name}" --key ${agent.edgeKey}`;
-
-  return (
-    <div className="flex flex-col gap-3 p-4 rounded-lg border border-border">
-      <p className="text-sm font-medium">{agent.name}</p>
-      <CodeSnippet title="Installation Command" code={command} />
-      <CodeSnippet title="Agent Key (manual)" code={agent.edgeKey} />
     </div>
   );
 };

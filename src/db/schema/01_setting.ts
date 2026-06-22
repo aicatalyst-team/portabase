@@ -1,4 +1,6 @@
-import {boolean, pgTable, uuid, varchar} from "drizzle-orm/pg-core";
+import {boolean, pgEnum, pgTable, uuid, varchar} from "drizzle-orm/pg-core";
+
+export const avatarModeEnum = pgEnum('avatar_mode', ['internal', 'gravatar', 'dicebear']);
 import {createSelectSchema} from "drizzle-zod";
 import {z} from "zod";
 import {timestamps} from "@/db/schema/00_common";
@@ -21,6 +23,8 @@ export const setting = pgTable("settings", {
         .references(() => storageChannel.id, {onDelete: "set null"}),
     encryption: boolean("encryption").default(false),
     onboarding: boolean("onboarding").default(false).notNull(),
+    avatarMode: avatarModeEnum('avatar_mode').default('internal').notNull(),
+    dicebearStyle: varchar('dicebear_style', { length: 64 }).default('thumbs').notNull(),
     ...timestamps
 });
 

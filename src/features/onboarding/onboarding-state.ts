@@ -1,11 +1,16 @@
 import "server-only";
 
+import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import { organization } from "@/db/schema/03_organization";
+import { member } from "@/db/schema/04_member";
 import { currentUser } from "@/lib/auth/current-user";
 import { getSettings } from "@/db/services/setting";
 import { hasUsers } from "@/db/services/user";
 import { getUserOrganization } from "@/db/services/organization";
 import { getOrganizationProject } from "@/db/services/project";
 import { getOrganizationAgents } from "@/db/services/agent";
+import { getDatabasesSettings } from "@/db/services/database";
 import { getOrganizationChannels } from "@/db/services/notification-channel";
 import { getOrganizationStorageChannels } from "@/db/services/storage-channel";
 import type { AgentWith } from "@/db/schema/08_agent";
@@ -51,10 +56,22 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
     return { stepId: "login", flowData: { meta } };
   }
 
-  const org = await getUserOrganization(user.id);
+  let org = await getUserOrganization(user.id);
   if (!org) {
-    meta.resumeStepId = "preferences";
-    return { stepId: "preferences", flowData: { meta } };
+    const defaultOrg = await db.query.organization.findFirst({
+      where: eq(organization.slug, "default"),
+    });
+    if (defaultOrg) {
+      await db.insert(member).values({
+        userId: user.id,
+        organizationId: defaultOrg.id,
+        role: "owner",
+      });
+      org = defaultOrg;
+    } else {
+      meta.resumeStepId = "preferences";
+      return { stepId: "preferences", flowData: { meta } };
+    }
   }
 
   const orgData = { id: org.id, name: org.name };
@@ -73,6 +90,7 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
     label: n.provider,
     name: n.name,
     config: (n.config as Record<string, unknown>) ?? {},
+    organizationId: n.organizationId ?? null,
   }));
 
   const storages = storageChannels.map((s) => ({
@@ -81,11 +99,14 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
     label: s.provider,
     name: s.name,
     config: (s.config as Record<string, unknown>) ?? {},
+    organizationId: s.organizationId ?? null,
   }));
 
   const defaults = {
     notifierId: settings?.defaultNotificationChannelId ?? undefined,
     storageId: settings?.defaultStorageChannelId ?? undefined,
+    avatarMode: settings?.avatarMode ?? "internal",
+    dicebearStyle: settings?.dicebearStyle ?? "thumbs",
   };
 
   const agentData = await Promise.all(
@@ -94,7 +115,7 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
       name: a.name,
       edgeKey: await generateEdgeKey(getServerUrl(), a.id),
       connected: !!a.lastContact,
-    }))
+    })),
   );
 
   const databases = (agents as AgentWith[]).flatMap((a) =>
@@ -107,6 +128,8 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
     })),
   );
 
+  const dbSettings = await getDatabasesSettings(databases.map((d) => d.id));
+
   const fullData: Partial<OnboardingFlowData> = {
     meta,
     org: orgData,
@@ -115,13 +138,15 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
     defaults,
     agents: agentData,
     databases,
+    dbSettings,
     ...(project
       ? {
           project: {
             id: project.id,
             name: project.name,
             description: "",
-            databaseIds: (project as any).databases?.map((db: any) => db.id) ?? [],
+            databaseIds:
+              (project as any).databases?.map((db: any) => db.id) ?? [],
           },
         }
       : {}),
@@ -129,10 +154,8 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
 
   const hasAgents = agents && agents.length > 0;
 
-  // Has project → late stage (project was created after agent-key)
   if (project) {
     if (!hasAgents) {
-      // Project without agents: missed earlier steps
       if (notifiers.length === 0) {
         meta.resumeStepId = "notifier";
         return { stepId: "notifier", flowData: fullData };
@@ -151,11 +174,16 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
       return { stepId: "agent-key", flowData: fullData };
     }
 
-    meta.resumeStepId = "finish";
-    return { stepId: "finish", flowData: fullData };
+    const projectDatabaseIds: string[] =
+      (project as any).databases?.map((db: any) => db.id) ?? [];
+    if (projectDatabaseIds.length > 0) {
+      meta.resumeStepId = "db-settings";
+      return { stepId: "db-settings", flowData: fullData };
+    }
+    meta.resumeStepId = "project-create";
+    return { stepId: "project-create", flowData: fullData };
   }
 
-  // Has agents but no project → past notifier/storage, waiting on project
   if (hasAgents) {
     const agentHasPinged = !!agents[0]?.lastContact;
     const stepId = agentHasPinged ? "project-create" : "agent-key";
@@ -163,7 +191,6 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
     return { stepId, flowData: fullData };
   }
 
-  // No agents, no project → check earlier steps in order
   if (notifiers.length === 0) {
     meta.resumeStepId = "notifier";
     return { stepId: "notifier", flowData: fullData };

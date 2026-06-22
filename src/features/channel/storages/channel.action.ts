@@ -74,6 +74,24 @@ export const removeStorageChannelAction = userAction.schema(
     const {organizationId, id} = parsedInput;
 
     try {
+        const existing = await db.query.storageChannel.findFirst({
+            where: eq(drizzleDb.schemas.storageChannel.id, id),
+        });
+
+        if (!existing) {
+            return {
+                success: false,
+                actionError: { message: "Storage channel not found.", status: 404, messageParams: { id } },
+            };
+        }
+
+        if (existing.organizationId === null) {
+            return {
+                success: false,
+                actionError: { message: "System storage channels cannot be deleted.", status: 403, messageParams: { id } },
+            };
+        }
+
         if (organizationId) {
             await db
                 .delete(drizzleDb.schemas.organizationStorageChannel)

@@ -5,7 +5,6 @@ import { useOnboarding } from "@onboardjs/react";
 import { Check, Database, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useCreateProject } from "@/features/onboarding/hooks/use-create-project";
 import type {
@@ -23,9 +22,6 @@ export const StepProjectCreate = () => {
   const isUpdateMode = !!existingProject;
 
   const [name, setName] = useState(existingProject?.name ?? "");
-  const [description, setDescription] = useState(
-    existingProject?.description ?? "",
-  );
   const [databaseIds, setDatabaseIds] = useState<string[]>(
     existingProject?.databaseIds ?? [],
   );
@@ -40,7 +36,7 @@ export const StepProjectCreate = () => {
       : [...databaseIds, id];
     setDatabaseIds(newDbIds);
     mutation.mutate(
-      { name: name || "My project", description, databaseIds: newDbIds },
+      { name: name || "My project", databaseIds: newDbIds },
       { onSettled: () => setLoadingDbId(null) }
     );
   };
@@ -64,23 +60,14 @@ export const StepProjectCreate = () => {
           placeholder="My project"
         />
       </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="project-description">Description</Label>
-        <Textarea
-          id="project-description"
-          value={description}
-          style={{ resize: "none" }}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-      </div>
       {databases.length > 0 && (
         <div className="flex flex-col gap-2">
           <Label>Databases</Label>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 max-h-52 sm:max-h-64 md:max-h-80 overflow-y-auto scrollbar-hide">
             {databases.map((db) => {
               const isSelected = databaseIds.includes(db.id);
               const isCurrentLoading = loadingDbId === db.id;
-              
+
               return (
                 <button
                   key={db.id}
@@ -124,7 +111,7 @@ export const StepProjectCreate = () => {
         type="button"
         onClick={() =>
           mutation.mutate(
-            { name: name || "My project", description, databaseIds },
+            { name: name || "My project", databaseIds },
             { onSuccess: () => next() },
           )
         }

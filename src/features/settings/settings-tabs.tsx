@@ -7,11 +7,12 @@ import {Setting} from "@/db/schema/01_setting";
 import {SettingsEmailSection} from "@/features/settings/email-section";
 import {SettingsStorageSection} from "@/features/settings/storage-section";
 import {StorageChannelWith} from "@/db/schema/12_storage-channel";
-import {AlarmClock, MailboxIcon, Save} from "lucide-react";
+import {AlarmClock, MailboxIcon, Save, UserCircle} from "lucide-react";
 import {
     SettingsNotificationSection
 } from "@/features/settings/notification-section";
 import {NotificationChannelWith} from "@/db/schema/09_notification-channel";
+import {SettingsAvatarSection} from "@/features/settings/avatar-section";
 
 export type SettingsTabsProps = {
     settings: Setting
@@ -62,6 +63,14 @@ export const SettingsTabs = ({settings, storageChannels, notificationChannels}: 
             content: (
                 <SettingsNotificationSection notificationChannels={notificationChannels} settings={settings}/>
 
+            )
+        },
+        {
+            name: 'Avatar',
+            value: 'avatar',
+            icon: UserCircle,
+            content: (
+                <SettingsAvatarSection settings={settings}/>
             )
         }
     ]

@@ -9,13 +9,13 @@ import {
 } from "@/features/projects/projects.action";
 import type { OnboardingProjectData } from "@/features/onboarding/types";
 
-type ProjectInput = { name: string; description: string; databaseIds: string[] };
+type ProjectInput = { name: string; databaseIds: string[] };
 
 export const useCreateProject = () => {
   const { state, updateContext } = useOnboarding();
 
   return useMutation({
-    mutationFn: async ({ name, description, databaseIds }: ProjectInput) => {
+    mutationFn: async ({ name, databaseIds }: ProjectInput) => {
       const trimmed = name.trim();
       if (!trimmed) throw new Error("Project name is required");
       const orgId = (state?.context.flowData.org as any)?.id as string | undefined;
@@ -35,7 +35,7 @@ export const useCreateProject = () => {
         await updateContext({
           flowData: {
             ...state?.context.flowData,
-            project: { id: existingProject.id, name: trimmed, description, databaseIds },
+            project: { id: existingProject.id, name: trimmed, databaseIds },
           },
         });
       } else {
@@ -52,7 +52,7 @@ export const useCreateProject = () => {
         await updateContext({
           flowData: {
             ...state?.context.flowData,
-            project: { id: project.id, name: project.name, description, databaseIds },
+            project: { id: project.id, name: project.name, databaseIds },
           },
         });
       }

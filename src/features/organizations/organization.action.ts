@@ -10,6 +10,15 @@ import {auth, checkSlugOrganization, createOrganization} from "@/lib/auth/auth";
 import {slugify} from "@/utils/slugify";
 import {Organization} from "@/db/schema/03_organization";
 import * as drizzleDb from "@/db";
+import {getUserOrganization} from "@/db/services/organization";
+
+export const getMyOrganizationAction = userAction.schema(z.object({})).action(async ({ ctx }): Promise<ServerActionResult<Organization>> => {
+    const org = await getUserOrganization(ctx.user.id);
+    if (!org) {
+        return { success: false, actionError: { message: "No organisation found.", status: 404 } };
+    }
+    return { success: true, value: org as Organization };
+});
 
 export const createOrganizationAction = userAction.schema(CreateOrganizationSchema).action(async ({parsedInput}): Promise<ServerActionResult<Organization>> => {
     try {

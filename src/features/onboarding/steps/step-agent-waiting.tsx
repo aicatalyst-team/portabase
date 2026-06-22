@@ -1,21 +1,23 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useOnboarding } from "@onboardjs/react";
 import { Loader2 } from "lucide-react";
 import { useAgentStatus } from "@/features/onboarding/hooks/use-agent-status";
 import type { OnboardingAgent } from "@/features/onboarding/types";
 
 export const StepAgentWaiting = () => {
-  const { next, state } = useOnboarding();
+  const { state } = useOnboarding();
+  const router = useRouter();
   const agents = (state?.context.flowData.agents ?? []) as OnboardingAgent[];
   const { data, isLoading } = useAgentStatus();
 
   useEffect(() => {
     if (data?.connected) {
-      next();
+      router.refresh();
     }
-  }, [data?.connected, next]);
+  }, [data?.connected, router]);
 
   if (isLoading || data?.connected) return null;
 

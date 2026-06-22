@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 import { getCurrentOrganizationSlug } from "@/features/organizations/organization-cookie";
 import { currentUser } from "@/lib/auth/current-user";
-import { isOnboardingDone } from "@/features/onboarding/is-onboarding-done";
+import { isOnboardingDone } from "@/db/services/setting";
+import { env } from "@/env.mjs";
 
 export default async function Index() {
-    if (!(await isOnboardingDone())) {
+    if (env.SKIP_ONBOARDING !== "true" && !(await isOnboardingDone())) {
         redirect("/welcome");
     }
 

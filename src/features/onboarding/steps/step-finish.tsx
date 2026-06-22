@@ -1,16 +1,17 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useOnboarding } from "@onboardjs/react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import confetti from "canvas-confetti";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMarkOnboardingDone } from "@/features/onboarding/hooks/use-mark-onboarding-done";
 
 export const StepFinish = () => {
-  const { next } = useOnboarding();
+  const router = useRouter();
   const fired = useRef(false);
   const mutation = useMarkOnboardingDone();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
     if (fired.current) return;
@@ -27,10 +28,11 @@ export const StepFinish = () => {
       </p>
       <Button
         type="button"
-        disabled={mutation.isPending}
+        disabled={mutation.isPending || isRedirecting}
         onClick={async () => {
           await mutation.mutateAsync();
-          await next();
+          setIsRedirecting(true);
+          router.push("/dashboard/home");
         }}
       >
         Go to dashboard

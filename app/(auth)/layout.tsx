@@ -1,8 +1,9 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth/current-user";
-import { isOnboardingDone } from "@/features/onboarding/is-onboarding-done";
+import { isOnboardingDone } from "@/db/services/setting";
 import { AuthLogoSection } from "@/features/auth/auth-logo-section";
+import { env } from "@/env.mjs";
 import { Heart } from "lucide-react";
 
 export default async function Layout({
@@ -10,7 +11,7 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  if (!(await isOnboardingDone())) {
+  if (env.SKIP_ONBOARDING !== "true" && !(await isOnboardingDone())) {
     redirect("/welcome");
   }
 

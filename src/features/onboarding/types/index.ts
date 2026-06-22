@@ -40,11 +40,16 @@ export type OnboardingChannel = {
   label: string;
   name: string;
   config: Record<string, unknown>;
+  organizationId?: string | null;
 };
+
+export type AvatarMode = 'internal' | 'gravatar' | 'dicebear';
 
 export type OnboardingDefaultsData = {
   notifierId?: string;
   storageId?: string;
+  avatarMode?: AvatarMode;
+  dicebearStyle?: string;
 };
 
 export type OnboardingAgent = {

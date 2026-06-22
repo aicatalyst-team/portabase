@@ -16,29 +16,37 @@ import type {
   SectionKind,
 } from "@/features/onboarding/types";
 
-const SECTIONS: { kind: SectionKind; label: string; icon: React.ReactNode }[] =
-  [
-    {
-      kind: "retention",
-      label: "Retention Policy",
-      icon: <Shield className="size-4 text-muted-foreground" />,
-    },
-    {
-      kind: "scheduling",
-      label: "Scheduling",
-      icon: <Clock className="size-4 text-muted-foreground" />,
-    },
-    {
-      kind: "notifications",
-      label: "Notifications",
-      icon: <Bell className="size-4 text-muted-foreground" />,
-    },
-    {
-      kind: "storage",
-      label: "Storage",
-      icon: <HardDrive className="size-4 text-muted-foreground" />,
-    },
-  ];
+const SECTIONS: {
+  kind: SectionKind;
+  label: string;
+  description: string;
+  icon: React.ReactNode;
+}[] = [
+  {
+    kind: "retention",
+    label: "Retention Policy",
+    description: "Configure how long your data is retained",
+    icon: <Shield className="size-4 text-muted-foreground" />,
+  },
+  {
+    kind: "scheduling",
+    label: "Scheduling",
+    description: "Set up backup schedules for your database",
+    icon: <Clock className="size-4 text-muted-foreground" />,
+  },
+  {
+    kind: "notifications",
+    label: "Notifications",
+    description: "Get notified about backup status and issues",
+    icon: <Bell className="size-4 text-muted-foreground" />,
+  },
+  {
+    kind: "storage",
+    label: "Storage",
+    description: "Choose where to store your backups",
+    icon: <HardDrive className="size-4 text-muted-foreground" />,
+  },
+];
 
 type DbDetailProps = {
   db: OnboardingDatabase | undefined;
@@ -80,8 +88,8 @@ export const DbDetail = ({
       </Button>
     </div>
 
-    <div className="flex flex-col gap-2">
-      {SECTIONS.map(({ kind, label, icon }) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {SECTIONS.map(({ kind, label, description, icon }) => (
         <button
           key={kind}
           type="button"
@@ -91,7 +99,14 @@ export const DbDetail = ({
           <div className="size-9 rounded-md border bg-muted/50 shadow-sm flex items-center justify-center shrink-0">
             {icon}
           </div>
-          <span className="flex-1 font-medium">{label}</span>
+          <div className="flex-col gap-1">
+            <div className="flex flex-col gap-1">
+              <span className="font-medium">{label}</span>
+              <span className="text-muted-foreground text-xs">
+                {description}
+              </span>
+            </div>
+          </div>
           {isSectionConfigured(kind) && (
             <div className="size-5 rounded-full bg-primary flex items-center justify-center ml-auto shrink-0">
               <Check

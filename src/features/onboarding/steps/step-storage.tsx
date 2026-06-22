@@ -161,14 +161,16 @@ export const StepStorage = () => {
                 <span className="flex-1 truncate">
                   {ch.name} <span className="opacity-60">({ch.label})</span>
                 </span>
-                <button
-                  type="button"
-                  onClick={() => removeStorage.mutate(ch.id)}
-                  disabled={removeStorage.isPending}
-                  className="opacity-50 hover:opacity-100 transition-opacity"
-                >
-                  <X className="size-4" />
-                </button>
+                {ch.organizationId !== null && (
+                  <button
+                    type="button"
+                    onClick={() => removeStorage.mutate(ch.id)}
+                    disabled={removeStorage.isPending}
+                    className="opacity-50 hover:opacity-100 transition-opacity"
+                  >
+                    <X className="size-4" />
+                  </button>
+                )}
               </div>
             );
           })}

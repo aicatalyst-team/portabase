@@ -5,12 +5,13 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/features/layout/app-sidebar";
 import { Header } from "@/features/layout/header";
 import { currentUser } from "@/lib/auth/current-user";
-import { isOnboardingDone } from "@/features/onboarding/is-onboarding-done";
+import { isOnboardingDone } from "@/db/services/setting";
+import { env } from "@/env.mjs";
 import { ModeToggle } from "@/features/theme/mode-toggle";
 import { UpdateNotification } from "@/features/updates/update-notification";
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  if (!(await isOnboardingDone())) {
+  if (env.SKIP_ONBOARDING !== "true" && !(await isOnboardingDone())) {
     redirect("/welcome");
   }
 

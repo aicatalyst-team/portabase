@@ -1,7 +1,8 @@
 import { ImageResponse } from "next/og";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { getSettings } from "@/db/services/setting";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 const AVATAR_COLORS = [
   "#4f46e5",
@@ -15,6 +16,11 @@ const AVATAR_COLORS = [
 ];
 
 export async function GET(request: NextRequest) {
+  const settings = await getSettings();
+  if (settings?.avatarMode && settings.avatarMode !== "internal") {
+    return new NextResponse(null, { status: 404 });
+  }
+
   const { searchParams } = new URL(request.url);
   const initials = (searchParams.get("initials") ?? "?")
     .slice(0, 2)

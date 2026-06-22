@@ -73,6 +73,24 @@ export const removeNotificationChannelAction = userAction.schema(
     const {organizationId, notificationChannelId} = parsedInput;
 
     try {
+        const existing = await db.query.notificationChannel.findFirst({
+            where: eq(drizzleDb.schemas.notificationChannel.id, notificationChannelId),
+        });
+
+        if (!existing) {
+            return {
+                success: false,
+                actionError: { message: "Notification channel not found.", status: 404, messageParams: { notificationChannelId } },
+            };
+        }
+
+        if (existing.organizationId === null) {
+            return {
+                success: false,
+                actionError: { message: "System notification channels cannot be deleted.", status: 403, messageParams: { notificationChannelId } },
+            };
+        }
+
         if (organizationId) {
             await db
                 .delete(drizzleDb.schemas.organizationNotificationChannel)

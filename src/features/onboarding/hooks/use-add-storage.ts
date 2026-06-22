@@ -40,6 +40,7 @@ export const useAddStorage = () => {
         label,
         name,
         config,
+        organizationId: orgId ?? null,
       };
       const storages = [
         ...((state?.context.flowData.storages ?? []) as OnboardingChannel[]),

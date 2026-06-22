@@ -27,7 +27,7 @@ export const DbGrid = ({
         Optional — configure backup policies for each database.
       </p>
     </div>
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 max-h-52 sm:max-h-72 md:max-h-96 lg:max-h-[28rem] overflow-y-auto scrollbar-hide">
       {databaseIds.map((dbId) => {
         const db = getDb(dbId);
         return (

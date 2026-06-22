@@ -52,11 +52,11 @@ export const StepDbSettings = () => {
       case "retention":
         return !!s.retention;
       case "scheduling":
-        return s.backupMethod !== undefined;
+        return s.backupMethod === "automatic";
       case "notifications":
-        return s.notificationPolicies !== undefined;
+        return (s.notificationPolicies?.length ?? 0) > 0;
       case "storage":
-        return s.storagePolicies !== undefined;
+        return (s.storagePolicies?.length ?? 0) > 0;
     }
   };
 
@@ -131,7 +131,7 @@ export const StepDbSettings = () => {
         getDb={getDb}
         isDbConfigured={isDbConfigured}
         onSelectDb={(dbId) => setPhase({ kind: "db", dbId })}
-        onContinue={next}
+        onContinue={() => next()}
       />
     );
 

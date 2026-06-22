@@ -11,6 +11,7 @@ export default async function WelcomePage() {
 
     return (
         <OnboardingClient
+            key={result.stepId}
             initialStepId={result.stepId}
             initialFlowData={result.flowData}
         />

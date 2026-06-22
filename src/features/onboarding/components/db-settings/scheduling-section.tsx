@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   BackupScheduleSelector,
@@ -13,14 +12,12 @@ import type { OnboardingDbSettings } from "@/features/onboarding/types";
 type SchedulingSectionProps = {
   initial: Pick<OnboardingDbSettings, "backupMethod" | "backupCron">;
   onSave: (method: "manual" | "automatic", cron?: string) => Promise<void>;
-  onBack: () => void;
   isPending: boolean;
 };
 
 export const SchedulingSection = ({
   initial,
   onSave,
-  onBack,
   isPending,
 }: SchedulingSectionProps) => {
   const [schedule, setSchedule] = useState<BackupScheduleValue>({
@@ -32,10 +29,6 @@ export const SchedulingSection = ({
     <div className="flex flex-col gap-6">
       <BackupScheduleSelector value={schedule} onChange={setSchedule} />
       <div className="flex gap-2 pt-2">
-        <Button type="button" variant="outline" onClick={onBack}>
-          <ArrowLeft className="size-4 mr-1" />
-          Back
-        </Button>
         <Button
           type="button"
           disabled={isPending}

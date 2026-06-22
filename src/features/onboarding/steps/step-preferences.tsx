@@ -5,10 +5,7 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth/auth-client";
-import type {
-  OnboardingAccountData,
-  OnboardingMeta,
-} from "@/features/onboarding/types";
+import type { OnboardingAccountData } from "@/features/onboarding/types";
 import { ThemeKey, ThemeSelector } from "@/components/common/theme-selector";
 
 const AVATAR_COLORS = [

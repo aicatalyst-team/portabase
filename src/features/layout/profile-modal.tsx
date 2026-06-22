@@ -6,6 +6,7 @@ import { ProfileSidebar } from "./profile-sidebar";
 import type { AuthProviderConfig } from "@/lib/auth/config";
 import { User, Session, Account } from "@/db/schema/02_user";
 import { ProfileGeneral } from "@/features/profile/profile-general";
+import type { AvatarMode } from "@/features/onboarding/types";
 import { ProfileSecurity } from "@/features/profile/profile-security";
 import { ProfileProviders } from "@/features/profile/profile-providers";
 import { ProfileAccount } from "@/features/profile/profile-account";
@@ -20,9 +21,11 @@ type ProfileModalProps = {
     onOpenChange: (open: boolean) => void;
     providers: AuthProviderConfig[];
     apiEnabled: boolean;
+    avatarMode?: AvatarMode;
+    avatarUrl?: string;
 };
 
-export const ProfileModal = ({ user, sessions, currentSession, accounts, open, onOpenChange, providers, apiEnabled }: ProfileModalProps) => {
+export const ProfileModal = ({ user, sessions, currentSession, accounts, open, onOpenChange, providers, apiEnabled, avatarMode, avatarUrl }: ProfileModalProps) => {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="w-[95vw] h-[90vh] max-w-md lg:max-w-[1000px] lg:h-[800px] pb-6 p-0 overflow-hidden flex flex-col outline-none gap-0 rounded-xl bg-background">
@@ -35,7 +38,7 @@ export const ProfileModal = ({ user, sessions, currentSession, accounts, open, o
 
                     <div className="flex-1 overflow-y-auto bg-background h-full scroll-smooth">
                         <TabsContent value="profile" className="mt-0 h-full p-6 lg:p-10 outline-none focus-visible:ring-0">
-                            <ProfileGeneral user={user} />
+                            <ProfileGeneral user={user} avatarMode={avatarMode} avatarUrl={avatarUrl} />
                         </TabsContent>
 
                         <TabsContent value="security" className="mt-0 h-full p-6 lg:p-10 outline-none focus-visible:ring-0">

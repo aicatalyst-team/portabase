@@ -7,6 +7,7 @@ import { LoggedInDropdown } from "./logged-in-dropdown";
 import { Account, Session } from "better-auth";
 import { AuthProviderConfig } from "@/lib/auth/config";
 import {User} from "@/db/schema/02_user";
+import type { AvatarMode } from "@/features/onboarding/types";
 
 type LoggedInButtonClientProps = {
     user: User;
@@ -15,9 +16,11 @@ type LoggedInButtonClientProps = {
     accounts: Account[];
     providers: AuthProviderConfig[];
     apiEnabled: boolean;
+    avatarMode?: AvatarMode;
+    avatarUrl?: string;
 };
 
-export const LoggedInButtonClient = ({ user, sessions, currentSession, accounts, providers, apiEnabled }: LoggedInButtonClientProps) => {
+export const LoggedInButtonClient = ({ user, sessions, currentSession, accounts, providers, apiEnabled, avatarMode, avatarUrl }: LoggedInButtonClientProps) => {
     return (
         <LoggedInDropdown
             user={user}
@@ -29,12 +32,14 @@ export const LoggedInButtonClient = ({ user, sessions, currentSession, accounts,
             accounts={accounts}
             providers={providers}
             apiEnabled={apiEnabled}
+            avatarMode={avatarMode}
+            avatarUrl={avatarUrl}
         >
             <SidebarMenuButton type="button" className="h-auto justify-between py-2" data-testid="profile-dropdown">
                 <div className="flex items-center gap-2">
                     <Avatar className="size-6">
                         <AvatarFallback>{(user.name?.[0] ?? user.email?.[0] ?? "?").toUpperCase()}</AvatarFallback>
-                        {user.image && <AvatarImage src={user.image} />}
+                        {avatarUrl && <AvatarImage src={avatarUrl} />}
                     </Avatar>
                     <div className="flex flex-col items-start">
                         <span className="text-sm font-medium first-letter:capitalize max-w-[170px] truncate">{user.name}</span>
