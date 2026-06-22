@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
+import { HardDrive } from "lucide-react";
 import { useOnboarding } from "@onboardjs/react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -33,7 +34,6 @@ export const StepDefaults = () => {
     existingDefaults.storageId || undefined,
   );
 
-
   const selectNotifier = async (value: string) => {
     setNotifierId(value);
     await updateNotificationSettingsAction({
@@ -49,6 +49,16 @@ export const StepDefaults = () => {
   };
 
   const selectStorage = async (value: string) => {
+    if (value === "filesystem") {
+      setStorageId(undefined);
+      await updateContext({
+        flowData: {
+          ...state?.context.flowData,
+          defaults: { notifierId, storageId: undefined },
+        },
+      });
+      return;
+    }
     setStorageId(value);
     await updateStorageSettingsAction({
       name: "system",
@@ -83,7 +93,9 @@ export const StepDefaults = () => {
       <div className="flex flex-col gap-2">
         <Label>Default notifier</Label>
         <Select
-          value={notifiers.some((n) => n.id === notifierId) ? notifierId : undefined}
+          value={
+            notifiers.some((n) => n.id === notifierId) ? notifierId : undefined
+          }
           onValueChange={selectNotifier}
           disabled={notifiers.length === 0}
         >
@@ -108,20 +120,21 @@ export const StepDefaults = () => {
       <div className="flex flex-col gap-2">
         <Label>Default storage</Label>
         <Select
-          value={storages.some((s) => s.id === storageId) ? storageId : undefined}
+          value={
+            storages.some((s) => s.id === storageId) ? storageId : "filesystem"
+          }
           onValueChange={selectStorage}
-          disabled={storages.length === 0}
         >
           <SelectTrigger>
-            <SelectValue
-              placeholder={
-                storages.length === 0
-                  ? "No storage connected"
-                  : "Choose a storage"
-              }
-            />
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value={"filesystem"}>
+              <div className="flex items-center gap-2">
+                <HardDrive className="size-4 text-muted-foreground" />
+                <span>Filesystem</span>
+              </div>
+            </SelectItem>
             {storages.map((s) => (
               <SelectItem key={s.id} value={s.id}>
                 {s.label}

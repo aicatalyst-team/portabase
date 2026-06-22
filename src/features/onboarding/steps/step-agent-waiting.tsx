@@ -17,8 +17,6 @@ export const StepAgentWaiting = () => {
     }
   }, [data?.connected, next]);
 
-  // Don't render until the first fetch completes, or if the agent is already
-  // connected (next() fires before the spinner is ever displayed).
   if (isLoading || data?.connected) return null;
 
   return (

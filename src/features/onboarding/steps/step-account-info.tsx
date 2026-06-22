@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useOnboarding } from "@onboardjs/react";
 import { useSession } from "@/lib/auth/auth-client";
 import { z } from "zod";
@@ -22,7 +22,6 @@ import {
 } from "@/features/onboarding/schemas/account.schema";
 import { useUpdateAccount } from "@/features/onboarding/hooks/use-update-account";
 import type { OnboardingMeta } from "@/features/onboarding/types";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const StepAccountInfo = () => {
   const { next, state } = useOnboarding();
@@ -164,7 +163,11 @@ export const StepAccountInfo = () => {
           ) : (
             <>
               {emailPasswordEnabled && (
-                <Button type="button" onClick={onSubmitPassword} disabled={mutation.isPending}>
+                <Button
+                  type="button"
+                  onClick={onSubmitPassword}
+                  disabled={mutation.isPending}
+                >
                   Create account
                 </Button>
               )}

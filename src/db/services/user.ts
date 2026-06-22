@@ -6,6 +6,11 @@ import {User, UserThemeEnum} from "@/db/schema/02_user";
 import {assertValidPassword} from "@/utils/password";
 
 
+export async function hasUsers(): Promise<boolean> {
+    const result = await db.select().from(drizzleDb.schemas.user).limit(1);
+    return result.length > 0;
+}
+
 export async function createUserDb(data: SignUpUser): Promise<User> {
     assertValidPassword(data.password);
 

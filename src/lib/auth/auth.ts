@@ -19,6 +19,7 @@ import EmailNewLogin from "@/components/emails/auth/email-new-login";
 import {sso} from "@better-auth/sso";
 import {SUPPORTED_PROVIDERS} from "@/lib/auth/config";
 import {passkey} from "@better-auth/passkey";
+import {verifyPasskeyContext} from "@/lib/auth/passkey-context";
 import {getOidcProviders} from "./oidc";
 import {APIError} from "better-auth/api";
 import {getOAuthProviders} from "./oauth";
@@ -290,6 +291,36 @@ export const auth = betterAuth({
                     rpID: env.PROJECT_URL
                         ? new URL(env.PROJECT_URL).hostname
                         : "localhost",
+                    registration: {
+                        requireSession: false,
+                        resolveUser: async ({ ctx, context }) => {
+                            const session = (ctx as any).context?.session;
+                            if (session?.user?.id) {
+                                return {
+                                    id: session.user.id,
+                                    name: session.user.name || session.user.email,
+                                    displayName: session.user.email,
+                                };
+                            }
+                            if (!context) throw new APIError("BAD_REQUEST", { message: "Passkey context required" });
+                            const payload = verifyPasskeyContext(context);
+                            if (!payload) throw new APIError("BAD_REQUEST", { message: "Invalid passkey context" });
+                            const [existing] = await db
+                                .select()
+                                .from(drizzleDb.schemas.user)
+                                .where(eq(drizzleDb.schemas.user.email, payload.email))
+                                .limit(1);
+                            if (existing) {
+                                return { id: existing.id, name: existing.name || payload.name, displayName: payload.email };
+                            }
+                            const newUser = await (ctx as any).context.internalAdapter.createUser({
+                                name: payload.name,
+                                email: payload.email,
+                                emailVerified: true,
+                            });
+                            return { id: newUser.id, name: payload.name, displayName: payload.email };
+                        },
+                    },
                 }),
             ]
             : []),

@@ -1,4 +1,3 @@
-// src/features/onboarding/hooks/use-add-notifier.ts
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
@@ -19,20 +18,36 @@ export const useAddNotifier = () => {
 
   return useMutation({
     mutationFn: async ({ provider, name, config, label }: NotifierInput) => {
-      const orgId = (state?.context.flowData.org as any)?.id as string | undefined;
+      const orgId = (state?.context.flowData.org as any)?.id as
+        | string
+        | undefined;
       const result = await addNotificationChannelAction({
         organizationId: orgId,
-        data: { provider: provider as any, name, config: config as any, enabled: true },
+        data: {
+          provider: provider as any,
+          name,
+          config: config as any,
+          enabled: true,
+        },
       });
       const inner = result?.data;
-      if (!inner?.success || !inner.value) throw new Error("Failed to save channel");
+      if (!inner?.success || !inner.value)
+        throw new Error("Failed to save channel");
 
-      const channel: OnboardingChannel = { id: inner.value.id, provider, label, name, config };
+      const channel: OnboardingChannel = {
+        id: inner.value.id,
+        provider,
+        label,
+        name,
+        config,
+      };
       const notifiers = [
         ...((state?.context.flowData.notifiers ?? []) as OnboardingChannel[]),
         channel,
       ];
-      await updateContext({ flowData: { ...state?.context.flowData, notifiers } });
+      await updateContext({
+        flowData: { ...state?.context.flowData, notifiers },
+      });
       return channel;
     },
     onError: (err: Error) => toast.error(err.message),

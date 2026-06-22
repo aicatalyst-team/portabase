@@ -49,9 +49,7 @@ export const StepPreferences = () => {
   };
 
   const selectTheme = async (theme: ThemeKey) => {
-    // Apply immediately to the UI
     setTheme(theme);
-    // Persist to DB so it survives page reload
     await authClient.updateUser({ theme });
     await updateContext({
       flowData: {
@@ -62,7 +60,6 @@ export const StepPreferences = () => {
   };
 
   const onContinue = async () => {
-    // Save avatar to user profile if selected
     if (selectedAvatarUrl) {
       await authClient.updateUser({ image: selectedAvatarUrl });
     }
@@ -85,7 +82,6 @@ export const StepPreferences = () => {
 
       <div className="flex flex-col gap-2">
         <p className="text-sm font-medium">Avatar</p>
-        {/* Remplacement de la grid par un flex avec wrap */}
         <div className="flex flex-wrap gap-2">
           {AVATAR_COLORS.map((c) => {
             const url = `/api/avatar?initials=${initials}&color=${encodeURIComponent(c.hex)}`;
@@ -96,7 +92,6 @@ export const StepPreferences = () => {
                 type="button"
                 onClick={() => selectAvatar(c.hex)}
                 className={cn(
-                  // Ajout de shrink-0 pour éviter toute déformation
                   "rounded-full overflow-hidden transition-all shrink-0",
                   isSelected
                     ? "ring-2 ring-primary ring-offset-2 ring-offset-background"

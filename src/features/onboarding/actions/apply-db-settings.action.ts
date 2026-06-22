@@ -43,13 +43,19 @@ export const applyOnboardingDbSettingsAction = userAction
   .schema(
     z.object({
       databaseId: z.string().min(1),
-      section: z.enum(["retention", "scheduling", "notifications", "storage", "all"]),
+      section: z.enum([
+        "retention",
+        "scheduling",
+        "notifications",
+        "storage",
+        "all",
+      ]),
       retention: RetentionSchema.optional(),
       backupMethod: z.enum(["manual", "automatic"]).optional(),
       backupCron: z.string().optional(),
       notificationPolicies: z.array(NotifPolicySchema).optional(),
       storagePolicies: z.array(StoragePolicyInputSchema).optional(),
-    })
+    }),
   )
   .action(async ({ parsedInput }) => {
     const {
@@ -94,8 +100,6 @@ export const applyOnboardingDbSettingsAction = userAction
 
     const applyScheduling = async () => {
       if (backupMethod === undefined) return;
-      // Direct DB update — intentionally skips the side effect in
-      // updateDatabaseBackupPolicyAction that deletes retention policy on null.
       const cronValue =
         backupMethod === "manual" ? null : (backupCron ?? "0 0 * * *");
       await db
@@ -118,7 +122,7 @@ export const applyOnboardingDbSettingsAction = userAction
               notificationChannelId: p.channelId,
               eventKinds: p.eventKinds as any,
               enabled: p.enabled,
-            }))
+            })),
           );
         }
       });
@@ -137,7 +141,7 @@ export const applyOnboardingDbSettingsAction = userAction
               databaseId,
               storageChannelId: p.channelId,
               enabled: p.enabled,
-            }))
+            })),
           );
         }
       });
@@ -145,7 +149,8 @@ export const applyOnboardingDbSettingsAction = userAction
 
     if (section === "retention" || section === "all") await applyRetention();
     if (section === "scheduling" || section === "all") await applyScheduling();
-    if (section === "notifications" || section === "all") await applyNotifications();
+    if (section === "notifications" || section === "all")
+      await applyNotifications();
     if (section === "storage" || section === "all") await applyStorage();
 
     return { success: true };

@@ -1,4 +1,3 @@
-// src/features/onboarding/steps/step-notifier.tsx
 "use client";
 
 import { useState } from "react";
@@ -26,7 +25,8 @@ type Phase = { kind: "grid" } | { kind: "configuring"; provider: string };
 
 export const StepNotifier = () => {
   const { next, updateContext, state } = useOnboarding();
-  const notifiers = (state?.context.flowData.notifiers ?? []) as OnboardingChannel[];
+  const notifiers = (state?.context.flowData.notifiers ??
+    []) as OnboardingChannel[];
   const [phase, setPhase] = useState<Phase>({ kind: "grid" });
   const form = useZodForm({ schema: NotificationChannelFormSchema });
 
@@ -40,12 +40,16 @@ export const StepNotifier = () => {
   };
 
   const onContinue = async () => {
-    await updateContext({ flowData: { ...state?.context.flowData, notifiers } });
+    await updateContext({
+      flowData: { ...state?.context.flowData, notifiers },
+    });
     await next();
   };
 
   if (phase.kind === "configuring") {
-    const providerDetails = notificationProviders.find((p) => p.value === phase.provider);
+    const providerDetails = notificationProviders.find(
+      (p) => p.value === phase.provider,
+    );
     const Icon = providerDetails?.icon;
 
     return (
@@ -56,8 +60,15 @@ export const StepNotifier = () => {
               <Icon className="size-5" />
             </div>
           )}
-          <p className="flex-1 text-sm font-medium">Configuring {providerDetails?.label}</p>
-          <Button type="button" variant="ghost" size="sm" onClick={() => setPhase({ kind: "grid" })}>
+          <p className="flex-1 text-sm font-medium">
+            Configuring {providerDetails?.label}
+          </p>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setPhase({ kind: "grid" })}
+          >
             <ArrowLeft className="size-4 mr-1" />
             Back
           </Button>
@@ -66,7 +77,9 @@ export const StepNotifier = () => {
           form={form}
           className="flex flex-col gap-4"
           onSubmit={async (values: any) => {
-            const details = notificationProviders.find((p) => p.value === values.provider);
+            const details = notificationProviders.find(
+              (p) => p.value === values.provider,
+            );
             addNotifier.mutate(
               {
                 provider: values.provider,
@@ -131,7 +144,9 @@ export const StepNotifier = () => {
       {notifiers.length > 0 && (
         <div className="flex flex-col gap-1">
           {notifiers.map((ch) => {
-            const details = notificationProviders.find((p) => p.value === ch.provider);
+            const details = notificationProviders.find(
+              (p) => p.value === ch.provider,
+            );
             const Icon = details?.icon;
             return (
               <div
@@ -181,7 +196,10 @@ export const StepNotifier = () => {
               <span className="flex-1 text-left">{provider.label}</span>
               {isConfigured && (
                 <div className="size-5 rounded-full bg-primary flex items-center justify-center ml-auto">
-                  <Check className="size-3 text-primary-foreground" strokeWidth={3} />
+                  <Check
+                    className="size-3 text-primary-foreground"
+                    strokeWidth={3}
+                  />
                 </div>
               )}
             </button>

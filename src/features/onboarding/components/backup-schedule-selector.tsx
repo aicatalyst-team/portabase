@@ -20,9 +20,9 @@ export type BackupScheduleValue = {
 
 const PRESETS = [
   { label: "Every hour", cron: "0 * * * *" },
-  { label: "Every day",  cron: "0 0 * * *" },
+  { label: "Every day", cron: "0 0 * * *" },
   { label: "Every week", cron: "0 0 * * 0" },
-  { label: "Custom",     cron: "custom"     },
+  { label: "Custom", cron: "custom" },
 ] as const;
 
 type PresetCron = (typeof PRESETS)[number]["cron"];
@@ -42,7 +42,7 @@ export const BackupScheduleSelector = ({
   onChange,
 }: BackupScheduleSelectorProps) => {
   const [customCron, setCustomCron] = useState<string>(
-    value.cron ?? "0 0 * * *"
+    value.cron ?? "0 0 * * *",
   );
 
   const selectedPreset = detectPreset(value.cron);
@@ -65,7 +65,7 @@ export const BackupScheduleSelector = ({
 
   const handleCronPartChange = (
     type: "minute" | "hour" | "day-of-month" | "month" | "day-of-week",
-    part: string
+    part: string,
   ) => {
     const indexMap: Record<typeof type, number> = {
       minute: 0,
@@ -149,11 +149,55 @@ export const BackupScheduleSelector = ({
               <div className="flex flex-col gap-2 pl-1">
                 {(
                   [
-                    { type: "minute",       label: "Minute",       options: Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0")), partIdx: 0 },
-                    { type: "hour",         label: "Hour",         options: Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0")), partIdx: 1 },
-                    { type: "day-of-month", label: "Day of Month", options: Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0")), partIdx: 2 },
-                    { type: "month",        label: "Month",        options: ["01","02","03","04","05","06","07","08","09","10","11","12"], partIdx: 3 },
-                    { type: "day-of-week",  label: "Day of Week",  options: ["0","1","2","3","4","5","6"], partIdx: 4 },
+                    {
+                      type: "minute",
+                      label: "Minute",
+                      options: Array.from({ length: 60 }, (_, i) =>
+                        String(i).padStart(2, "0"),
+                      ),
+                      partIdx: 0,
+                    },
+                    {
+                      type: "hour",
+                      label: "Hour",
+                      options: Array.from({ length: 24 }, (_, i) =>
+                        String(i).padStart(2, "0"),
+                      ),
+                      partIdx: 1,
+                    },
+                    {
+                      type: "day-of-month",
+                      label: "Day of Month",
+                      options: Array.from({ length: 31 }, (_, i) =>
+                        String(i + 1).padStart(2, "0"),
+                      ),
+                      partIdx: 2,
+                    },
+                    {
+                      type: "month",
+                      label: "Month",
+                      options: [
+                        "01",
+                        "02",
+                        "03",
+                        "04",
+                        "05",
+                        "06",
+                        "07",
+                        "08",
+                        "09",
+                        "10",
+                        "11",
+                        "12",
+                      ],
+                      partIdx: 3,
+                    },
+                    {
+                      type: "day-of-week",
+                      label: "Day of Week",
+                      options: ["0", "1", "2", "3", "4", "5", "6"],
+                      partIdx: 4,
+                    },
                   ] as const
                 ).map(({ type, label, options, partIdx }) => (
                   <AdvancedCronSelect
@@ -166,8 +210,13 @@ export const BackupScheduleSelector = ({
                     defaultValue={cronParts[partIdx] ?? "*"}
                     onValueChange={(val) =>
                       handleCronPartChange(
-                        type as "minute" | "hour" | "day-of-month" | "month" | "day-of-week",
-                        val
+                        type as
+                          | "minute"
+                          | "hour"
+                          | "day-of-month"
+                          | "month"
+                          | "day-of-week",
+                        val,
                       )
                     }
                   />

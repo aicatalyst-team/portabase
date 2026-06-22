@@ -15,7 +15,8 @@ export const StepAgentKey = () => {
       <div>
         <h1 className="text-2xl font-semibold">Connect your agent</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Run the command below on your server. The next step waits for the agent to connect.
+          Run the command below on your server. The next step waits for the
+          agent to connect.
         </p>
       </div>
       {agents.map((agent) => (

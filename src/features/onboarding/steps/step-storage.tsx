@@ -1,4 +1,3 @@
-// src/features/onboarding/steps/step-storage.tsx
 "use client";
 
 import { useState } from "react";
@@ -26,7 +25,8 @@ type Phase = { kind: "grid" } | { kind: "configuring"; provider: string };
 
 export const StepStorage = () => {
   const { next, updateContext, state } = useOnboarding();
-  const storages = (state?.context.flowData.storages ?? []) as OnboardingChannel[];
+  const storages = (state?.context.flowData.storages ??
+    []) as OnboardingChannel[];
   const [phase, setPhase] = useState<Phase>({ kind: "grid" });
   const form = useZodForm({ schema: StorageChannelFormSchema });
 
@@ -45,7 +45,9 @@ export const StepStorage = () => {
   };
 
   if (phase.kind === "configuring") {
-    const providerDetails = storageProviders.find((p) => p.value === phase.provider);
+    const providerDetails = storageProviders.find(
+      (p) => p.value === phase.provider,
+    );
     const Icon = providerDetails?.icon;
 
     return (
@@ -56,8 +58,15 @@ export const StepStorage = () => {
               <Icon className="size-5" />
             </div>
           )}
-          <p className="flex-1 text-sm font-medium">Configuring {providerDetails?.label}</p>
-          <Button type="button" variant="ghost" size="sm" onClick={() => setPhase({ kind: "grid" })}>
+          <p className="flex-1 text-sm font-medium">
+            Configuring {providerDetails?.label}
+          </p>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setPhase({ kind: "grid" })}
+          >
             <ArrowLeft className="size-4 mr-1" />
             Back
           </Button>
@@ -66,7 +75,9 @@ export const StepStorage = () => {
           form={form}
           className="flex flex-col gap-4"
           onSubmit={async (values: any) => {
-            const details = storageProviders.find((p) => p.value === values.provider);
+            const details = storageProviders.find(
+              (p) => p.value === values.provider,
+            );
             addStorage.mutate(
               {
                 provider: values.provider,
@@ -116,7 +127,9 @@ export const StepStorage = () => {
     );
   }
 
-  const availableProviders = storageProviders.filter((p) => !p.preview && p.value !== "local");
+  const availableProviders = storageProviders.filter(
+    (p) => !p.preview && p.value !== "local",
+  );
   const configuredProviderIds = storages.map((c) => c.provider);
 
   return (
@@ -131,7 +144,9 @@ export const StepStorage = () => {
       {storages.length > 0 && (
         <div className="flex flex-col gap-1">
           {storages.map((ch) => {
-            const details = storageProviders.find((p) => p.value === ch.provider);
+            const details = storageProviders.find(
+              (p) => p.value === ch.provider,
+            );
             const Icon = details?.icon;
             return (
               <div
@@ -181,7 +196,10 @@ export const StepStorage = () => {
               <span className="flex-1 text-left">{provider.label}</span>
               {isConfigured && (
                 <div className="size-5 rounded-full bg-primary flex items-center justify-center ml-auto">
-                  <Check className="size-3 text-primary-foreground" strokeWidth={3} />
+                  <Check
+                    className="size-3 text-primary-foreground"
+                    strokeWidth={3}
+                  />
                 </div>
               )}
             </button>

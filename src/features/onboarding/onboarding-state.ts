@@ -93,9 +93,7 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
       id: a.id,
       name: a.name,
       edgeKey: await generateEdgeKey(getServerUrl(), a.id),
-      connected: a.lastContact
-        ? Date.now() - new Date(a.lastContact).getTime() < 60_000
-        : false,
+      connected: !!a.lastContact,
     }))
   );
 
@@ -129,41 +127,43 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
       : {}),
   };
 
+  const hasAgents = agents && agents.length > 0;
+
+  // Has project → late stage (project was created after agent-key)
   if (project) {
-    if (!agents || agents.length === 0) {
+    if (!hasAgents) {
+      // Project without agents: missed earlier steps
+      if (notifiers.length === 0) {
+        meta.resumeStepId = "notifier";
+        return { stepId: "notifier", flowData: fullData };
+      }
+      if (storages.length === 0) {
+        meta.resumeStepId = "storage";
+        return { stepId: "storage", flowData: fullData };
+      }
       meta.resumeStepId = "agent-create";
       return { stepId: "agent-create", flowData: fullData };
     }
 
-    const firstAgent = agents[0];
-    const agentConnected = firstAgent?.lastContact
-      ? Date.now() - new Date(firstAgent.lastContact).getTime() < 60_000
-      : false;
-
-    if (agentConnected && (project as any).databases?.length === 0) {
-      meta.resumeStepId = "project-create";
-      return { stepId: "project-create", flowData: fullData };
-    }
-
-    if (!agentConnected) {
-      meta.resumeStepId = "finish";
-      return { stepId: "finish", flowData: fullData };
+    const agentHasPinged = !!agents[0]?.lastContact;
+    if (!agentHasPinged) {
+      meta.resumeStepId = "agent-key";
+      return { stepId: "agent-key", flowData: fullData };
     }
 
     meta.resumeStepId = "finish";
     return { stepId: "finish", flowData: fullData };
   }
 
-  if (agents && agents.length > 0) {
-    const firstAgent = agents[0];
-    const agentConnected = firstAgent?.lastContact
-      ? Date.now() - new Date(firstAgent.lastContact).getTime() < 60_000
-      : false;
-    const stepId = agentConnected ? "project-create" : "agent-key";
+  // Has agents but no project → past notifier/storage, waiting on project
+  if (hasAgents) {
+    const agentHasPinged = !!agents[0]?.lastContact;
+    const stepId = agentHasPinged ? "project-create" : "agent-key";
     meta.resumeStepId = stepId;
     return { stepId, flowData: fullData };
   }
 
+  // No agents, no project → check earlier steps in order
   if (notifiers.length === 0) {
     meta.resumeStepId = "notifier";
     return { stepId: "notifier", flowData: fullData };

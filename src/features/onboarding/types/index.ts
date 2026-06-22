@@ -62,9 +62,24 @@ export type OnboardingDatabase = {
   engine: "postgres" | "mysql" | "mongodb";
 };
 
+export type SectionKind =
+  | "retention"
+  | "scheduling"
+  | "notifications"
+  | "storage";
+
+export type EventKind =
+  | "error_backup"
+  | "error_restore"
+  | "success_restore"
+  | "success_backup"
+  | "weekly_report"
+  | "error_health_agent"
+  | "error_health_database";
+
 export type OnboardingNotificationPolicy = {
   channelId: string;
-  eventKinds: string[];
+  eventKinds: EventKind[];
   enabled: boolean;
 };
 

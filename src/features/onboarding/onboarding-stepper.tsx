@@ -3,10 +3,11 @@
 import { useOnboarding } from "@onboardjs/react";
 import { Progress } from "@/components/ui/progress";
 import { STEP_ORDER } from "@/features/onboarding/constants/steps";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const OnboardingStepper = () => {
   const { state } = useOnboarding();
-
+  const mobile = useIsMobile();
   if (!state) return null;
 
   const currentId = String(state.currentStep?.id ?? "");
@@ -18,10 +19,11 @@ export const OnboardingStepper = () => {
   return (
     <div className="flex flex-col gap-2 w-full">
       <div className="flex justify-between text-xs text-muted-foreground">
-        <span>
-          Step {stepNumber} of {totalSteps}
-        </span>
-        <span>{progress}%</span>
+        {mobile && (
+          <span>
+            Step {stepNumber} of {totalSteps}
+          </span>
+        )}
       </div>
       <Progress value={progress} />
     </div>
