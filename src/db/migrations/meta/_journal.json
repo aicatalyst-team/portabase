@@ -435,13 +435,6 @@
       "when": 1780822414802,
       "tag": "0061_illegal_mole_man",
       "breakpoints": true
-    },
-    {
-      "idx": 62,
-      "version": "7",
-      "when": 1781772995082,
-      "tag": "0062_clear_shiva",
-      "breakpoints": true
     }
   ]
 }
