@@ -6,7 +6,7 @@ import {humanReadableDate} from "@/utils/date-formatting";
 import {CheckCircle2, XCircle} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
 import {NotificationLogModal} from "@/features/notifications/notification-log-modal";
-import {getChannelIcon} from "@/features/channel/channels-helpers";
+import {getChannelIcon} from "@/features/channel/components/channels-helpers";
 
 
 export function notificationLogsColumns(): ColumnDef<NotificationLogWithRelations>[] {

@@ -5,15 +5,15 @@ import {
 } from '@/features/storages/storages.types';
 
 import {uploadLocal, getLocal, deleteLocal, pingLocal, copyLocal} from './local';
-import {copyS3, deleteS3, getS3, pingS3, uploadS3} from "@/features/channel/storages/s3";
-import {copyBlob, deleteBlob, getBlob, pingBlob, uploadBlob} from "@/features/channel/storages/az-blob";
+import {copyS3, deleteS3, getS3, pingS3, uploadS3} from "@/features/channel/components/storages/s3";
+import {copyBlob, deleteBlob, getBlob, pingBlob, uploadBlob} from "@/features/channel/components/storages/az-blob";
 import {
     copyGoogleDrive,
     deleteGoogleDrive,
     getGoogleDrive,
     pingGoogleDrive,
     uploadGoogleDrive
-} from "@/features/channel/storages/google-drive";
+} from "@/features/channel/components/storages/google-drive";
 
 type ProviderHandler = {
     upload: (config: any, input: StorageInput & { action: 'upload' }) => Promise<StorageResult>;

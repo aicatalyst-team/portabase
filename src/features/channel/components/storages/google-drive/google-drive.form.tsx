@@ -8,7 +8,7 @@ import {Button} from "@/components/ui/button";
 import {PasswordInput} from "@/components/ui/password-input";
 import {
     googleDriveRefreshTokenAction
-} from "@/features/channel/storages/google-drive/google-drive-refresh.action";
+} from "@/features/channel/components/storages/google-drive/google-drive-refresh.action";
 import {toast} from "sonner";
 
 type StorageGoogleDriveFormProps = {

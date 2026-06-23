@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useOnboarding } from "@onboardjs/react";
 import { toast } from "sonner";
-import { removeNotificationChannelAction } from "@/features/channel/notifications/channel.action";
+import { removeNotificationChannelAction } from "@/features/channel/components/notifications/channel.action";
 import type { OnboardingChannel } from "@/features/onboarding/types";
 
 export const useRemoveNotifier = () => {

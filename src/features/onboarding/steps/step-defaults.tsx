@@ -17,7 +17,7 @@ import type {
   OnboardingChannel,
   OnboardingDefaultsData,
 } from "@/features/onboarding/types";
-import { getChannelIcon } from "@/features/channel/channels-helpers";
+import { getChannelIcon } from "@/features/channel/components/channels-helpers";
 import { updateNotificationSettingsAction } from "@/features/settings/notification.action";
 import { updateStorageSettingsAction } from "@/features/settings/storage.action";
 import { updateAvatarModeAction } from "@/features/settings/avatar.action";

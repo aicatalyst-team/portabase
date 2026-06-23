@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useOnboarding } from "@onboardjs/react";
 import { toast } from "sonner";
-import { addNotificationChannelAction } from "@/features/channel/notifications/channel.action";
+import { addNotificationChannelAction } from "@/features/channel/components/notifications/channel.action";
 import type { OnboardingChannel } from "@/features/onboarding/types";
 
 type NotifierInput = {

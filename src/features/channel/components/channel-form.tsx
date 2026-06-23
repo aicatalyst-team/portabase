@@ -8,7 +8,7 @@ import {Input} from "@/components/ui/input";
 
 import {
     addStorageChannelAction, updateStorageChannelAction
-} from "@/features/channel/storages/channel.action";
+} from "@/features/channel/components/storages/channel.action";
 import {toast} from "sonner";
 import {OrganizationWithMembers} from "@/db/schema/03_organization";
 import {Button} from "@/components/ui/button";
@@ -20,19 +20,19 @@ import {ArrowLeft} from "lucide-react";
 import {StorageChannelWith} from "@/db/schema/12_storage-channel";
 import {
     NotificationChannelFormSchema, NotificationChannelFormType, StorageChannelFormSchema, StorageChannelFormType
-} from "@/features/channel/channel-form.schema";
+} from "@/features/channel/schemas/channel-form.schema";
 import {
     ChannelKind,
     renderChannelForm
-} from "@/features/channel/channels-helpers";
-import {storageProviders} from "@/features/channel/channels-storage-helper";
-import {notificationProviders} from "@/features/channel/channels-notification-helper";
+} from "@/features/channel/components/channels-helpers";
+import {storageProviders} from "@/features/channel/components/channels-storage-helper";
+import {notificationProviders} from "@/features/channel/components/channels-notification-helper";
 import {
     ChannelTestButton
-} from "@/features/channel/channel-test-button";
+} from "@/features/channel/components/channel-test-button";
 import {
     addNotificationChannelAction, updateNotificationChannelAction
-} from "@/features/channel/notifications/channel.action";
+} from "@/features/channel/components/notifications/channel.action";
 
 
 type NotifierFormProps = {

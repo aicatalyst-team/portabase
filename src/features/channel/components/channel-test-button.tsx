@@ -11,7 +11,7 @@ import {EventPayload} from "@/features/notifications/notifications.types";
 import {useIsMobile} from "@/hooks/use-mobile";
 import {cn} from "@/lib/utils";
 import {StorageChannel} from "@/db/schema/12_storage-channel";
-import {ChannelKind} from "@/features/channel/channels-helpers";
+import {ChannelKind} from "@/features/channel/components/channels-helpers";
 import type {StorageInput} from "@/features/storages/storages.types";
 import {dispatchStorage} from "@/features/storages/storages.dispatch";
 

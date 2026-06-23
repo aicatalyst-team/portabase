@@ -5,12 +5,12 @@ import { useState } from "react";
 import { EmptyStatePlaceholder } from "@/components/common/empty-state-placeholder";
 import { OrganizationWithMembers } from "@/db/schema/03_organization";
 import { StorageChannelWith } from "@/db/schema/12_storage-channel";
-import { ChannelCard } from "@/features/channel/channel-card";
-import { ChannelAddEditModal } from "@/features/channel/channel-add-edit-modal";
+import { ChannelCard } from "@/features/channel/components/channel-card";
+import { ChannelAddEditModal } from "@/features/channel/components/channel-add-edit-modal";
 import {
   ChannelKind,
   getChannelTextBasedOnKind,
-} from "@/features/channel/channels-helpers";
+} from "@/features/channel/components/channels-helpers";
 
 type ChannelsSectionProps = {
   channels: NotificationChannelWith[] | StorageChannelWith[];

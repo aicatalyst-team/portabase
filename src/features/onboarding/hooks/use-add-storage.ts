@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useOnboarding } from "@onboardjs/react";
 import { toast } from "sonner";
-import { addStorageChannelAction } from "@/features/channel/storages/channel.action";
+import { addStorageChannelAction } from "@/features/channel/components/storages/channel.action";
 import type { OnboardingChannel } from "@/features/onboarding/types";
 
 type StorageInput = {

@@ -7,14 +7,14 @@ import {toast} from "sonner";
 import {useState} from "react";
 import {OrganizationWithMembers} from "@/db/schema/03_organization";
 import {StorageChannelWith} from "@/db/schema/12_storage-channel";
-import {ChannelKind} from "@/features/channel/channels-helpers";
+import {ChannelKind} from "@/features/channel/components/channels-helpers";
 import {
     updateNotificationChannelAction
-} from "@/features/channel/notifications/channel.action";
-import {ChannelAddEditModal} from "@/features/channel/channel-add-edit-modal";
+} from "@/features/channel/components/notifications/channel.action";
+import {ChannelAddEditModal} from "@/features/channel/components/channel-add-edit-modal";
 import {
     updateStorageChannelAction
-} from "@/features/channel/storages/channel.action";
+} from "@/features/channel/components/storages/channel.action";
 
 export type EditChannelButtonProps = {
     channel: NotificationChannelWith | StorageChannelWith;

@@ -12,7 +12,7 @@ import { MultiSelect } from "@/components/common/multi-select";
 import { Switch } from "@/components/ui/switch";
 import { Card } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ChannelKind, getChannelIcon, getChannelTextBasedOnKind } from "@/features/channel/channels-helpers";
+import { ChannelKind, getChannelIcon, getChannelTextBasedOnKind } from "@/features/channel/components/channels-helpers";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, useZodForm } from "@/components/ui/form";
 import {
     EVENT_KIND_BACKUP_ONLY_OPTIONS,

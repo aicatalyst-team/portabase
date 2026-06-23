@@ -10,7 +10,7 @@ import {dispatchViaProvider} from "@/features/channel/storages";
 import {StorageChannel} from "@/db/schema/12_storage-channel";
 import {
     StorageChannelFormType
-} from "@/features/channel/channel-form.schema";
+} from "@/features/channel/schemas/channel-form.schema";
 import { logger } from "@/lib/logger";
 
 const log = logger.child({ module: "features/storages/dispatch" });

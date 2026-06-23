@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ButtonWithLoading } from "@/components/common/button-with-loading";
-import { getChannelIcon } from "@/features/channel/channels-helpers";
+import { getChannelIcon } from "@/features/channel/components/channels-helpers";
 import {
   getStatusColor,
   getStatusIcon,

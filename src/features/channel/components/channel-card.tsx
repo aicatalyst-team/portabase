@@ -9,11 +9,11 @@ import {useIsMobile} from "@/hooks/use-mobile";
 import {StorageChannelWith} from "@/db/schema/12_storage-channel";
 import {
     EditChannelButton
-} from "@/features/channel/channel-edit-button";
-import {ChannelKind, getChannelIcon} from "@/features/channel/channels-helpers";
+} from "@/features/channel/components/channel-edit-button";
+import {ChannelKind, getChannelIcon} from "@/features/channel/components/channels-helpers";
 import {
     DeleteChannelButton
-} from "@/features/channel/channel-delete-button";
+} from "@/features/channel/components/channel-delete-button";
 
 export type ChannelCardProps = {
     data: NotificationChannelWith | StorageChannelWith;

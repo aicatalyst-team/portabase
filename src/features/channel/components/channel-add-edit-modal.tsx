@@ -12,8 +12,8 @@ import {useIsMobile} from "@/hooks/use-mobile";
 import {useEffect, useState} from "react";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {StorageChannelWith} from "@/db/schema/12_storage-channel";
-import {ChannelForm} from "@/features/channel/channel-form";
-import {ChannelKind, getChannelTextBasedOnKind} from "@/features/channel/channels-helpers";
+import {ChannelForm} from "@/features/channel/components/channel-form";
+import {ChannelKind, getChannelTextBasedOnKind} from "@/features/channel/components/channels-helpers";
 import {
     ChannelOrganisationForm
 } from "@/features/organizations/channels-organization-form";

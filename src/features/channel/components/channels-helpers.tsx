@@ -1,49 +1,49 @@
 import {UseFormReturn} from "react-hook-form";
 import {
     NotifierSmtpForm
-} from "@/features/channel/notifications/smtp.form";
+} from "@/features/channel/components/notifications/smtp.form";
 import {
     NotifierSlackForm
-} from "@/features/channel/notifications/slack.form";
+} from "@/features/channel/components/notifications/slack.form";
 import {
     NotifierDiscordForm
-} from "@/features/channel/notifications/discord.form";
+} from "@/features/channel/components/notifications/discord.form";
 import {
     NotifierTelegramForm
-} from "@/features/channel/notifications/telegram.form";
+} from "@/features/channel/components/notifications/telegram.form";
 import {
     NotifierGotifyForm
-} from "@/features/channel/notifications/gotify.form";
+} from "@/features/channel/components/notifications/gotify.form";
 import {
     NotifierNtfyForm
-} from "@/features/channel/notifications/ntfy.form";
+} from "@/features/channel/components/notifications/ntfy.form";
 import {
     NotifierWebhookForm
-} from "@/features/channel/notifications/webhook.form";
+} from "@/features/channel/components/notifications/webhook.form";
 import {
     NotifierNextcloudForm
-} from "@/features/channel/notifications/nextcloud.form";
+} from "@/features/channel/components/notifications/nextcloud.form";
 import {
     NotifierPushoverForm
-} from "@/features/channel/notifications/pushover.form";
+} from "@/features/channel/components/notifications/pushover.form";
 import {
     notificationProviders,
-} from "@/features/channel/channels-notification-helper";
+} from "@/features/channel/components/channels-notification-helper";
 import {
     NotifierTeamsForm
-} from "@/features/channel/notifications/teams.form";
-import {storageProviders} from "@/features/channel/channels-storage-helper";
+} from "@/features/channel/components/notifications/teams.form";
+import {storageProviders} from "@/features/channel/components/channels-storage-helper";
 import {ForwardRefExoticComponent, JSX, RefAttributes, SVGProps} from "react";
 import {LucideProps} from "lucide-react";
 import {
     StorageS3Form
-} from "@/features/channel/storages/s3.form";
+} from "@/features/channel/components/storages/s3.form";
 import {
     StorageGoogleDriveForm
-} from "@/features/channel/storages/google-drive/google-drive.form";
+} from "@/features/channel/components/storages/google-drive/google-drive.form";
 import {
     StorageBlobForm
-} from "@/features/channel/storages/az-blob.form";
+} from "@/features/channel/components/storages/az-blob.form";
 
 export type ChannelKind = "notification" | "storage";
 

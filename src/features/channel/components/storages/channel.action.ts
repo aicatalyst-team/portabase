@@ -9,7 +9,7 @@ import {and, eq} from "drizzle-orm";
 import {withUpdatedAt} from "@/db/utils";
 import {
     StorageChannelFormSchema
-} from "@/features/channel/channel-form.schema";
+} from "@/features/channel/schemas/channel-form.schema";
 import {StorageChannel} from "@/db/schema/12_storage-channel";
 
 

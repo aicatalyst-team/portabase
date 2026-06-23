@@ -14,9 +14,9 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { notificationProviders } from "@/features/channel/channels-notification-helper";
-import { renderChannelForm } from "@/features/channel/channels-helpers";
-import { NotificationChannelFormSchema } from "@/features/channel/channel-form.schema";
+import { notificationProviders } from "@/features/channel/components/channels-notification-helper";
+import { renderChannelForm } from "@/features/channel/components/channels-helpers";
+import { NotificationChannelFormSchema } from "@/features/channel/schemas/channel-form.schema";
 import { useAddNotifier } from "@/features/onboarding/hooks/use-add-notifier";
 import { useRemoveNotifier } from "@/features/onboarding/hooks/use-remove-notifier";
 import type { OnboardingChannel } from "@/features/onboarding/types";

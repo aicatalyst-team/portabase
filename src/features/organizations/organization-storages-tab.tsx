@@ -3,8 +3,8 @@ import {CardsWithPagination} from "@/components/common/cards-with-pagination";
 import {EmptyStatePlaceholder} from "@/components/common/empty-state-placeholder";
 import {useState} from "react";
 import {cn} from "@/lib/utils";
-import {ChannelAddEditModal} from "@/features/channel/channel-add-edit-modal";
-import {ChannelCard} from "@/features/channel/channel-card";
+import {ChannelAddEditModal} from "@/features/channel/components/channel-add-edit-modal";
+import {ChannelCard} from "@/features/channel/components/channel-card";
 import {StorageChannel} from "@/db/schema/12_storage-channel";
 
 export type OrganizationNotifiersTabProps = {

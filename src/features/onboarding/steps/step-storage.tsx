@@ -14,9 +14,9 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { storageProviders } from "@/features/channel/channels-storage-helper";
-import { renderChannelForm } from "@/features/channel/channels-helpers";
-import { StorageChannelFormSchema } from "@/features/channel/channel-form.schema";
+import { storageProviders } from "@/features/channel/components/channels-storage-helper";
+import { renderChannelForm } from "@/features/channel/components/channels-helpers";
+import { StorageChannelFormSchema } from "@/features/channel/schemas/channel-form.schema";
 import { useAddStorage } from "@/features/onboarding/hooks/use-add-storage";
 import { useRemoveStorage } from "@/features/onboarding/hooks/use-remove-storage";
 import type { OnboardingChannel } from "@/features/onboarding/types";
