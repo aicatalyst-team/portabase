@@ -24,7 +24,7 @@ import { toast } from "sonner";
 import { TooltipCustom } from "@/components/common/tooltip-custom";
 import { MemberWithUser } from "@/db/schema/03_organization";
 import { ButtonWithConfirm } from "@/components/common/button-with-confirm";
-import {LogsModalTrigger} from "@/features/logs/logs-modal-trigger";
+import {LogsModalTrigger} from "@/features/logs/components/logs-modal-trigger";
 import {formatDuration} from "@/utils/text";
 
 export function restoreColumns(

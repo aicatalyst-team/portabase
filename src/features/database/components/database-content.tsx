@@ -23,7 +23,7 @@ import {BackupButton} from "@/features/database/components/backup-button";
 import {HealthModal} from "@/features/database/components/health-modal";
 import {HealthcheckLog} from "@/db/schema/15_healthcheck-log";
 import {Badge} from "@/components/ui/badge";
-import {LogsModal} from "@/features/logs/logs-modal";
+import {LogsModal} from "@/features/logs/components/logs-modal";
 
 export type DatabaseContentProps = {
     settings: Setting;

@@ -9,7 +9,7 @@ import { getActiveMember, getOrganization } from "@/lib/auth/auth";
 import { BackupModalProvider } from "@/features/database/components/backup-modal-context";
 import { DatabaseContent } from "@/features/database/components/database-content";
 import { getHealthLast12hLogs } from "@/db/services/healthcheck";
-import { LogsModalProvider } from "@/features/logs/logs-modal-context";
+import { LogsModalProvider } from "@/features/logs/components/logs-modal-context";
 
 export default async function RoutePage(
   props: PageParams<{

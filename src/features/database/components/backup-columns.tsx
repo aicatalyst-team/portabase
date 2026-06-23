@@ -12,7 +12,7 @@ import {formatBytes, formatDuration} from "@/utils/text";
 import {DatabaseActionsCell} from "@/features/database/components/backup-actions-cell";
 import { Badge as BadgeC } from "@/components/ui/badge";
 import {backupOnly} from "@/features/database/components/database-tabs";
-import {LogsModalTrigger} from "@/features/logs/logs-modal-trigger";
+import {LogsModalTrigger} from "@/features/logs/components/logs-modal-trigger";
 
 export function backupColumns(
     isAlreadyRestore: boolean,

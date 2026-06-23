@@ -6,9 +6,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { useLogsModal } from "@/features/logs/logs-modal-context"
+import { useLogsModal } from "@/features/logs/components/logs-modal-context"
 import { JobLog } from "@/db/schema/17_job-log"
-import { LogRow } from "@/features/logs/log-row-modal"
+import { LogRow } from "@/features/logs/components/log-row-modal"
 
 export const LogsModal = () => {
     const { open, logs, closeModal } = useLogsModal()
