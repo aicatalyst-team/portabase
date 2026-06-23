@@ -21,7 +21,7 @@ import {
     createApiKeysAction,
     deleteApiKeyAction,
     getApiKeysAction,
-} from "@/features/profile/profile.action";
+} from "@/features/profile/actions/profile.action";
 import {copyToClipboardWithMeta} from "@/components/common/copy-button";
 import Link from "next/link";
 

@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth/auth-client";
-import { TwoFactorSetupContent } from "@/features/profile/two-factor-setup-content";
+import { TwoFactorSetupContent } from "@/features/profile/components/two-factor-setup-content";
 import type { OnboardingMeta } from "@/features/onboarding/types";
 
 export const StepSecurity = () => {

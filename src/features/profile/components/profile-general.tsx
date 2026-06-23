@@ -21,7 +21,7 @@ import {useRouter} from "next/navigation";
 import {updateProfileSettingsAction} from "./profile.action";
 import {User} from "@/db/schema/02_user";
 import {ProfileSchema, ProfileSchemaType} from "./general.schema";
-import {AvatarWithUpload} from "@/features/profile/avatar-with-upload";
+import {AvatarWithUpload} from "@/features/profile/components/avatar-with-upload";
 import type { AvatarMode } from "@/features/onboarding/types";
 
 interface ProfileGeneralProps {
