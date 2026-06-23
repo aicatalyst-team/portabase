@@ -47,7 +47,7 @@ export const StepLogin = () => {
     if (session?.user) {
       router.push("/welcome");
     }
-  }, [session?.user?.id]);
+  }, [session?.user, router]);
 
   const form = useZodForm({ schema: LoginSchema });
 

@@ -107,14 +107,16 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
     organizationId: n.organizationId ?? null,
   }));
 
-  const storages = storageChannels.map((s) => ({
-    id: s.id,
-    provider: s.provider,
-    label: s.provider,
-    name: s.name,
-    config: (s.config as Record<string, unknown>) ?? {},
-    organizationId: s.organizationId ?? null,
-  }));
+  const storages = storageChannels
+    .filter((s) => s.provider !== "local")
+    .map((s) => ({
+      id: s.id,
+      provider: s.provider,
+      label: s.provider,
+      name: s.name,
+      config: (s.config as Record<string, unknown>) ?? {},
+      organizationId: s.organizationId ?? null,
+    }));
 
   const defaults = {
     notifierId: settings?.defaultNotificationChannelId ?? undefined,
@@ -168,6 +170,10 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
 
   const hasAgents = agents && agents.length > 0;
 
+  const defaultsConfigured =
+    !!settings?.defaultNotificationChannelId &&
+    !!settings?.defaultStorageChannelId;
+
   if (project) {
     if (!hasAgents) {
       if (notifiers.length === 0) {
@@ -178,8 +184,12 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
         meta.resumeStepId = "storage";
         return { stepId: "storage", flowData: fullData };
       }
-      meta.resumeStepId = "agent-create";
-      return { stepId: "agent-create", flowData: fullData };
+      if (defaultsConfigured) {
+        meta.resumeStepId = "agent-create";
+        return { stepId: "agent-create", flowData: fullData };
+      }
+      meta.resumeStepId = "defaults";
+      return { stepId: "defaults", flowData: fullData };
     }
 
     const agentHasPinged = !!agents[0]?.lastContact;
@@ -215,6 +225,11 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
     return { stepId: "storage", flowData: fullData };
   }
 
-  meta.resumeStepId = "agent-create";
-  return { stepId: "agent-create", flowData: fullData };
+  if (defaultsConfigured) {
+    meta.resumeStepId = "agent-create";
+    return { stepId: "agent-create", flowData: fullData };
+  }
+
+  meta.resumeStepId = "defaults";
+  return { stepId: "defaults", flowData: fullData };
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useOnboarding } from "@onboardjs/react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -46,61 +47,85 @@ export const StepDefaults = () => {
   );
 
   const selectNotifier = async (value: string) => {
+    const prev = notifierId;
     setNotifierId(value);
-    await updateNotificationSettingsAction({
-      name: "system",
-      data: { notificationChannelId: value },
-    });
-    await updateContext({
-      flowData: {
-        ...state?.context.flowData,
-        defaults: { notifierId: value, storageId, avatarMode },
-      },
-    });
+    try {
+      await updateNotificationSettingsAction({
+        name: "system",
+        data: { notificationChannelId: value },
+      });
+      await updateContext({
+        flowData: {
+          ...state?.context.flowData,
+          defaults: { notifierId: value, storageId, avatarMode, dicebearStyle },
+        },
+      });
+    } catch {
+      setNotifierId(prev);
+      toast.error("Failed to save default notifier");
+    }
   };
 
   const selectStorage = async (value: string) => {
+    const prev = storageId;
     setStorageId(value);
-    await updateStorageSettingsAction({
-      name: "system",
-      data: { storageChannelId: value, encryption: false },
-    });
-    await updateContext({
-      flowData: {
-        ...state?.context.flowData,
-        defaults: { notifierId, storageId: value, avatarMode },
-      },
-    });
+    try {
+      await updateStorageSettingsAction({
+        name: "system",
+        data: { storageChannelId: value, encryption: false },
+      });
+      await updateContext({
+        flowData: {
+          ...state?.context.flowData,
+          defaults: { notifierId, storageId: value, avatarMode, dicebearStyle },
+        },
+      });
+    } catch {
+      setStorageId(prev);
+      toast.error("Failed to save default storage");
+    }
   };
 
   const selectAvatarMode = async (mode: AvatarMode) => {
+    const prev = avatarMode;
     setAvatarMode(mode);
-    await updateAvatarModeAction({
-      name: "system",
-      avatarMode: mode,
-      dicebearStyle,
-    });
-    await updateContext({
-      flowData: {
-        ...state?.context.flowData,
-        defaults: { notifierId, storageId, avatarMode: mode, dicebearStyle },
-      },
-    });
+    try {
+      await updateAvatarModeAction({
+        name: "system",
+        avatarMode: mode,
+        dicebearStyle,
+      });
+      await updateContext({
+        flowData: {
+          ...state?.context.flowData,
+          defaults: { notifierId, storageId, avatarMode: mode, dicebearStyle },
+        },
+      });
+    } catch {
+      setAvatarMode(prev);
+      toast.error("Failed to save avatar mode");
+    }
   };
 
   const selectDicebearStyle = async (style: string) => {
+    const prev = dicebearStyle;
     setDicebearStyle(style);
-    await updateAvatarModeAction({
-      name: "system",
-      avatarMode: "dicebear",
-      dicebearStyle: style,
-    });
-    await updateContext({
-      flowData: {
-        ...state?.context.flowData,
-        defaults: { notifierId, storageId, avatarMode, dicebearStyle: style },
-      },
-    });
+    try {
+      await updateAvatarModeAction({
+        name: "system",
+        avatarMode: "dicebear",
+        dicebearStyle: style,
+      });
+      await updateContext({
+        flowData: {
+          ...state?.context.flowData,
+          defaults: { notifierId, storageId, avatarMode, dicebearStyle: style },
+        },
+      });
+    } catch {
+      setDicebearStyle(prev);
+      toast.error("Failed to save avatar style");
+    }
   };
 
   const onContinue = async () => {
@@ -218,7 +243,7 @@ export const StepDefaults = () => {
       <AvatarModeSelector value={avatarMode} onChange={selectAvatarMode} />
 
       {avatarMode === "dicebear" && (
-        <DicebearStylePicker value={dicebearStyle} onChange={selectDicebearStyle} />
+        <DicebearStylePicker value={dicebearStyle} onChange={selectDicebearStyle} maxHeight="max-h-56" />
       )}
 
       <Button type="button" onClick={onContinue}>

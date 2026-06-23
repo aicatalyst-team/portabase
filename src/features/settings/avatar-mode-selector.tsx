@@ -28,9 +28,9 @@ export const AvatarModeSelector = ({ value, onChange, disabled }: Props) => (
             key={mode.value}
             type="button"
             disabled={disabled}
-            onClick={() => onChange(mode.value)}
+            onClick={() => { if (!isActive) onChange(mode.value); }}
             className={cn(
-              "flex flex-col gap-2 rounded-xl border-2 p-3 text-left transition-all hover:bg-accent/50 disabled:opacity-50",
+              "flex flex-col gap-3 rounded-xl border-2 p-4 text-left transition-all hover:bg-accent/50 disabled:opacity-50",
               isActive ? "border-primary bg-primary/5" : "border-muted/40",
             )}
           >

@@ -27,7 +27,7 @@ export const StorageSection = ({ initial, storages, onSave, isPending }: Storage
         }
         noChannelsMessage={
             <p className="text-xs text-muted-foreground">
-                Go back and configure storages in the &quot;Connect a storage&quot; step first.
+                Go back and configure storages in the &quot;Connect an external storage&quot; step first.
             </p>
         }
     />

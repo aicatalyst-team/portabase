@@ -23,7 +23,6 @@ export type OnboardingSecurityData = {
 
 export type OnboardingPreferencesData = {
   theme: "light" | "dark";
-  avatarUrl?: string;
 };
 
 export type OnboardingOrgData = {

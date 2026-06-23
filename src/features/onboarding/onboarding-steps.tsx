@@ -105,7 +105,11 @@ export const onboardingSteps: OnboardingStep[] = [
     id: "agent-key",
     component: StepAgentKey,
     isSkippable: false,
-    nextStep: "agent-waiting",
+    nextStep: (ctx: any) => {
+      const agents = (ctx.flowData?.agents as any[]) || [];
+      const isConnected = agents.some((a) => a.connected);
+      return isConnected ? "project-create" : "agent-waiting";
+    },
   },
   {
     id: "agent-waiting",

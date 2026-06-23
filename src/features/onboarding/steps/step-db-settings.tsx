@@ -100,7 +100,9 @@ export const StepDbSettings = () => {
           storagePolicies: settings.storagePolicies,
         });
         succeededIds.push(targetId);
-      } catch {}
+      } catch (err) {
+        console.error("Failed to apply settings to database", targetId, err);
+      }
     }
 
     if (succeededIds.length > 0) {

@@ -42,7 +42,7 @@ export const SettingsAvatarSection = ({ settings }: Props) => {
   };
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl">
+    <div className="flex flex-col gap-6">
       <div>
         <h2 className="text-lg font-semibold">Avatar</h2>
         <p className="text-sm text-muted-foreground mt-1">

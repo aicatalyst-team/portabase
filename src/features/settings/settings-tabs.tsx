@@ -1,32 +1,28 @@
 "use client";
 
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import {useEffect, useState} from "react";
-import {useRouter, useSearchParams} from "next/navigation";
-import {Setting} from "@/db/schema/01_setting";
-import {SettingsEmailSection} from "@/features/settings/email-section";
-import {SettingsStorageSection} from "@/features/settings/storage-section";
-import {StorageChannelWith} from "@/db/schema/12_storage-channel";
-import {AlarmClock, MailboxIcon, Save, UserCircle} from "lucide-react";
-import {
-    SettingsNotificationSection
-} from "@/features/settings/notification-section";
-import {NotificationChannelWith} from "@/db/schema/09_notification-channel";
-import {SettingsAvatarSection} from "@/features/settings/avatar-section";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Setting } from "@/db/schema/01_setting";
+import { SettingsEmailSection } from "@/features/settings/email-section";
+import { SettingsStorageSection } from "@/features/settings/storage-section";
+import { StorageChannelWith } from "@/db/schema/12_storage-channel";
+import { AlarmClock, MailboxIcon, Save, UserCircle } from "lucide-react";
+import { SettingsNotificationSection } from "@/features/settings/notification-section";
+import { NotificationChannelWith } from "@/db/schema/09_notification-channel";
+import { SettingsAvatarSection } from "@/features/settings/avatar-section";
 
 export type SettingsTabsProps = {
-    settings: Setting
-    storageChannels: StorageChannelWith[],
+    settings: Setting;
+    storageChannels: StorageChannelWith[];
     notificationChannels: NotificationChannelWith[];
-
 };
 
-export const SettingsTabs = ({settings, storageChannels, notificationChannels}: SettingsTabsProps) => {
+export const SettingsTabs = ({ settings, storageChannels, notificationChannels }: SettingsTabsProps) => {
     const router = useRouter();
     const searchParams = useSearchParams();
 
     const [tab, setTab] = useState<string>(() => searchParams.get("tab") ?? "email");
-
 
     useEffect(() => {
         const newTab = searchParams.get("tab") ?? "email";
@@ -37,65 +33,51 @@ export const SettingsTabs = ({settings, storageChannels, notificationChannels}: 
         router.push(`?tab=${value}`);
     };
 
-
     const tabs = [
         {
-            name: 'System Email',
-            value: 'email',
+            name: "System Email",
+            value: "email",
             icon: MailboxIcon,
-            content: (
-                <SettingsEmailSection settings={settings}/>
-            )
+            content: <SettingsEmailSection settings={settings} />,
         },
         {
-            name: 'Storage',
-            value: 'storage',
+            name: "Storage",
+            value: "storage",
             icon: Save,
-            content: (
-                <SettingsStorageSection storageChannels={storageChannels} settings={settings}/>
-
-            )
+            content: <SettingsStorageSection storageChannels={storageChannels} settings={settings} />,
         },
         {
-            name: 'Notification',
-            value: 'notification',
+            name: "Notification",
+            value: "notification",
             icon: AlarmClock,
-            content: (
-                <SettingsNotificationSection notificationChannels={notificationChannels} settings={settings}/>
-
-            )
+            content: <SettingsNotificationSection notificationChannels={notificationChannels} settings={settings} />,
         },
         {
-            name: 'Avatar',
-            value: 'avatar',
+            name: "Avatar",
+            value: "avatar",
             icon: UserCircle,
-            content: (
-                <SettingsAvatarSection settings={settings}/>
-            )
-        }
-    ]
-
+            content: <SettingsAvatarSection settings={settings} />,
+        },
+    ];
 
     return (
         <div className="h-full mt-3">
             <Tabs className="h-full gap-4" value={tab} onValueChange={handleChangeTab}>
-                <TabsList className="w-full sm:w-fit">
-                    {tabs.map(({icon: Icon, name, value}) => (
-                        <TabsTrigger key={value} value={value} className='flex items-center gap-1 px-2.5 sm:px-3 flex-1 sm:flex-none'>
-                            <Icon className="size-4 shrink-0"/>
+                <TabsList className="w-full">
+                    {tabs.map(({ icon: Icon, name, value }) => (
+                        <TabsTrigger key={value} value={value} className="w-full flex items-center gap-1.5">
+                            <Icon className="size-4 shrink-0" />
                             <span className="hidden sm:inline">{name}</span>
                         </TabsTrigger>
                     ))}
                 </TabsList>
 
-                {tabs.map(tab => (
-                    <TabsContent key={tab.value} value={tab.value} className="h-full">
-                        {tab.content}
+                {tabs.map((t) => (
+                    <TabsContent key={t.value} value={t.value} className="h-full">
+                        {t.content}
                     </TabsContent>
                 ))}
             </Tabs>
         </div>
-
-
     );
 };

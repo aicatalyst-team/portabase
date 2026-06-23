@@ -10,9 +10,10 @@ type Props = {
   value: string;
   onChange: (style: string) => void;
   disabled?: boolean;
+  maxHeight?: string;
 };
 
-export const DicebearStylePicker = ({ value, onChange, disabled }: Props) => {
+export const DicebearStylePicker = ({ value, onChange, disabled, maxHeight = "max-h-96" }: Props) => {
   const dicebearState = useDiceBearStyles();
 
   return (
@@ -43,7 +44,7 @@ export const DicebearStylePicker = ({ value, onChange, disabled }: Props) => {
       )}
 
       {dicebearState.status === "success" && (
-        <div className="max-h-52 overflow-y-auto scrollbar-hide">
+        <div className={cn("overflow-y-auto scrollbar-hide", maxHeight)}>
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
             {dicebearState.styles.map((style) => {
               const isActive = value === style;
@@ -52,7 +53,7 @@ export const DicebearStylePicker = ({ value, onChange, disabled }: Props) => {
                   key={style}
                   type="button"
                   disabled={disabled}
-                  onClick={() => onChange(style)}
+                  onClick={() => { if (!isActive) onChange(style); }}
                   title={style}
                   className={cn(
                     "flex flex-col items-center gap-1 rounded-lg border-2 p-1.5 transition-all hover:bg-accent/50 disabled:opacity-50",
