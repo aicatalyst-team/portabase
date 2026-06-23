@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useOnboarding } from "@onboardjs/react";
 import { toast } from "sonner";
-import { deleteAgentAction } from "@/features/agents/agent-delete.action";
+import { deleteAgentAction } from "@/features/agents/actions/agent-delete.action";
 import type { OnboardingAgent } from "@/features/onboarding/types";
 
 export const useDeleteAgent = () => {

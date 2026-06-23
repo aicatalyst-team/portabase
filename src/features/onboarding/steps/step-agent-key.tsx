@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useOnboarding } from "@onboardjs/react";
 import { Server } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AgentCardKey } from "@/features/agents/agent-card-key";
+import { AgentCardKey } from "@/features/agents/components/agent-card-key";
 import type { OnboardingAgent } from "@/features/onboarding/types";
 import { cn } from "@/lib/utils";
 

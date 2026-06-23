@@ -5,7 +5,7 @@ import {ButtonWithConfirm} from "@/components/common/button-with-confirm";
 import {useMutation} from "@tanstack/react-query";
 import {useRouter} from "next/navigation";
 import {toast} from "sonner";
-import {deleteAgentAction} from "@/features/agents/agent-delete.action";
+import {deleteAgentAction} from "@/features/agents/actions/agent-delete.action";
 import {useIsMobile} from "@/hooks/use-mobile";
 
 export type ButtonDeleteAgentProps = {

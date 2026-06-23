@@ -3,10 +3,10 @@
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Server} from "lucide-react";
 import {formatDateLastContact} from "@/utils/date-formatting";
-import {AgentCardKey} from "@/features/agents/agent-card-key";
+import {AgentCardKey} from "@/features/agents/components/agent-card-key";
 import {AgentWithDatabases} from "@/db/schema/08_agent";
 import {useQuery} from "@tanstack/react-query";
-import {getAgentAction} from "@/features/agents/agents.action";
+import {getAgentAction} from "@/features/agents/actions/agents.action";
 import {
     Accordion,
     AccordionContent,
@@ -16,7 +16,7 @@ import {
 import {Separator} from "@/components/ui/separator";
 import {Badge} from "@/components/ui/badge";
 import {CardsWithPagination} from "@/components/common/cards-with-pagination";
-import {AgentDatabaseCard} from "@/features/agents/agent-database-card";
+import {AgentDatabaseCard} from "@/features/agents/components/agent-database-card";
 import {HealthCheckGraph} from "@/features/database/health-grid";
 import {HealthcheckLog} from "@/db/schema/15_healthcheck-log";
 

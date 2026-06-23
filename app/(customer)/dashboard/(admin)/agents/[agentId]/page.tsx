@@ -9,12 +9,12 @@ import { db } from "@/db";
 import * as drizzleDb from "@/db";
 import {eq, isNull} from "drizzle-orm";
 import { notFound } from "next/navigation";
-import { ButtonDeleteAgent } from "@/features/agents/agent-delete-button";
+import { ButtonDeleteAgent } from "@/features/agents/components/agent-delete-button";
 import { capitalizeFirstLetter } from "@/utils/text";
 import { generateEdgeKey } from "@/utils/edge_key";
 import { getServerUrl } from "@/utils/get-server-url";
-import { AgentContentPage } from "@/features/agents/agent-content";
-import { AgentDialog } from "@/features/agents/agent-dialog";
+import { AgentContentPage } from "@/features/agents/components/agent-content";
+import { AgentDialog } from "@/features/agents/components/agent-dialog";
 
 
 export default async function RoutePage(

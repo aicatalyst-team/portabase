@@ -1,6 +1,6 @@
 "use server";
 import {action, ActionError, userAction} from "@/lib/safe-actions/actions";
-import {AgentSchema} from "@/features/agents/agents.schema";
+import {AgentSchema} from "@/features/agents/schemas/agents.schema";
 import {z} from "zod";
 import {eq, and, ne, count, desc} from "drizzle-orm";
 import {db} from "@/db";

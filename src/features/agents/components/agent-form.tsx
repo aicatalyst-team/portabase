@@ -15,9 +15,9 @@ import {Button} from "@/components/ui/button";
 import {useRouter} from "next/navigation";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {TooltipProvider} from "@/components/ui/tooltip";
-import {AgentSchema, AgentType} from "@/features/agents/agents.schema";
+import {AgentSchema, AgentType} from "@/features/agents/schemas/agents.schema";
 import {toast} from "sonner";
-import {createAgentAction, updateAgentAction} from "@/features/agents/agents.action";
+import {createAgentAction, updateAgentAction} from "@/features/agents/actions/agents.action";
 import {OrganizationWithMembers} from "@/db/schema/03_organization";
 
 export type agentFormProps = {

@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useOnboarding } from "@onboardjs/react";
 import { toast } from "sonner";
-import { createAgentAction } from "@/features/agents/agents.action";
+import { createAgentAction } from "@/features/agents/actions/agents.action";
 import type { OnboardingAgent, OnboardingDefaultsData } from "@/features/onboarding/types";
 import { generateEdgeKey } from "@/utils/edge_key";
 import { getServerUrl } from "@/utils/get-server-url";

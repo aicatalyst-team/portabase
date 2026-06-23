@@ -2,7 +2,7 @@
 
 import { userAction } from "@/lib/safe-actions/actions";
 import { z } from "zod";
-import { getAgentAction } from "@/features/agents/agents.action";
+import { getAgentAction } from "@/features/agents/actions/agents.action";
 
 export const getAgentStatusAction = userAction
   .schema(z.object({ agentId: z.string() }))
