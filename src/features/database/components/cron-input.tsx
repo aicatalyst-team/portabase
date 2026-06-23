@@ -1,5 +1,5 @@
-import {AdvancedCronSelect} from "@/features/database/cron-advanced-select";
-import {updateDatabaseBackupPolicyAction} from "@/features/database/cron.action";
+import {AdvancedCronSelect} from "@/features/database/components/cron-advanced-select";
+import {updateDatabaseBackupPolicyAction} from "@/features/database/actions/cron.action";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useRouter} from "next/navigation";
 import {useState} from "react";

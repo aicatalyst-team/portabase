@@ -1,5 +1,5 @@
 "use client"
-import {backupColumns} from "@/features/database/backup-columns";
+import {backupColumns} from "@/features/database/components/backup-columns";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {ButtonWithLoading} from "@/components/common/button-with-loading";
 import {MoreHorizontal, Trash2} from "lucide-react";
@@ -11,7 +11,7 @@ import {Setting} from "@/db/schema/01_setting";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {toast} from "sonner";
 import {MemberWithUser} from "@/db/schema/03_organization";
-import {deleteBackupAction} from "@/features/database/backup-actions.action";
+import {deleteBackupAction} from "@/features/database/actions/backup-actions.action";
 import {ButtonWithConfirm} from "@/components/common/button-with-confirm";
 
 

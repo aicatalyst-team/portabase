@@ -1,6 +1,6 @@
 "use client";
 
-import { BackupRetentionSettingsForm } from "@/features/database/retention-policy-form";
+import { BackupRetentionSettingsForm } from "@/features/database/components/retention-policy-form";
 import { DEFAULT_RETENTION } from "@/features/onboarding/constants/db-settings";
 import type { OnboardingDbSettings } from "@/features/onboarding/types";
 

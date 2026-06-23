@@ -20,7 +20,7 @@ import {
     PoliciesSchema,
     PoliciesType,
     PolicyType,
-} from "@/features/database/channels-policy.schema";
+} from "@/features/database/schemas/channels-policy.schema";
 
 export type ChannelEntry = { id: string; name: string; provider: string };
 

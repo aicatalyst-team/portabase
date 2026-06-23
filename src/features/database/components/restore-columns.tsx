@@ -19,7 +19,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   deleteRestoreAction,
   rerunRestorationAction,
-} from "@/features/database/restore.action";
+} from "@/features/database/actions/restore.action";
 import { toast } from "sonner";
 import { TooltipCustom } from "@/components/common/tooltip-custom";
 import { MemberWithUser } from "@/db/schema/03_organization";

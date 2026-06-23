@@ -17,7 +17,7 @@ import {Separator} from "@/components/ui/separator";
 import {Badge} from "@/components/ui/badge";
 import {CardsWithPagination} from "@/components/common/cards-with-pagination";
 import {AgentDatabaseCard} from "@/features/agents/components/agent-database-card";
-import {HealthCheckGraph} from "@/features/database/health-grid";
+import {HealthCheckGraph} from "@/features/database/components/health-grid";
 import {HealthcheckLog} from "@/db/schema/15_healthcheck-log";
 
 type AgentContentPageProps = {

@@ -7,7 +7,7 @@ import * as drizzleDb from "@/db";
 import {and, eq, inArray} from "drizzle-orm";
 import {withUpdatedAt} from "@/db/utils";
 import {AlertPolicy} from "@/db/schema/10_alert-policy";
-import {PolicySchema} from "@/features/database/channels-policy.schema";
+import {PolicySchema} from "@/features/database/schemas/channels-policy.schema";
 import {StoragePolicy} from "@/db/schema/13_storage-policy";
 
 

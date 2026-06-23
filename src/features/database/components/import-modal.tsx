@@ -13,7 +13,7 @@ import {Button} from "@/components/ui/button";
 import {DatabaseWith} from "@/db/schema/07_database";
 import {Separator} from "@/components/ui/separator";
 import {Import} from "lucide-react";
-import {UploadBackupZone} from "@/features/database/import-upload-zone";
+import {UploadBackupZone} from "@/features/database/components/import-upload-zone";
 
 type ImportModalProps = {
     database: DatabaseWith;

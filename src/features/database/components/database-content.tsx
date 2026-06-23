@@ -1,26 +1,26 @@
 "use client";
-import {DatabaseBackupActionsModal} from "@/features/database/backup-actions-modal";
-import {DatabaseTabs} from "@/features/database/database-tabs";
+import {DatabaseBackupActionsModal} from "@/features/database/components/backup-actions-modal";
+import {DatabaseTabs} from "@/features/database/components/database-tabs";
 import {Setting} from "@/db/schema/01_setting";
 import {BackupWith, DatabaseWith, RestorationWith} from "@/db/schema/07_database";
 import {MemberWithUser} from "@/db/schema/03_organization";
-import {useBackupModal} from "@/features/database/backup-modal-context";
-import {DatabaseKpi} from "@/features/database/database-kpi";
+import {useBackupModal} from "@/features/database/components/backup-modal-context";
+import {DatabaseKpi} from "@/features/database/components/database-kpi";
 import {useQuery} from "@tanstack/react-query";
-import {getDatabaseDataAction} from "@/features/database/backup-get-data.action";
+import {getDatabaseDataAction} from "@/features/database/actions/backup-get-data.action";
 import {
     PageContent,
     PageDescription,
     PageTitle,
 } from "@/features/layout/page";
 import {capitalizeFirstLetter} from "@/utils/text";
-import {RetentionPolicySheet} from "@/features/database/retention-policy-sheet";
-import {CronButton} from "@/features/database/cron-button";
-import {ChannelPoliciesModal} from "@/features/database/channels-policy-modal";
+import {RetentionPolicySheet} from "@/features/database/components/retention-policy-sheet";
+import {CronButton} from "@/features/database/components/cron-button";
+import {ChannelPoliciesModal} from "@/features/database/components/channels-policy-modal";
 import {HardDrive, Megaphone} from "lucide-react";
-import {ImportModal} from "@/features/database/import-modal";
-import {BackupButton} from "@/features/database/backup-button";
-import {HealthModal} from "@/features/database/health-modal";
+import {ImportModal} from "@/features/database/components/import-modal";
+import {BackupButton} from "@/features/database/components/backup-button";
+import {HealthModal} from "@/features/database/components/health-modal";
 import {HealthcheckLog} from "@/db/schema/15_healthcheck-log";
 import {Badge} from "@/components/ui/badge";
 import {LogsModal} from "@/features/logs/logs-modal";

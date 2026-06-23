@@ -6,7 +6,7 @@ import {eq} from "drizzle-orm"
 import * as drizzleDb from "@/db";
 import {
     RetentionSettingsSchema
-} from "@/features/database/retention-policy.schema";
+} from "@/features/database/schemas/retention-policy.schema";
 import {userAction} from "@/lib/safe-actions/actions";
 
 

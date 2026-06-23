@@ -1,8 +1,8 @@
 "use client";
 
-import { ChannelPoliciesForm } from "@/features/database/channels-policy-form";
+import { ChannelPoliciesForm } from "@/features/database/components/channels-policy-form";
 import type { OnboardingChannel, OnboardingStoragePolicy } from "@/features/onboarding/types";
-import type { PolicyType } from "@/features/database/channels-policy.schema";
+import type { PolicyType } from "@/features/database/schemas/channels-policy.schema";
 
 type StorageSectionProps = {
     initial: OnboardingStoragePolicy[];

@@ -9,9 +9,9 @@ import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/compon
 import {MemberWithUser} from "@/db/schema/03_organization";
 import {formatLocalizedDate} from "@/utils/date-formatting";
 import {formatBytes, formatDuration} from "@/utils/text";
-import {DatabaseActionsCell} from "@/features/database/backup-actions-cell";
+import {DatabaseActionsCell} from "@/features/database/components/backup-actions-cell";
 import { Badge as BadgeC } from "@/components/ui/badge";
-import {backupOnly} from "@/features/database/database-tabs";
+import {backupOnly} from "@/features/database/components/database-tabs";
 import {LogsModalTrigger} from "@/features/logs/logs-modal-trigger";
 
 export function backupColumns(

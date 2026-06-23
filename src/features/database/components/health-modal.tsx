@@ -11,7 +11,7 @@ import {
     SheetTrigger
 } from "@/components/ui/sheet";
 import {HealthcheckLog} from "@/db/schema/15_healthcheck-log";
-import {HealthCheckGraph} from "@/features/database/health-grid";
+import {HealthCheckGraph} from "@/features/database/components/health-grid";
 
 type HealthModalProps = {
     database: DatabaseWith,

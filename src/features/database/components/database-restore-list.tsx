@@ -1,12 +1,12 @@
 "use client"
 import {DataTable} from "@/components/common/data-table";
-import {restoreColumns} from "@/features/database/restore-columns";
+import {restoreColumns} from "@/features/database/components/restore-columns";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {ButtonWithLoading} from "@/components/common/button-with-loading";
 import {MoreHorizontal, Trash2} from "lucide-react";
 import {Restoration} from "@/db/schema/07_database";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {deleteRestoreAction} from "@/features/database/restore.action";
+import {deleteRestoreAction} from "@/features/database/actions/restore.action";
 import {toast} from "sonner";
 import {MemberWithUser} from "@/db/schema/03_organization";
 import {useMemo, useState} from "react";

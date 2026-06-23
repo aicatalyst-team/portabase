@@ -7,11 +7,11 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import {Separator} from "@/components/ui/separator";
-import {BackupActionsForm} from "@/features/database/backup-actions-form";
+import {BackupActionsForm} from "@/features/database/components/backup-actions-form";
 import {
     getBackupActionTextBasedOnActionKind,
     useBackupModal
-} from "@/features/database/backup-modal-context";
+} from "@/features/database/components/backup-modal-context";
 
 
 type DatabaseActionsModalProps = {}

@@ -7,9 +7,9 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Button } from "@/components/ui/button";
 import { Database, Ruler } from "lucide-react";
 import { DatabaseWith, RetentionPolicy } from "@/db/schema/07_database";
-import { BackupRetentionSettingsForm } from "@/features/database/retention-policy-form";
-import { RetentionSettings } from "@/features/database/retention-policy.schema";
-import { updateOrCreateBackupRetentionPolicyAction } from "@/features/database/retention-policy.action";
+import { BackupRetentionSettingsForm } from "@/features/database/components/retention-policy-form";
+import { RetentionSettings } from "@/features/database/schemas/retention-policy.schema";
+import { updateOrCreateBackupRetentionPolicyAction } from "@/features/database/actions/retention-policy.action";
 
 type RetentionPolicySheetProps = {
     database: DatabaseWith;

@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { DatabaseSchema, DatabaseType } from "@/features/database/database-form.schema";
-import { updateDatabaseAction } from "@/features/database/database-form.action";
+import { DatabaseSchema, DatabaseType } from "@/features/database/schemas/database-form.schema";
+import { updateDatabaseAction } from "@/features/database/actions/database-form.action";
 import { toast } from "sonner";
 
 export type DatabaseFormProps = {

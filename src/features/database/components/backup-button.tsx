@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { backupButtonAction } from "@/features/database/backup-button.action";
+import { backupButtonAction } from "@/features/database/actions/backup-button.action";
 import { Check, DatabaseZap, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ButtonWithConfirm } from "@/components/common/button-with-confirm";

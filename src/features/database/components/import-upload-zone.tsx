@@ -7,7 +7,7 @@ import {useState} from "react";
 import {Loader2} from "lucide-react";
 import {ButtonWithLoading} from "@/components/common/button-with-loading";
 import {toast} from "sonner";
-import {uploadBackupAction} from "@/features/database/import.action";
+import {uploadBackupAction} from "@/features/database/actions/import.action";
 import {Card, CardContent} from "@/components/ui/card";
 import {DatabaseWith} from "@/db/schema/07_database";
 import {getFileHeadersBasedOnDbms} from "@/utils/common";

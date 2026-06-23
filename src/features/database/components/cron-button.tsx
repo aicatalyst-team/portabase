@@ -2,7 +2,7 @@
 import { Clock9 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { CronInput } from "@/features/database/cron-input";
+import { CronInput } from "@/features/database/components/cron-input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { updateDatabaseBackupPolicyAction } from "@/features/database/cron.action";
+import { updateDatabaseBackupPolicyAction } from "@/features/database/actions/cron.action";
 import {Database} from "@/db/schema/07_database";
 
 export type CronButtonProps = {

@@ -13,7 +13,7 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useRouter} from "next/navigation";
 import {
     updateOrCreateBackupRetentionPolicyAction
-} from "@/features/database/retention-policy.action";
+} from "@/features/database/actions/retention-policy.action";
 import {Database as DbSchema} from "@/db/schema/07_database";
 
 type RetentionPolicyType = "count" | "days" | "gfs"

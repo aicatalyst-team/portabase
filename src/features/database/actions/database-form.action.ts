@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { db } from "@/db";
 import { eq } from "drizzle-orm";
-import { DatabaseSchema } from "@/features/database/database-form.schema";
+import { DatabaseSchema } from "@/features/database/schemas/database-form.schema";
 import * as drizzleDb from "@/db";
 import {userAction} from "@/lib/safe-actions/actions";
 import {Database} from "@/db/schema/07_database";

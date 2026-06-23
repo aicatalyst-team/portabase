@@ -22,15 +22,15 @@ import {
   deleteBackupAction,
   deleteBackupStorageAction,
   downloadBackupAction,
-} from "@/features/database/backup-actions.action";
+} from "@/features/database/actions/backup-actions.action";
 import {
   BackupActionsSchema,
   BackupActionsType,
-} from "@/features/database/backup-actions.schema";
+} from "@/features/database/schemas/backup-actions.schema";
 import {
   DatabaseActionKind,
   useBackupModal,
-} from "@/features/database/backup-modal-context";
+} from "@/features/database/components/backup-modal-context";
 import { Backup, BackupWith, Restoration } from "@/db/schema/07_database";
 import { BackupStorageWith } from "@/db/schema/14_storage-backup";
 import { ServerActionResult } from "@/types/action-type";

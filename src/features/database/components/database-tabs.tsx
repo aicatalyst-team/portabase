@@ -5,8 +5,8 @@ import {useEffect, useState} from "react";
 import {useRouter, useSearchParams} from "next/navigation";
 import {BackupWith, DatabaseWith, Restoration} from "@/db/schema/07_database";
 import {Setting} from "@/db/schema/01_setting";
-import {DatabaseBackupList} from "@/features/database/database-backup-list";
-import {DatabaseRestoreList} from "@/features/database/database-restore-list";
+import {DatabaseBackupList} from "@/features/database/components/database-backup-list";
+import {DatabaseRestoreList} from "@/features/database/components/database-restore-list";
 import {MemberWithUser} from "@/db/schema/03_organization";
 
 export type DatabaseTabsProps = {

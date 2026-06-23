@@ -20,8 +20,8 @@ import { DatabaseWith } from "@/db/schema/07_database";
 import { NotificationChannel } from "@/db/schema/09_notification-channel";
 import { StorageChannel } from "@/db/schema/12_storage-channel";
 import { ChannelKind, getChannelTextBasedOnKind } from "@/features/channel/components/channels-helpers";
-import { ChannelPoliciesForm } from "@/features/database/channels-policy-form";
-import { PolicyType } from "@/features/database/channels-policy.schema";
+import { ChannelPoliciesForm } from "@/features/database/components/channels-policy-form";
+import { PolicyType } from "@/features/database/schemas/channels-policy.schema";
 import {
     createAlertPoliciesAction,
     createStoragePoliciesAction,
@@ -29,8 +29,8 @@ import {
     deleteStoragePoliciesAction,
     updateAlertPoliciesAction,
     updateStoragePoliciesAction,
-} from "@/features/database/channels-policy.action";
-import { backupOnly } from "@/features/database/database-tabs";
+} from "@/features/database/actions/channels-policy.action";
+import { backupOnly } from "@/features/database/components/database-tabs";
 
 type ChannelPoliciesModalProps = {
     database: DatabaseWith;
