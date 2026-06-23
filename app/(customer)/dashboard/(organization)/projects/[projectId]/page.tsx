@@ -1,15 +1,15 @@
 import { PageParams } from "@/types/next";
 import { Page, PageContent, PageTitle } from "@/features/layout/components/page";
-import { ButtonDeleteProject } from "@/features/projects/project-delete-button";
+import { ButtonDeleteProject } from "@/features/projects/components/project-delete-button";
 import { CardsWithPagination } from "@/components/common/cards-with-pagination";
-import { ProjectDatabaseCard } from "@/features/projects/project-database-card";
+import { ProjectDatabaseCard } from "@/features/projects/components/project-database-card";
 import { notFound, redirect } from "next/navigation";
 import { db } from "@/db";
 import { eq } from "drizzle-orm";
 import { getActiveMember, getOrganization } from "@/lib/auth/auth";
 import * as drizzleDb from "@/db";
 import { capitalizeFirstLetter, isUUID } from "@/utils/text";
-import { ProjectDialog } from "@/features/projects/project-dialog";
+import { ProjectDialog } from "@/features/projects/components/project-dialog";
 import { ProjectWith } from "@/db/schema/06_project";
 import { getOrganizationAvailableDatabases } from "@/db/services/database";
 

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import {
   createProjectAction,
   updateProjectAction,
-} from "@/features/projects/projects.action";
+} from "@/features/projects/actions/projects.action";
 import type { OnboardingProjectData } from "@/features/onboarding/types";
 
 type ProjectInput = { name: string; databaseIds: string[] };

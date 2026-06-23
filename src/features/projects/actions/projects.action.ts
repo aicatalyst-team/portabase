@@ -1,7 +1,7 @@
 "use server";
 
 import {userAction} from "@/lib/safe-actions/actions";
-import {ProjectSchema} from "@/features/projects/projects.schema";
+import {ProjectSchema} from "@/features/projects/schemas/projects.schema";
 import {z} from "zod";
 import {ServerActionResult} from "@/types/action-type";
 import {db} from "@/db";
