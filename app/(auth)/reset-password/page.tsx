@@ -4,7 +4,7 @@ import { ResetPasswordForm } from "@/features/auth/components/reset-password-for
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/auth";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
-import { CardAuth } from "@/features/layout/card-auth";
+import { CardAuth } from "@/features/layout/components/card-auth";
 import { env } from "@/env.mjs";
 
 export default async function RoutePage(props: { searchParams: Promise<{ token: string | undefined }> }) {

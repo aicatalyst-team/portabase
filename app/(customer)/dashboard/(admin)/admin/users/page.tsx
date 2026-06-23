@@ -1,5 +1,5 @@
 import {PageParams} from "@/types/next";
-import {Page, PageActions, PageContent, PageHeader, PageTitle} from "@/features/layout/page";
+import {Page, PageActions, PageContent, PageHeader, PageTitle} from "@/features/layout/components/page";
 import {db} from "@/db";
 import {desc, isNull} from "drizzle-orm";
 import {AdminUserList} from "@/features/users/admin-user-list";

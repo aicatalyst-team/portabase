@@ -1,5 +1,5 @@
 import {PageParams} from "@/types/next";
-import {Page, PageContent, PageHeader, PageTitle} from "@/features/layout/page";
+import {Page, PageContent, PageHeader, PageTitle} from "@/features/layout/components/page";
 import {Metadata} from "next";
 import {NotificationLogsList} from "@/features/notifications/notification-logs-list";
 import {notFound} from "next/navigation";

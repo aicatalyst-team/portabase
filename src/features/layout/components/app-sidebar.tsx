@@ -6,12 +6,12 @@ import {
     SidebarMenu,
     SidebarMenuItem
 } from "@/components/ui/sidebar";
-import {SidebarLogo} from "@/features/layout/logo-sidebar";
-import {SidebarMenuCustomMain} from "@/features/layout/menu-sidebar-main";
-import {SideBarFooterCredit} from "@/features/layout/side-bar-footer-credit";
+import {SidebarLogo} from "@/features/layout/components/logo-sidebar";
+import {SidebarMenuCustomMain} from "@/features/layout/components/menu-sidebar-main";
+import {SideBarFooterCredit} from "@/features/layout/components/side-bar-footer-credit";
 import {OrganizationCombobox} from "@/features/organizations/organization-combobox";
 import {env} from "@/env.mjs";
-import {LoggedInButton} from "@/features/layout/logged-in-button.server";
+import {LoggedInButton} from "@/features/layout/components/logged-in-button.server";
 
 export function AppSidebar({ updateNotification }: { updateNotification?: ReactNode } = {}) {
     const projectName = env.PROJECT_NAME;

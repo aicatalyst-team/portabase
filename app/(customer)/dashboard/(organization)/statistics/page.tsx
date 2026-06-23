@@ -1,5 +1,5 @@
 import {PageParams} from "@/types/next";
-import {Page, PageContent, PageHeader, PageTitle} from "@/features/layout/page";
+import {Page, PageContent, PageHeader, PageTitle} from "@/features/layout/components/page";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {EvolutionLineChart} from "@/features/statistics/evolution-line-chart";
 import {PercentageLineChart} from "@/features/statistics/percentage-line-chart";

@@ -17,7 +17,7 @@ import {
 } from "@/features/auth/schemas/register-form.schema";
 import { signUp } from "@/lib/auth/auth-client";
 import { useZodForm } from "@/components/ui/form";
-import { CardAuth } from "@/features/layout/card-auth";
+import { CardAuth } from "@/features/layout/components/card-auth";
 import { FormField } from "@/components/ui/form";
 import { FormItem } from "@/components/ui/form";
 import { FormLabel } from "@/components/ui/form";

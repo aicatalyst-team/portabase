@@ -4,7 +4,7 @@ import {
     PageContent,
     PageHeader,
     PageTitle,
-} from "@/features/layout/page";
+} from "@/features/layout/components/page";
 import {currentUser} from "@/lib/auth/current-user";
 import {getActiveMember, getOrganization} from "@/lib/auth/auth";
 import {notFound} from "next/navigation";

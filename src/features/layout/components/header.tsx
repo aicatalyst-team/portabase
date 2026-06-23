@@ -4,9 +4,9 @@ import {SidebarTrigger} from "@/components/ui/sidebar";
 import {currentUser} from "@/lib/auth/current-user";
 import {BreadCrumbsWrapper} from "@/components/common/bread-crumbs";
 import GitHubStarsButtonCustom from "@/components/common/github-button";
-import {LoggedInButton} from "@/features/layout/logged-in-button.server";
+import {LoggedInButton} from "@/features/layout/components/logged-in-button.server";
 import { env } from "@/env.mjs";
-import { DemoResetBanner } from "@/features/layout/demo-reset-banner";
+import { DemoResetBanner } from "@/features/layout/components/demo-reset-banner";
 
 export const Header = async ({ actions }: { actions?: ReactNode } = {}) => {
     const user = await currentUser();

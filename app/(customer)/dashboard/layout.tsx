@@ -2,8 +2,8 @@ import { ReactNode } from "react";
 import { redirect } from "next/navigation";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/features/layout/app-sidebar";
-import { Header } from "@/features/layout/header";
+import { AppSidebar } from "@/features/layout/components/app-sidebar";
+import { Header } from "@/features/layout/components/header";
 import { currentUser } from "@/lib/auth/current-user";
 import { isOnboardingDone } from "@/db/services/setting";
 import { env } from "@/env.mjs";

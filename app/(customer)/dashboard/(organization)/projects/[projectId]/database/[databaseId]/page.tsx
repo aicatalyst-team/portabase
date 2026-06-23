@@ -1,6 +1,6 @@
 import { PageParams } from "@/types/next";
 import { notFound, redirect } from "next/navigation";
-import { Page } from "@/features/layout/page";
+import { Page } from "@/features/layout/components/page";
 import { db } from "@/db";
 import { eq, and, inArray } from "drizzle-orm";
 import * as drizzleDb from "@/db";

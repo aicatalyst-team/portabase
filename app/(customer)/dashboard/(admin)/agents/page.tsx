@@ -1,7 +1,7 @@
 import {PageParams} from "@/types/next";
 import {AgentCard} from "@/features/agents/components/agent-card";
 import {CardsWithPagination} from "@/components/common/cards-with-pagination";
-import {Page, PageActions, PageContent, PageHeader, PageTitle} from "@/features/layout/page";
+import {Page, PageActions, PageContent, PageHeader, PageTitle} from "@/features/layout/components/page";
 import {notFound} from "next/navigation";
 import {db} from "@/db";
 import * as drizzleDb from "@/db";

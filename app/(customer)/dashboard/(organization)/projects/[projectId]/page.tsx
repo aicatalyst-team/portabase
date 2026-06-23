@@ -1,5 +1,5 @@
 import { PageParams } from "@/types/next";
-import { Page, PageContent, PageTitle } from "@/features/layout/page";
+import { Page, PageContent, PageTitle } from "@/features/layout/components/page";
 import { ButtonDeleteProject } from "@/features/projects/project-delete-button";
 import { CardsWithPagination } from "@/components/common/cards-with-pagination";
 import { ProjectDatabaseCard } from "@/features/projects/project-database-card";

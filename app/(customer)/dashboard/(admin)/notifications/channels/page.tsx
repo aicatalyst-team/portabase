@@ -1,5 +1,5 @@
 import {PageParams} from "@/types/next";
-import {Page, PageActions, PageContent, PageHeader, PageTitle} from "@/features/layout/page";
+import {Page, PageActions, PageContent, PageHeader, PageTitle} from "@/features/layout/components/page";
 import {Metadata} from "next";
 import {db} from "@/db";
 import {notificationChannel, NotificationChannelWith} from "@/db/schema/09_notification-channel";

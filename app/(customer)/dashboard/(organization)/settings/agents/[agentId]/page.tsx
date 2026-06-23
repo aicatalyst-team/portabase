@@ -4,7 +4,7 @@ import {
     PageContent,
     PageDescription,
     PageTitle,
-} from "@/features/layout/page";
+} from "@/features/layout/components/page";
 import {db} from "@/db";
 import * as drizzleDb from "@/db";
 import {eq} from "drizzle-orm";

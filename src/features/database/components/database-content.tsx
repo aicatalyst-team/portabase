@@ -12,7 +12,7 @@ import {
     PageContent,
     PageDescription,
     PageTitle,
-} from "@/features/layout/page";
+} from "@/features/layout/components/page";
 import {capitalizeFirstLetter} from "@/utils/text";
 import {RetentionPolicySheet} from "@/features/database/components/retention-policy-sheet";
 import {CronButton} from "@/features/database/components/cron-button";

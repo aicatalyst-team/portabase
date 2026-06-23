@@ -3,7 +3,7 @@ import {eq} from "drizzle-orm";
 import {db} from "@/db";
 import * as drizzleDb from "@/db";
 import {PageParams} from "@/types/next";
-import {Page} from "@/features/layout/page";
+import {Page} from "@/features/layout/components/page";
 import {OrganizationManagement} from "@/features/organizations/admin-organization-management";
 import {buildOrganizationWithMembers} from "@/utils/common";
 import {isUUID} from "@/utils/text";
