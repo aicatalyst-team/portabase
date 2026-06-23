@@ -48,15 +48,16 @@ export const onboardingSteps: OnboardingStep[] = [
     id: "org-create",
     component: StepOrgCreate,
     isSkippable: false,
-    nextStep: "invite-members",
-  },
-  {
-    id: "invite-members",
-    component: StepInviteMembers,
-    isSkippable: true,
-    skipToStep: "notifier",
+    //nextStep: "invite-members",
     nextStep: "notifier",
   },
+  // {
+  //   id: "invite-members",
+  //   component: StepInviteMembers,
+  //   isSkippable: true,
+  //   skipToStep: "notifier",
+  //   nextStep: "notifier",
+  // },
   {
     id: "notifier",
     component: StepNotifier,
@@ -71,12 +72,16 @@ export const onboardingSteps: OnboardingStep[] = [
     skipToStep: (ctx: any) => {
       const notifiers = (ctx.flowData?.notifiers as unknown[]) || [];
       const storages = (ctx.flowData?.storages as unknown[]) || [];
-      return notifiers.length === 0 && storages.length === 0 ? "agent-create" : "defaults";
+      return notifiers.length === 0 && storages.length === 0
+        ? "agent-create"
+        : "defaults";
     },
     nextStep: (ctx: any) => {
       const notifiers = (ctx.flowData?.notifiers as unknown[]) || [];
       const storages = (ctx.flowData?.storages as unknown[]) || [];
-      return notifiers.length === 0 && storages.length === 0 ? "agent-create" : "defaults";
+      return notifiers.length === 0 && storages.length === 0
+        ? "agent-create"
+        : "defaults";
     },
   },
   {
@@ -126,15 +131,21 @@ export const onboardingSteps: OnboardingStep[] = [
       const agents = (ctx.flowData?.agents as any[]) || [];
       if (agents.length === 0) return "finish";
       const isAgentConnected = agents.some((a) => a.connected);
-      const databaseIds = (ctx.flowData?.project?.databaseIds as string[]) || [];
-      return !isAgentConnected || databaseIds.length === 0 ? "finish" : "db-settings";
+      const databaseIds =
+        (ctx.flowData?.project?.databaseIds as string[]) || [];
+      return !isAgentConnected || databaseIds.length === 0
+        ? "finish"
+        : "db-settings";
     },
     nextStep: (ctx: any) => {
       const agents = (ctx.flowData?.agents as any[]) || [];
       if (agents.length === 0) return "finish";
       const isAgentConnected = agents.some((a) => a.connected);
-      const databaseIds = (ctx.flowData?.project?.databaseIds as string[]) || [];
-      return !isAgentConnected || databaseIds.length === 0 ? "finish" : "db-settings";
+      const databaseIds =
+        (ctx.flowData?.project?.databaseIds as string[]) || [];
+      return !isAgentConnected || databaseIds.length === 0
+        ? "finish"
+        : "db-settings";
     },
   },
   {

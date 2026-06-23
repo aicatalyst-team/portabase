@@ -10,7 +10,7 @@ const CHECKLIST_STEPS = [
   { id: "security", label: "Security" },
   { id: "preferences", label: "Preferences" },
   { id: "org-create", label: "Organisation" },
-  { id: "invite-members", label: "Team members" },
+  // { id: "invite-members", label: "Team members" },
   { id: "notifier", label: "Notifications" },
   { id: "storage", label: "Storage" },
   { id: "defaults", label: "Defaults" },
