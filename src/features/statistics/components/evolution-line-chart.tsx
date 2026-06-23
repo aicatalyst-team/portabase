@@ -3,8 +3,8 @@
 import {ChartConfig, ChartTooltip} from "@/components/ui/chart";
 import {CartesianGrid, TooltipProps, XAxis, YAxis} from "recharts";
 import {formatDayOnly} from "@/utils/date-formatting";
-import {LineChartCustom} from "@/features/statistics/line-chart";
-import {generateFakeEvolutionData} from "@/features/statistics/fake-data";
+import {LineChartCustom} from "@/features/statistics/components/line-chart";
+import {generateFakeEvolutionData} from "@/features/statistics/utils/fake-data";
 
 type Data = {
     createdAt: Date;

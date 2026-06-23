@@ -2,7 +2,7 @@ import {ChartConfig, ChartContainer} from "@/components/ui/chart";
 import {Line, LineChart} from "recharts";
 import {ReactNode, useState} from "react";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {PlaceholderChart} from "@/features/statistics/chart-placeholder";
+import {PlaceholderChart} from "@/features/statistics/components/chart-placeholder";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
 type LineChartCustomProps<T> = {

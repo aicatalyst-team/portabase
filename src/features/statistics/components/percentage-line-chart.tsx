@@ -2,7 +2,7 @@
 
 import {ChartConfig, ChartTooltip} from "@/components/ui/chart";
 import {EStatusSchema} from "@/db/schema/types";
-import {LineChartCustom} from "@/features/statistics/line-chart";
+import {LineChartCustom} from "@/features/statistics/components/line-chart";
 import {CartesianGrid, TooltipProps, XAxis, YAxis} from "recharts";
 import {formatDayOnly} from "@/utils/date-formatting";
 
