@@ -44,7 +44,7 @@ export const DicebearStylePicker = ({ value, onChange, disabled }: Props) => {
 
       {dicebearState.status === "success" && (
         <div className="max-h-52 overflow-y-auto scrollbar-hide">
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
             {dicebearState.styles.map((style) => {
               const isActive = value === style;
               return (

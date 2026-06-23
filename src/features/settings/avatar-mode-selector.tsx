@@ -20,7 +20,7 @@ type Props = {
 export const AvatarModeSelector = ({ value, onChange, disabled }: Props) => (
   <div className="flex flex-col gap-2">
     <Label>Avatar mode</Label>
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
       {MODES.map((mode) => {
         const isActive = value === mode.value;
         return (

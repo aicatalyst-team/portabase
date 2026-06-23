@@ -79,11 +79,11 @@ export const SettingsTabs = ({settings, storageChannels, notificationChannels}: 
     return (
         <div className="h-full mt-3">
             <Tabs className="h-full gap-4" value={tab} onValueChange={handleChangeTab}>
-                <TabsList>
+                <TabsList className="w-full sm:w-fit">
                     {tabs.map(({icon: Icon, name, value}) => (
-                        <TabsTrigger key={value} value={value} className='flex items-center gap-1 px-2.5 sm:px-3'>
-                            <Icon/>
-                            {name}
+                        <TabsTrigger key={value} value={value} className='flex items-center gap-1 px-2.5 sm:px-3 flex-1 sm:flex-none'>
+                            <Icon className="size-4 shrink-0"/>
+                            <span className="hidden sm:inline">{name}</span>
                         </TabsTrigger>
                     ))}
                 </TabsList>
