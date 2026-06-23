@@ -7,9 +7,9 @@ import {Organization} from "@/db/schema/03_organization";
 import {Input} from "@/components/ui/input";
 import {ButtonWithLoading} from "@/components/common/button-with-loading";
 import {Button} from "@/components/ui/button";
-import {UserSchema, UserType} from "@/features/users/user.schema";
+import {UserSchema, UserType} from "@/features/users/schemas/user.schema";
 import {toast} from "sonner";
-import {createUserAction} from "@/features/users/user.action";
+import {createUserAction} from "@/features/users/actions/user.action";
 
 type AdminUserFormProps = {
     onSuccess?: () => void;

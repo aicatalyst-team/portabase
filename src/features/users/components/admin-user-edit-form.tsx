@@ -7,8 +7,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, useZodF
 import { Input } from "@/components/ui/input";
 import { ButtonWithLoading } from "@/components/common/button-with-loading";
 import {Button} from "@/components/ui/button";
-import {UserEditSchema, UserEditType, UserSchema} from "@/features/users/user.schema";
-import {updateUserAction} from "@/features/users/user.action";
+import {UserEditSchema, UserEditType, UserSchema} from "@/features/users/schemas/user.schema";
+import {updateUserAction} from "@/features/users/actions/user.action";
 type AdminUserEditFormProps = {
     onSuccess?: () => void;
     defaultValues: {

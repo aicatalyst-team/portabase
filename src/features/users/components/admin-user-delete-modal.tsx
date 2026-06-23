@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { authClient } from "@/lib/auth/auth-client";
 import { toast } from "sonner";
-import { setSuperAdminOwnerOfOrganizationsOwnedByUser } from "@/features/users/user.action";
+import { setSuperAdminOwnerOfOrganizationsOwnedByUser } from "@/features/users/actions/user.action";
 
 type AdminDeleteUserModalProps = {
   open: boolean;

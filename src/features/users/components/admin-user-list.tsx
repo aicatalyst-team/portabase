@@ -1,6 +1,6 @@
 "use client";
 import { DataTable } from "@/components/common/data-table";
-import {usersListColumns} from "@/features/users/user-columns";
+import {usersListColumns} from "@/features/users/components/user-columns";
 import {User} from "@/db/schema/02_user";
 
 type AdminUserListProps = {
