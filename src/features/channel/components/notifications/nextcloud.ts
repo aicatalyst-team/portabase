@@ -1,5 +1,5 @@
 import { createHmac, randomBytes } from "crypto";
-import type { EventPayload, DispatchResult } from '@/features/notifications/notifications.types';
+import type { EventPayload, DispatchResult } from '@/features/notifications/types';
 
 type NextcloudConfig = {
     nextcloudUrl: string;

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import * as drizzleDb from "@/db";
 import { db as dbClient, db } from "@/db";
 import { and, eq } from "drizzle-orm";
-import { sendNotificationsBackupRestore } from "@/features/notifications/notifications.helpers";
+import { sendNotificationsBackupRestore } from "@/features/notifications/utils/notifications.helpers";
 import { logger } from "@/lib/logger";
 import { withUpdatedAt } from "@/db/utils";
 import { JobLogEntry } from "@/features/logs/types";

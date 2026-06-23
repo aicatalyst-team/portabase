@@ -16,7 +16,7 @@ import { getChannelIcon } from "@/features/channel/components/channels-helpers";
 import {
   getStatusColor,
   getStatusIcon,
-} from "@/features/notifications/notification-log-columns";
+} from "@/features/notifications/components/notification-log-columns";
 import {
   createRestorationBackupAction,
   deleteBackupAction,

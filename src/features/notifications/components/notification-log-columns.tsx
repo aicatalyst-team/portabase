@@ -5,7 +5,7 @@ import {NotificationLogWithRelations} from "@/db/services/notification-log";
 import {humanReadableDate} from "@/utils/date-formatting";
 import {CheckCircle2, XCircle} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
-import {NotificationLogModal} from "@/features/notifications/notification-log-modal";
+import {NotificationLogModal} from "@/features/notifications/components/notification-log-modal";
 import {getChannelIcon} from "@/features/channel/components/channels-helpers";
 
 
