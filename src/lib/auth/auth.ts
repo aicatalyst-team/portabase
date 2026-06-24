@@ -95,7 +95,7 @@ export const auth = betterAuth({
     },
   },
   emailVerification: {
-    async sendVerificationEmail({ user, token, url }) {
+    async sendVerificationEmail({ user, url }) {
       await sendEmail({
         to: user.email,
         subject: "Portabase Email Verification",

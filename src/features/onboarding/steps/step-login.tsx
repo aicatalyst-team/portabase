@@ -8,6 +8,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Globe, Mail, KeyRound, ShieldAlert } from "lucide-react";
 import { Icon } from "@iconify/react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -152,7 +153,18 @@ export const StepLogin = () => {
               >
                 <div className="size-9 rounded-md border bg-muted/50 shadow-sm flex items-center justify-center shrink-0">
                   {provider.icon ? (
-                    <Icon icon={provider.icon} className="size-4" />
+                    provider.icon.startsWith("/") || provider.icon.startsWith("http") ? (
+                      <Image
+                        src={provider.icon}
+                        alt={provider.label || "icon"}
+                        width={16}
+                        height={16}
+                        className="size-4"
+                        unoptimized={provider.icon.startsWith("http")}
+                      />
+                    ) : (
+                      <Icon icon={provider.icon} className="size-4" />
+                    )
                   ) : (
                     <Globe className="size-4 text-muted-foreground" />
                   )}
