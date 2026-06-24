@@ -1,191 +1,189 @@
 "use server";
 
-import {z} from "zod";
-import {ServerActionResult} from "@/types/action-type";
+import { z } from "zod";
+import { ServerActionResult } from "@/types/action-type";
 import * as drizzleDb from "@/db";
-import {userAction} from "@/lib/safe-actions/actions";
-import {db} from "@/db";
-import {and, eq} from "drizzle-orm";
-import {withUpdatedAt} from "@/db/utils";
-import {
-    StorageChannelFormSchema
-} from "@/features/channel/schemas/channel-form.schema";
-import {StorageChannel} from "@/db/schema/12_storage-channel";
+import { userAction } from "@/lib/safe-actions/actions";
+import { db } from "@/db";
+import { and, eq } from "drizzle-orm";
+import { withUpdatedAt } from "@/db/utils";
+import { StorageChannelFormSchema } from "@/features/channel/schemas/channel-form.schema";
+import { StorageChannel } from "@/db/schema/12_storage-channel";
 
-
-export const addStorageChannelAction = userAction.schema(
+export const addStorageChannelAction = userAction
+  .schema(
     z.object({
-        organizationId: z.string().optional(),
-        data: StorageChannelFormSchema
-    })
-).action(async ({parsedInput}): Promise<ServerActionResult<StorageChannel>> => {
-    const {organizationId, data} = parsedInput;
+      organizationId: z.string().optional(),
+      data: StorageChannelFormSchema,
+    }),
+  )
+  .action(
+    async ({ parsedInput }): Promise<ServerActionResult<StorageChannel>> => {
+      const { organizationId, data } = parsedInput;
 
-    try {
+      try {
         const [channel] = await db
-            .insert(drizzleDb.schemas.storageChannel)
-            .values({
-                provider: data.provider,
-                name: data.name,
-                config: data.config,
-                enabled: data.enabled ?? true,
-                organizationId: organizationId ?? null
-            })
-            .returning();
+          .insert(drizzleDb.schemas.storageChannel)
+          .values({
+            provider: data.provider,
+            name: data.name,
+            config: data.config,
+            enabled: data.enabled ?? true,
+            organizationId: organizationId ?? null,
+          })
+          .returning();
 
         if (organizationId) {
-            await db.insert(drizzleDb.schemas.organizationStorageChannel).values({
-                organizationId,
-                storageChannelId: channel.id,
-            });
+          await db.insert(drizzleDb.schemas.organizationStorageChannel).values({
+            organizationId,
+            storageChannelId: channel.id,
+          });
         }
 
         return {
-            success: true,
-            value: {
-                ...channel,
-                config: channel.config as JSON
-            },
-            actionSuccess: {
-                message: "Storage channel has been successfully created.",
-                messageParams: {id: channel.id},
-            },
+          success: true,
+          value: {
+            ...channel,
+            config: channel.config as JSON,
+          },
+          actionSuccess: {
+            message: "Storage channel has been successfully created.",
+            messageParams: { id: channel.id },
+          },
         };
-    } catch (_error) {
+      } catch (_error) {
         const error = _error;
         return {
-            success: false,
-            actionError: {
-                message: "Failed to create storage channel.",
-                status: 500,
-                cause: error instanceof Error ? error.message : "Unknown error",
-                messageParams: {id: ""},
-            },
+          success: false,
+          actionError: {
+            message: "Failed to create storage channel.",
+            status: 500,
+            cause: error instanceof Error ? error.message : "Unknown error",
+            messageParams: { id: "" },
+          },
         };
-    }
-});
+      }
+    },
+  );
 
-export const removeStorageChannelAction = userAction.schema(
+export const removeStorageChannelAction = userAction
+  .schema(
     z.object({
-        organizationId: z.string().optional(),
-        id: z.string(),
-    })
-).action(async ({parsedInput}): Promise<ServerActionResult<StorageChannel>> => {
-    const {organizationId, id} = parsedInput;
+      organizationId: z.string().optional(),
+      id: z.string(),
+    }),
+  )
+  .action(
+    async ({ parsedInput }): Promise<ServerActionResult<StorageChannel>> => {
+      const { organizationId, id } = parsedInput;
 
-    try {
-        const existing = await db.query.storageChannel.findFirst({
-            where: eq(drizzleDb.schemas.storageChannel.id, id),
-        });
-
-        if (!existing) {
-            return {
-                success: false,
-                actionError: { message: "Storage channel not found.", status: 404, messageParams: { id } },
-            };
-        }
-
-        if (existing.organizationId === null) {
-            return {
-                success: false,
-                actionError: { message: "System storage channels cannot be deleted.", status: 403, messageParams: { id } },
-            };
-        }
-
+      try {
         if (organizationId) {
-            await db
-                .delete(drizzleDb.schemas.organizationStorageChannel)
-                .where(
-                    and(
-                        eq(drizzleDb.schemas.organizationStorageChannel.organizationId, organizationId),
-                        eq(drizzleDb.schemas.organizationStorageChannel.storageChannelId, id)
-                    )
-                );
+          await db
+            .delete(drizzleDb.schemas.organizationStorageChannel)
+            .where(
+              and(
+                eq(
+                  drizzleDb.schemas.organizationStorageChannel.organizationId,
+                  organizationId,
+                ),
+                eq(
+                  drizzleDb.schemas.organizationStorageChannel.storageChannelId,
+                  id,
+                ),
+              ),
+            );
         }
 
         const [deletedChannel] = await db
-            .delete(drizzleDb.schemas.storageChannel)
-            .where(eq(drizzleDb.schemas.storageChannel.id, id))
-            .returning();
+          .delete(drizzleDb.schemas.storageChannel)
+          .where(eq(drizzleDb.schemas.storageChannel.id, id))
+          .returning();
 
         if (!deletedChannel) {
-            return {
-                success: false,
-                actionError: {
-                    message: "Storage channel not found.",
-                    status: 404,
-                    messageParams: {id: id},
-                },
-            };
+          return {
+            success: false,
+            actionError: {
+              message: "Storage channel not found.",
+              status: 404,
+              messageParams: { id: id },
+            },
+          };
         }
 
         return {
-            success: true,
-            value: {
-                ...deletedChannel,
-                config: deletedChannel.config as JSON
-            },
-            actionSuccess: {
-                message: "Storage channel has been successfully removed.",
-                messageParams: {id: id},
-            },
+          success: true,
+          value: {
+            ...deletedChannel,
+            config: deletedChannel.config as JSON,
+          },
+          actionSuccess: {
+            message: "Storage channel has been successfully removed.",
+            messageParams: { id: id },
+          },
         };
-    } catch (_error) {
+      } catch (_error) {
         const error = _error;
         return {
-            success: false,
-            actionError: {
-                message: "Failed to remove storage channel.",
-                status: 500,
-                cause: error instanceof Error ? error.message : "Unknown error",
-                messageParams: {id: id},
-            },
+          success: false,
+          actionError: {
+            message: "Failed to remove storage channel.",
+            status: 500,
+            cause: error instanceof Error ? error.message : "Unknown error",
+            messageParams: { id: id },
+          },
         };
-    }
-});
+      }
+    },
+  );
 
-
-export const updateStorageChannelAction = userAction.schema(
+export const updateStorageChannelAction = userAction
+  .schema(
     z.object({
-        id: z.string(),
-        data: StorageChannelFormSchema
-    })
-).action(async ({parsedInput}): Promise<ServerActionResult<StorageChannel>> => {
-    const {id, data} = parsedInput;
+      id: z.string(),
+      data: StorageChannelFormSchema,
+    }),
+  )
+  .action(
+    async ({ parsedInput }): Promise<ServerActionResult<StorageChannel>> => {
+      const { id, data } = parsedInput;
 
-    try {
+      try {
         const [channel] = await db
-            .update(drizzleDb.schemas.storageChannel)
-            .set(withUpdatedAt({
-                provider: data.provider,
-                name: data.name,
-                config: data.config,
-                enabled: data.enabled ?? true,
-            }))
-            .where(eq(drizzleDb.schemas.storageChannel.id, id))
-            .returning();
+          .update(drizzleDb.schemas.storageChannel)
+          .set(
+            withUpdatedAt({
+              provider: data.provider,
+              name: data.name,
+              config: data.config,
+              enabled: data.enabled ?? true,
+            }),
+          )
+          .where(eq(drizzleDb.schemas.storageChannel.id, id))
+          .returning();
 
         return {
-            success: true,
-            value: {
-                ...channel,
-                config: channel.config as JSON
-            },
-            actionSuccess: {
-                message: `Storage channel "${channel.name}" has been successfully updated.`,
-                messageParams: {id: channel.id},
-            },
+          success: true,
+          value: {
+            ...channel,
+            config: channel.config as JSON,
+          },
+          actionSuccess: {
+            message: `Storage channel "${channel.name}" has been successfully updated.`,
+            messageParams: { id: channel.id },
+          },
         };
-    } catch (_error) {
+      } catch (_error) {
         const error = _error;
         return {
-            success: false,
-            actionError: {
-                message: "Failed to update storage channel.",
-                status: 500,
-                cause: error instanceof Error ? error.message : "Unknown error",
-                messageParams: {id: ""},
-            },
+          success: false,
+          actionError: {
+            message: "Failed to update storage channel.",
+            status: 500,
+            cause: error instanceof Error ? error.message : "Unknown error",
+            messageParams: { id: "" },
+          },
         };
-    }
-});
+      }
+    },
+  );
