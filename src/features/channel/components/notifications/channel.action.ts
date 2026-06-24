@@ -8,7 +8,7 @@ import { NotificationChannel } from "@/db/schema/09_notification-channel";
 import { db } from "@/db";
 import { and, eq } from "drizzle-orm";
 import { withUpdatedAt } from "@/db/utils";
-import { NotificationChannelFormSchema } from "@/features/channel/channel-form.schema";
+import { NotificationChannelFormSchema } from "@/features/channel/schemas/channel-form.schema";
 
 export const addNotificationChannelAction = userAction
   .schema(
