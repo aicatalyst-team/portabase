@@ -13,37 +13,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type {
-  AvatarMode,
   OnboardingChannel,
   OnboardingDefaultsData,
 } from "@/features/onboarding/types";
 import { getChannelIcon } from "@/features/channel/components/channels-helpers";
 import { updateNotificationSettingsAction } from "@/features/settings/actions/notification.action";
 import { updateStorageSettingsAction } from "@/features/settings/actions/storage.action";
-import { updateAvatarModeAction } from "@/features/settings/actions/avatar.action";
-import { AvatarModeSelector } from "@/features/settings/components/avatar-mode-selector";
-import { DicebearStylePicker } from "@/features/settings/components/dicebear-style-picker";
 
 export const StepDefaults = () => {
   const { next, updateContext, state } = useOnboarding();
-  const notifiers = (state?.context.flowData.notifiers ??
-    []) as OnboardingChannel[];
-  const storages = (state?.context.flowData.storages ??
-    []) as OnboardingChannel[];
-  const existingDefaults = (state?.context.flowData.defaults ??
-    {}) as OnboardingDefaultsData;
+  const notifiers = (state?.context.flowData.notifiers ?? []) as OnboardingChannel[];
+  const storages = (state?.context.flowData.storages ?? []) as OnboardingChannel[];
+  const existingDefaults = (state?.context.flowData.defaults ?? {}) as OnboardingDefaultsData;
 
   const [notifierId, setNotifierId] = useState<string | undefined>(
     existingDefaults.notifierId || undefined,
   );
   const [storageId, setStorageId] = useState<string | undefined>(
     existingDefaults.storageId || undefined,
-  );
-  const [avatarMode, setAvatarMode] = useState<AvatarMode>(
-    existingDefaults.avatarMode ?? "internal",
-  );
-  const [dicebearStyle, setDicebearStyle] = useState<string>(
-    existingDefaults.dicebearStyle ?? "thumbs",
   );
 
   const selectNotifier = async (value: string) => {
@@ -57,7 +44,7 @@ export const StepDefaults = () => {
       await updateContext({
         flowData: {
           ...state?.context.flowData,
-          defaults: { notifierId: value, storageId, avatarMode, dicebearStyle },
+          defaults: { notifierId: value, storageId },
         },
       });
     } catch {
@@ -77,7 +64,7 @@ export const StepDefaults = () => {
       await updateContext({
         flowData: {
           ...state?.context.flowData,
-          defaults: { notifierId, storageId: value, avatarMode, dicebearStyle },
+          defaults: { notifierId, storageId: value },
         },
       });
     } catch {
@@ -86,53 +73,11 @@ export const StepDefaults = () => {
     }
   };
 
-  const selectAvatarMode = async (mode: AvatarMode) => {
-    const prev = avatarMode;
-    setAvatarMode(mode);
-    try {
-      await updateAvatarModeAction({
-        name: "system",
-        avatarMode: mode,
-        dicebearStyle,
-      });
-      await updateContext({
-        flowData: {
-          ...state?.context.flowData,
-          defaults: { notifierId, storageId, avatarMode: mode, dicebearStyle },
-        },
-      });
-    } catch {
-      setAvatarMode(prev);
-      toast.error("Failed to save avatar mode");
-    }
-  };
-
-  const selectDicebearStyle = async (style: string) => {
-    const prev = dicebearStyle;
-    setDicebearStyle(style);
-    try {
-      await updateAvatarModeAction({
-        name: "system",
-        avatarMode: "dicebear",
-        dicebearStyle: style,
-      });
-      await updateContext({
-        flowData: {
-          ...state?.context.flowData,
-          defaults: { notifierId, storageId, avatarMode, dicebearStyle: style },
-        },
-      });
-    } catch {
-      setDicebearStyle(prev);
-      toast.error("Failed to save avatar style");
-    }
-  };
-
   const onContinue = async () => {
     await updateContext({
       flowData: {
         ...state?.context.flowData,
-        defaults: { notifierId, storageId, avatarMode, dicebearStyle },
+        defaults: { notifierId, storageId },
       },
     });
     await next();
@@ -146,7 +91,7 @@ export const StepDefaults = () => {
       <div>
         <h1 className="text-2xl font-semibold">Set your defaults</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Optional — choose the default notifier, storage and avatar mode.
+          Optional — choose the default notifier and storage.
         </p>
       </div>
 
@@ -239,12 +184,6 @@ export const StepDefaults = () => {
           </SelectContent>
         </Select>
       </div>
-
-      <AvatarModeSelector value={avatarMode} onChange={selectAvatarMode} />
-
-      {avatarMode === "dicebear" && (
-        <DicebearStylePicker value={dicebearStyle} onChange={selectDicebearStyle} maxHeight="max-h-56" />
-      )}
 
       <Button type="button" onClick={onContinue}>
         Continue
