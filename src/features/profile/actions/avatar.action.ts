@@ -13,3 +13,11 @@ export const updateImageUserAction = userAction.schema(z.string()).action(async 
         data: updatedUser,
     };
 });
+
+export const resetImageUserAction = userAction.schema(z.void()).action(async ({ ctx }) => {
+    const [updatedUser] = await db.update(drizzleDb.schemas.user).set({ image: null }).where(eq(drizzleDb.schemas.user.id, ctx.user.id)).returning();
+
+    return {
+        data: updatedUser,
+    };
+});
