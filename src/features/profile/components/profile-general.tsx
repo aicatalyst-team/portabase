@@ -22,15 +22,13 @@ import {updateProfileSettingsAction} from "../actions/profile.action";
 import {User} from "@/db/schema/02_user";
 import {ProfileSchema, ProfileSchemaType} from "../schemas/general.schema";
 import {AvatarWithUpload} from "@/features/profile/components/avatar-with-upload";
-import type { AvatarMode } from "@/features/onboarding/types";
 
 interface ProfileGeneralProps {
     user: User;
-    avatarMode?: AvatarMode;
     avatarUrl?: string;
 }
 
-export function ProfileGeneral({user, avatarMode, avatarUrl}: ProfileGeneralProps) {
+export function ProfileGeneral({user, avatarUrl}: ProfileGeneralProps) {
     const router = useRouter();
 
     const profileForm = useZodForm({
@@ -66,7 +64,6 @@ export function ProfileGeneral({user, avatarMode, avatarUrl}: ProfileGeneralProp
                 <div className="flex flex-col items-center gap-4">
                     <AvatarWithUpload
                         user={user}
-                        avatarMode={avatarMode}
                         avatarUrl={avatarUrl}
                     />
                 </div>
