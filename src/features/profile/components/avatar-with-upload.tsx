@@ -1,5 +1,6 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info, UploadIcon, X } from "lucide-react";
 import { toast } from "sonner";
@@ -118,15 +119,17 @@ export const AvatarWithUpload = (props: AvatarWithUploadProps) => {
       </div>
 
       {hasCustomImage && (
-        <button
+        <Button
           type="button"
+          variant="destructive"
+          size="sm"
           onClick={() => resetImage.mutate()}
           disabled={resetImage.isPending}
-          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
+          className="h-6 px-2 text-xs"
         >
           <X className="size-3" />
-          Reset avatar
-        </button>
+          Remove
+        </Button>
       )}
     </div>
   );
