@@ -1,6 +1,7 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UploadIcon, X } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Info, UploadIcon, X } from "lucide-react";
 import { toast } from "sonner";
 import { uploadUserImageAction } from "@/features/upload/actions/upload.action";
 import { useMutation } from "@tanstack/react-query";
@@ -103,6 +104,17 @@ export const AvatarWithUpload = (props: AvatarWithUploadProps) => {
         >
           <UploadIcon className="w-12 h-12 lg:w-16 lg:h-16 text-primary" />
         </div>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="absolute -top-1 -right-1 flex items-center justify-center size-5 rounded-full bg-muted border border-border cursor-help">
+              <Info className="size-3 text-muted-foreground" />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="max-w-52">
+            Upload a custom photo to override your Gravatar. Without one, your Gravatar is used automatically. If neither is set, your initials are shown.
+          </TooltipContent>
+        </Tooltip>
       </div>
 
       {hasCustomImage && (

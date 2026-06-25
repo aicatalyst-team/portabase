@@ -4,7 +4,7 @@ import React from "react";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Badge} from "@/components/ui/badge";
-import {Info, Loader2} from "lucide-react";
+import {Loader2} from "lucide-react";
 import {
     Form,
     FormControl,
@@ -15,7 +15,6 @@ import {
     FormMessage,
     useZodForm
 } from "@/components/ui/form";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {useMutation} from "@tanstack/react-query";
 import {toast} from "sonner";
 import {useRouter} from "next/navigation";
@@ -63,17 +62,6 @@ export function ProfileGeneral({user, avatarUrl}: ProfileGeneralProps) {
 
             <div className="flex flex-col sm:flex-row gap-8 items-start">
                 <div className="flex flex-col items-center gap-2">
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <span>Avatar</span>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Info className="size-3 cursor-help" />
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-56 text-center">
-                                Upload a custom photo to override your Gravatar. Without a custom photo, your Gravatar is used automatically. If neither is set, your initials are shown.
-                            </TooltipContent>
-                        </Tooltip>
-                    </div>
                     <AvatarWithUpload
                         user={user}
                         avatarUrl={avatarUrl}
