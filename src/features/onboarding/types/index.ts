@@ -21,10 +21,6 @@ export type OnboardingSecurityData = {
   method: "passkey" | "two-factor" | "skipped";
 };
 
-export type OnboardingPreferencesData = {
-  theme: "light" | "dark";
-};
-
 export type OnboardingOrgData = {
   id: string;
   name: string;
@@ -44,13 +40,9 @@ export type OnboardingChannel = {
   organizationId?: string | null;
 };
 
-export type AvatarMode = 'internal' | 'gravatar' | 'dicebear';
-
 export type OnboardingDefaultsData = {
   notifierId?: string;
   storageId?: string;
-  avatarMode?: AvatarMode;
-  dicebearStyle?: string;
 };
 
 export type OnboardingAgent = {
@@ -123,7 +115,6 @@ export type OnboardingFlowData = {
   meta?: OnboardingMeta;
   account?: OnboardingAccountData;
   security?: OnboardingSecurityData;
-  preferences?: OnboardingPreferencesData;
   org?: OnboardingOrgData;
   members?: OnboardingMember[];
   notifiers?: OnboardingChannel[];
