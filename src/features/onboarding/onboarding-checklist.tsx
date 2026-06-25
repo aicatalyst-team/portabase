@@ -8,7 +8,6 @@ const CHECKLIST_STEPS = [
   { id: "login", label: "Sign in" },
   { id: "account-info", label: "Your account" },
   { id: "security", label: "Security" },
-  { id: "preferences", label: "Preferences" },
   { id: "org-create", label: "Organisation" },
   // { id: "invite-members", label: "Team members" },
   { id: "notifier", label: "Notifications" },
