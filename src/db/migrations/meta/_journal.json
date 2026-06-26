@@ -460,29 +460,15 @@
     {
       "idx": 65,
       "version": "7",
-      "when": 1782118902777,
-      "tag": "0065_overjoyed_mantis",
+      "when": 1782474059918,
+      "tag": "0065_mighty_killer_shrike",
       "breakpoints": true
     },
     {
-      "idx": 67,
+      "idx": 66,
       "version": "7",
-      "when": 1782133059337,
-      "tag": "0067_adorable_jean_grey",
-      "breakpoints": true
-    },
-    {
-      "idx": 68,
-      "version": "7",
-      "when": 1782134460680,
-      "tag": "0068_bitter_revanche",
-      "breakpoints": true
-    },
-    {
-      "idx": 69,
-      "version": "7",
-      "when": 1782377492743,
-      "tag": "0069_elite_madrox",
+      "when": 1782474105293,
+      "tag": "0066_milky_puma",
       "breakpoints": true
     }
   ]
