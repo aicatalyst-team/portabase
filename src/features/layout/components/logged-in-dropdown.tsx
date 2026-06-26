@@ -8,7 +8,6 @@ import { signOut } from "@/lib/auth/auth-client";
 import { ProfileModal } from "@/features/layout/components/profile-modal";
 import { Account, Session, User as UserType } from "@/db/schema/02_user";
 import { AuthProviderConfig } from "@/lib/auth/config";
-import type { AvatarMode } from "@/features/onboarding/types";
 
 export type LoggedInDropdownProps = PropsWithChildren<{
     user: UserType;
@@ -18,13 +17,11 @@ export type LoggedInDropdownProps = PropsWithChildren<{
     children: ReactNode;
     providers: AuthProviderConfig[];
     apiEnabled: boolean;
-    avatarMode?: AvatarMode;
     avatarUrl?: string;
 }>;
 
-export const LoggedInDropdown = ({ user, sessions, currentSession, accounts, children, providers, apiEnabled, avatarMode, avatarUrl }: LoggedInDropdownProps) => {
+export const LoggedInDropdown = ({ user, sessions, currentSession, accounts, children, providers, apiEnabled, avatarUrl }: LoggedInDropdownProps) => {
     const router = useRouter();
-
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
@@ -38,7 +35,6 @@ export const LoggedInDropdown = ({ user, sessions, currentSession, accounts, chi
                 onOpenChange={setIsModalOpen}
                 providers={providers}
                 apiEnabled={apiEnabled}
-                avatarMode={avatarMode}
                 avatarUrl={avatarUrl}
             />
             <DropdownMenu>

@@ -6,8 +6,7 @@ import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { LoggedInDropdown } from "./logged-in-dropdown";
 import { Account, Session } from "better-auth";
 import { AuthProviderConfig } from "@/lib/auth/config";
-import {User} from "@/db/schema/02_user";
-import type { AvatarMode } from "@/features/onboarding/types";
+import { User } from "@/db/schema/02_user";
 
 type LoggedInButtonClientProps = {
     user: User;
@@ -16,11 +15,10 @@ type LoggedInButtonClientProps = {
     accounts: Account[];
     providers: AuthProviderConfig[];
     apiEnabled: boolean;
-    avatarMode?: AvatarMode;
     avatarUrl?: string;
 };
 
-export const LoggedInButtonClient = ({ user, sessions, currentSession, accounts, providers, apiEnabled, avatarMode, avatarUrl }: LoggedInButtonClientProps) => {
+export const LoggedInButtonClient = ({ user, sessions, currentSession, accounts, providers, apiEnabled, avatarUrl }: LoggedInButtonClientProps) => {
     return (
         <LoggedInDropdown
             user={user}
@@ -32,7 +30,6 @@ export const LoggedInButtonClient = ({ user, sessions, currentSession, accounts,
             accounts={accounts}
             providers={providers}
             apiEnabled={apiEnabled}
-            avatarMode={avatarMode}
             avatarUrl={avatarUrl}
         >
             <SidebarMenuButton type="button" className="h-auto justify-between py-2" data-testid="profile-dropdown">

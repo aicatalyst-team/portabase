@@ -84,8 +84,8 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
 
   const org = await getUserOwnOrganization(user.id);
   if (!org) {
-    meta.resumeStepId = "preferences";
-    return { stepId: "preferences", flowData: { meta } };
+    meta.resumeStepId = "org-create";
+    return { stepId: "org-create", flowData: { meta } };
   }
 
   const orgData = { id: org.id, name: org.name };
@@ -121,8 +121,6 @@ export async function resolveOnboardingState(): Promise<ResolvedOnboardingState>
   const defaults = {
     notifierId: settings?.defaultNotificationChannelId ?? undefined,
     storageId: settings?.defaultStorageChannelId ?? undefined,
-    avatarMode: settings?.avatarMode ?? "internal",
-    dicebearStyle: settings?.dicebearStyle ?? "thumbs",
   };
 
   const agentData = await Promise.all(

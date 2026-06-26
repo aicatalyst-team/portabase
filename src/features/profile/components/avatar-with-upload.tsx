@@ -1,24 +1,24 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UploadIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Info, UploadIcon, X } from "lucide-react";
 import { toast } from "sonner";
 import { uploadUserImageAction } from "@/features/upload/actions/upload.action";
 import { useMutation } from "@tanstack/react-query";
-import { updateImageUserAction } from "@/features/profile/actions/avatar.action";
+import { resetImageUserAction, updateImageUserAction } from "@/features/profile/actions/avatar.action";
 import { useRouter } from "next/navigation";
 import { User } from "@/db/schema/02_user";
 import React, { ChangeEvent } from "react";
-import type { AvatarMode } from "@/features/onboarding/types";
 
 export type AvatarWithUploadProps = {
   user: User;
-  avatarMode?: AvatarMode;
   avatarUrl?: string;
 };
 
 export const AvatarWithUpload = (props: AvatarWithUploadProps) => {
   const user = props.user;
-  const canUpload = !props.avatarMode || props.avatarMode === "internal";
+  const hasCustomImage = !!user.image;
   const src = props.avatarUrl ?? user.image ?? undefined;
   const router = useRouter();
 
@@ -47,6 +47,16 @@ export const AvatarWithUpload = (props: AvatarWithUploadProps) => {
     },
   });
 
+  const resetImage = useMutation({
+    mutationFn: async () => {
+      const result = await resetImageUserAction();
+      if (result?.serverError) throw new Error(result.serverError);
+      toast.success("Avatar reset");
+      router.refresh();
+    },
+    onError: () => toast.error("Failed to reset avatar"),
+  });
+
   const handleImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -68,18 +78,18 @@ export const AvatarWithUpload = (props: AvatarWithUploadProps) => {
   };
 
   return (
-    <div className="relative ">
-      <Avatar
-        key={src}
-        className="w-24 h-24 lg:w-32 lg:h-32 border-4 border-muted/20"
-      >
-        {src && <AvatarImage className="object-cover" src={src} />}
-        <AvatarFallback className="text-3xl">
-          {(user.name?.charAt(0) ?? user.email?.charAt(0) ?? "?").toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
+    <div className="flex flex-col items-center gap-2">
+      <div className="relative">
+        <Avatar
+          key={src}
+          className="w-24 h-24 lg:w-32 lg:h-32 border-4 border-muted/20"
+        >
+          {src && <AvatarImage className="object-cover" src={src} />}
+          <AvatarFallback className="text-3xl">
+            {(user.name?.charAt(0) ?? user.email?.charAt(0) ?? "?").toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
 
-      {canUpload && (
         <div
           onClick={() => {
             const fileInput = document.createElement("input");
@@ -95,6 +105,31 @@ export const AvatarWithUpload = (props: AvatarWithUploadProps) => {
         >
           <UploadIcon className="w-12 h-12 lg:w-16 lg:h-16 text-primary" />
         </div>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="absolute -top-1 -right-1 flex items-center justify-center size-5 rounded-full bg-muted border border-border cursor-help">
+              <Info className="size-3 text-muted-foreground" />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="max-w-52">
+            Upload a custom photo to override your Gravatar. Without one, your Gravatar is used automatically. If neither is set, your initials are shown.
+          </TooltipContent>
+        </Tooltip>
+      </div>
+
+      {hasCustomImage && (
+        <Button
+          type="button"
+          variant="destructive"
+          size="sm"
+          onClick={() => resetImage.mutate()}
+          disabled={resetImage.isPending}
+          className="h-6 px-2 text-xs"
+        >
+          <X className="size-3" />
+          Remove
+        </Button>
       )}
     </div>
   );
