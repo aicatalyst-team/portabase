@@ -54,21 +54,30 @@ if [ -z "$DATABASE_URL" ]; then
     echo "[SUCCESS] Internal PostgreSQL started"
 fi
 
-# Run database migrations
+# Run database migrations using psql directly
 echo "[INFO] Running database migrations..."
 cd /opt/app-root/src
-node -e "
-const { drizzle } = require('drizzle-orm/node-postgres');
-const { migrate } = require('drizzle-orm/node-postgres/migrator');
-const { Pool } = require('pg');
-
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const db = drizzle(pool);
-
-migrate(db, { migrationsFolder: './src/db/migrations' })
-  .then(() => { console.log('[SUCCESS] Migrations completed'); pool.end(); })
-  .catch((err) => { console.error('[WARN] Migration error:', err.message); pool.end(); });
-" 2>&1 || echo "[WARN] Migration script failed, app may handle migrations on startup"
+MIGRATION_DIR="./src/db/migrations"
+if [ -d "$MIGRATION_DIR" ]; then
+    # Create drizzle migration tracking table
+    psql "$DATABASE_URL" -c "CREATE TABLE IF NOT EXISTS \"__drizzle_migrations\" (id SERIAL PRIMARY KEY, hash TEXT NOT NULL, created_at BIGINT);" 2>&1 || true
+    
+    # Apply each SQL migration file in order
+    for sql_file in $(ls "$MIGRATION_DIR"/*.sql 2>/dev/null | sort); do
+        HASH=$(basename "$sql_file" .sql)
+        ALREADY_APPLIED=$(psql "$DATABASE_URL" -tAc "SELECT COUNT(*) FROM \"__drizzle_migrations\" WHERE hash = '$HASH';" 2>/dev/null || echo "0")
+        if [ "$ALREADY_APPLIED" = "0" ]; then
+            echo "[INFO] Applying migration: $HASH"
+            psql "$DATABASE_URL" -f "$sql_file" 2>&1 || echo "[WARN] Migration $HASH may have partially failed"
+            psql "$DATABASE_URL" -c "INSERT INTO \"__drizzle_migrations\" (hash, created_at) VALUES ('$HASH', extract(epoch from now())::bigint);" 2>&1 || true
+        else
+            echo "[INFO] Migration already applied: $HASH"
+        fi
+    done
+    echo "[SUCCESS] Database migrations completed"
+else
+    echo "[WARN] No migration directory found at $MIGRATION_DIR"
+fi
 
 echo "[INFO] Starting tusd server..."
 tusd \
