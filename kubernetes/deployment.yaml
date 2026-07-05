@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portabase-app
+  namespace: poc-portabase
+  labels:
+    app: portabase
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: portabase
+  template:
+    metadata:
+      labels:
+        app: portabase
+    spec:
+      containers:
+        - name: portabase-app
+          image: image-registry.openshift-image-registry.svc:5000/autopoc-test-builds/portabase-app:latest
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PROJECT_NAME
+              value: "Portabase"
+            - name: PROJECT_URL
+              value: "http://localhost:8080"
+            - name: AUTH_EMAIL_PASSWORD_ENABLED
+              value: "true"
+            - name: AUTH_SIGNUP_ENABLED
+              value: "true"
+            - name: SKIP_ONBOARDING
+              value: "true"
+          envFrom:
+            - secretRef:
+                name: portabase-env
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: portabase-data
