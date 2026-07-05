@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: portabase-app
-          image: image-registry.openshift-image-registry.svc:5000/autopoc-test-builds/portabase-app:latest
+          image: image-registry.openshift-image-registry.svc:5000/poc-portabase/portabase-app:latest
           ports:
             - containerPort: 8080
               protocol: TCP

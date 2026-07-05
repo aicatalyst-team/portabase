@@ -3,6 +3,14 @@ set -e
 
 echo "[INFO] Starting Portabase on OpenShift..."
 
+# Handle OpenShift arbitrary UID - add current user to /etc/passwd if not present
+if ! whoami &>/dev/null 2>&1; then
+    if [ -w /etc/passwd ]; then
+        echo "default:x:$(id -u):0:Default User:/opt/app-root/src:/bin/bash" >> /etc/passwd
+        echo "[INFO] Added current UID $(id -u) to /etc/passwd"
+    fi
+fi
+
 export PGDATA=${PGDATA:-/data/postgres}
 mkdir -p "$PGDATA" /data/private/uploads/tmp
 
