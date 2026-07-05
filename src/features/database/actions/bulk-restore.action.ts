@@ -1,7 +1,7 @@
 "use server";
 
 import {z} from "zod";
-import {and, desc, eq, isNull} from "drizzle-orm";
+import {and, desc, eq, inArray, isNull} from "drizzle-orm";
 import {db} from "@/db";
 import * as drizzleDb from "@/db";
 import {ServerActionResult} from "@/types/action-type";
@@ -34,6 +34,7 @@ export type RestorePreviewRow = {
     backupStorageId?: string;
     backupDate?: string;
     restorable: boolean;
+    reason?: string;
 };
 
 async function resolveLatestRestorable(projectId: string, databaseIds: string[]): Promise<RestorePreviewRow[]> {
@@ -45,6 +46,22 @@ async function resolveLatestRestorable(projectId: string, databaseIds: string[])
 
     const rows: RestorePreviewRow[] = [];
     for (const databaseId of databaseIds) {
+        const activeRestore = await db.query.restoration.findFirst({
+            where: and(
+                eq(drizzleDb.schemas.restoration.databaseId, databaseId),
+                inArray(drizzleDb.schemas.restoration.status, ["waiting", "ongoing"]),
+            ),
+        });
+        if (activeRestore) {
+            rows.push({
+                databaseId,
+                name: nameById.get(databaseId) ?? databaseId,
+                restorable: false,
+                reason: "restore already in progress",
+            });
+            continue;
+        }
+
         const backups = await db.query.backup.findMany({
             where: and(
                 eq(drizzleDb.schemas.backup.databaseId, databaseId),
@@ -76,7 +93,7 @@ async function resolveLatestRestorable(projectId: string, databaseIds: string[])
             }
         }
 
-        rows.push(picked ?? {databaseId, name: nameById.get(databaseId) ?? databaseId, restorable: false});
+        rows.push(picked ?? {databaseId, name: nameById.get(databaseId) ?? databaseId, restorable: false, reason: "no successful backup"});
     }
     return rows;
 }
@@ -117,7 +134,7 @@ export const bulkRestoreLatestAction = userAction
             const restorable = rows.filter((r) => r.restorable);
             const skipped = rows
                 .filter((r) => !r.restorable)
-                .map((r) => ({databaseId: r.databaseId, reason: "no successful backup"}));
+                .map((r) => ({databaseId: r.databaseId, reason: r.reason ?? "no successful backup"}));
 
             if (restorable.length > 0) {
                 await db.insert(drizzleDb.schemas.restoration).values(
