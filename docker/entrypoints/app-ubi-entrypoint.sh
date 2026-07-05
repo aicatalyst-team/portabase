@@ -54,6 +54,22 @@ if [ -z "$DATABASE_URL" ]; then
     echo "[SUCCESS] Internal PostgreSQL started"
 fi
 
+# Run database migrations
+echo "[INFO] Running database migrations..."
+cd /opt/app-root/src
+node -e "
+const { drizzle } = require('drizzle-orm/node-postgres');
+const { migrate } = require('drizzle-orm/node-postgres/migrator');
+const { Pool } = require('pg');
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const db = drizzle(pool);
+
+migrate(db, { migrationsFolder: './src/db/migrations' })
+  .then(() => { console.log('[SUCCESS] Migrations completed'); pool.end(); })
+  .catch((err) => { console.error('[WARN] Migration error:', err.message); pool.end(); });
+" 2>&1 || echo "[WARN] Migration script failed, app may handle migrations on startup"
+
 echo "[INFO] Starting tusd server..."
 tusd \
     --base-path /tus/files/ \
