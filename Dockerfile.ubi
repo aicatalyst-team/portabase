@@ -1,0 +1,153 @@
+# ============================================================
+# Portabase UBI Dockerfile for OpenShift
+# ============================================================
+
+# Stage 1: Build tusd from source
+FROM registry.access.redhat.com/ubi9/go-toolset AS tusd-builder
+
+ARG TUSD_VERSION=2.8.0
+USER 0
+WORKDIR /build
+RUN git clone --branch v${TUSD_VERSION} --depth 1 https://github.com/tus/tusd.git . && \
+    CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /tusddist/tusd ./cmd/tusd
+
+# Stage 2: Build Next.js application
+FROM registry.access.redhat.com/ubi9/nodejs-22 AS builder
+
+USER 0
+RUN npm install -g pnpm@latest corepack
+
+WORKDIR /app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN pnpm run build
+
+# Stage 3: Production runtime
+FROM registry.access.redhat.com/ubi9/nodejs-22 AS prod
+
+USER 0
+
+# Install PostgreSQL and nginx
+RUN dnf install -y postgresql-server postgresql nginx && \
+    dnf clean all
+
+# Install tusd binary
+COPY --from=tusd-builder /tusddist/tusd /usr/local/bin/tusd
+RUN chmod +x /usr/local/bin/tusd
+
+WORKDIR /opt/app-root/src
+
+# Copy built Next.js application
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.ts ./
+COPY --from=builder /app/portabase.config.ts ./
+COPY --from=builder /app/drizzle.config.ts ./
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/src/db ./src/db
+
+# Copy nginx config (will be modified for port 8080)
+COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf.template
+
+# Create data directories
+RUN mkdir -p /data/private/uploads/tmp /data/postgres /var/lib/pgsql/data /run/nginx
+
+# Create custom nginx config for port 8080
+RUN sed 's/listen 80;/listen 8080;/' /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+
+# Create the entrypoint script for OpenShift
+RUN cat > /opt/app-root/src/entrypoint.sh << 'ENTRY'
+#!/bin/bash
+set -e
+
+echo "[INFO] Starting Portabase on OpenShift..."
+
+# PostgreSQL setup - use PGDATA in writable location
+export PGDATA=${PGDATA:-/data/postgres}
+mkdir -p "$PGDATA"
+
+if [ -z "$DATABASE_URL" ]; then
+    echo "[INFO] No DATABASE_URL provided, starting internal Postgres..."
+
+    # Initialize PostgreSQL if needed (run as current user, not postgres)
+    if [ ! -f "$PGDATA/PG_VERSION" ]; then
+        echo "[INFO] Initializing database cluster..."
+        initdb -D "$PGDATA" --auth=trust --no-locale 2>&1 || {
+            echo "[ERROR] initdb failed"; exit 1;
+        }
+        # Configure to listen on localhost only
+        echo "listen_addresses = 'localhost'" >> "$PGDATA/postgresql.conf"
+        echo "port = 5432" >> "$PGDATA/postgresql.conf"
+        echo "unix_socket_directories = '/tmp'" >> "$PGDATA/postgresql.conf"
+        echo "logging_collector = off" >> "$PGDATA/postgresql.conf"
+    fi
+
+    # Start PostgreSQL as current user
+    pg_ctl -D "$PGDATA" -l /tmp/postgres.log start -w 2>&1 || {
+        echo "[ERROR] PostgreSQL failed to start"
+        cat /tmp/postgres.log 2>/dev/null
+        exit 1
+    }
+
+    # Wait for PostgreSQL
+    until pg_isready -h 127.0.0.1 -p 5432 2>/dev/null; do
+        sleep 1
+    done
+
+    DB_USER="${POSTGRES_USER:-portabase}"
+    DB_PASS="${POSTGRES_PASSWORD:-portabase123}"
+    DB_NAME="${POSTGRES_DB:-portabase}"
+
+    # Create user and database if they don't exist
+    psql -h 127.0.0.1 -p 5432 -c "SELECT 1 FROM pg_roles WHERE rolname='$DB_USER'" 2>/dev/null | grep -q 1 || \
+        psql -h 127.0.0.1 -p 5432 -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';" 2>&1
+    psql -h 127.0.0.1 -p 5432 -c "SELECT 1 FROM pg_database WHERE datname='$DB_NAME'" 2>/dev/null | grep -q 1 || \
+        psql -h 127.0.0.1 -p 5432 -c "CREATE DATABASE $DB_NAME OWNER $DB_USER;" 2>&1
+
+    export DATABASE_URL="postgres://$DB_USER:$DB_PASS@127.0.0.1:5432/$DB_NAME"
+    echo "[SUCCESS] Internal PostgreSQL started successfully"
+fi
+
+# Start tusd
+echo "[INFO] Starting tusd server..."
+tusd \
+    --base-path /tus/files/ \
+    --upload-dir /data/private/uploads/tmp \
+    --hooks-http http://127.0.0.1:3000/api/tus/hooks \
+    --port 1080 \
+    --max-size 21474836480 &
+
+# Start Next.js
+echo "[INFO] Starting Next.js server..."
+PORT=3000 HOSTNAME=0.0.0.0 node server.js &
+
+# Start nginx (foreground)
+echo "[INFO] Starting nginx on port 8080..."
+exec nginx -g "daemon off;"
+ENTRY
+
+RUN chmod +x /opt/app-root/src/entrypoint.sh
+
+# Fix permissions for OpenShift arbitrary UID
+RUN chgrp -R 0 /opt/app-root /data /var/lib/pgsql /run/nginx /var/log/nginx /etc/nginx && \
+    chmod -R g=u /opt/app-root /data /var/lib/pgsql /run/nginx /var/log/nginx /etc/nginx && \
+    chmod g=u /etc/passwd
+
+# Environment
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV HOSTNAME="0.0.0.0"
+ENV PGDATA=/data/postgres
+ENV PROJECT_NAME="Portabase"
+ENV PROJECT_URL="http://localhost:8080"
+ENV AUTH_EMAIL_PASSWORD_ENABLED=true
+ENV AUTH_SIGNUP_ENABLED=true
+
+USER 1001
+
+EXPOSE 8080
+
+CMD ["/opt/app-root/src/entrypoint.sh"]
