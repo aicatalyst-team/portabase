@@ -14,6 +14,9 @@ fi
 export PGDATA=${PGDATA:-/data/postgres}
 mkdir -p "$PGDATA" /data/private/uploads/tmp
 
+# Fix PostgreSQL data directory permissions (required after OpenShift group permission changes)
+chmod 700 "$PGDATA" 2>/dev/null || true
+
 if [ -z "$DATABASE_URL" ]; then
     echo "[INFO] No DATABASE_URL provided, starting internal Postgres..."
 
