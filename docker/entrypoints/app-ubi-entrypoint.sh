@@ -42,10 +42,10 @@ if [ -z "$DATABASE_URL" ]; then
     DB_PASS="${POSTGRES_PASSWORD:-portabase123}"
     DB_NAME="${POSTGRES_DB:-portabase}"
 
-    psql -h 127.0.0.1 -p 5432 -c "SELECT 1 FROM pg_roles WHERE rolname='$DB_USER'" 2>/dev/null | grep -q 1 || \
-        psql -h 127.0.0.1 -p 5432 -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';" 2>&1
-    psql -h 127.0.0.1 -p 5432 -c "SELECT 1 FROM pg_database WHERE datname='$DB_NAME'" 2>/dev/null | grep -q 1 || \
-        psql -h 127.0.0.1 -p 5432 -c "CREATE DATABASE $DB_NAME OWNER $DB_USER;" 2>&1
+    psql -h 127.0.0.1 -p 5432 -d postgres -c "SELECT 1 FROM pg_roles WHERE rolname='$DB_USER'" 2>/dev/null | grep -q 1 || \
+        psql -h 127.0.0.1 -p 5432 -d postgres -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';" 2>&1
+    psql -h 127.0.0.1 -p 5432 -d postgres -c "SELECT 1 FROM pg_database WHERE datname='$DB_NAME'" 2>/dev/null | grep -q 1 || \
+        psql -h 127.0.0.1 -p 5432 -d postgres -c "CREATE DATABASE $DB_NAME OWNER $DB_USER;" 2>&1
 
     export DATABASE_URL="postgres://$DB_USER:$DB_PASS@127.0.0.1:5432/$DB_NAME"
     echo "[SUCCESS] Internal PostgreSQL started"
