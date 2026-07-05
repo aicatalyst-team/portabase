@@ -8,8 +8,8 @@ import {userAction} from "@/lib/safe-actions/actions";
 import {assertDatabasesInOrgProject} from "@/features/database/actions/bulk-restore.action";
 
 const bulkSchema = z.object({
-    projectId: z.string().uuid(),
-    databaseIds: z.array(z.string().uuid()).min(1),
+    projectId: z.uuid(),
+    databaseIds: z.array(z.uuid()).min(1),
 });
 
 export const bulkBackupAction = userAction
@@ -18,11 +18,9 @@ export const bulkBackupAction = userAction
         try {
             const {projectId, databaseIds} = parsedInput;
             await assertDatabasesInOrgProject(projectId, databaseIds);
-
             await db
                 .insert(drizzleDb.schemas.backup)
                 .values(databaseIds.map((databaseId) => ({databaseId, status: "waiting" as const})));
-
             return {
                 success: true,
                 value: {queued: databaseIds.length},

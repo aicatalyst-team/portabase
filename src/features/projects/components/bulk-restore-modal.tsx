@@ -29,7 +29,7 @@ export const BulkRestoreModal = (props: BulkRestoreModalProps) => {
         <Dialog open={open} onOpenChange={(o) => (!o ? onCancel() : undefined)}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle className="text-destructive">
+                    <DialogTitle>
                         Restore {rows.length} database(s) to latest backup
                     </DialogTitle>
                 </DialogHeader>
@@ -73,7 +73,7 @@ export const BulkRestoreModal = (props: BulkRestoreModalProps) => {
 
                 <DialogFooter>
                     <Button variant="outline" onClick={onCancel} disabled={submitting}>Cancel</Button>
-                    <Button variant="destructive" onClick={onConfirm} disabled={!canConfirm}>
+                    <Button  onClick={onConfirm} disabled={!canConfirm}>
                         {submitting && <Loader2 className="animate-spin" />}
                         {restorableCount > 0 ? `Restore ${restorableCount} database(s)` : "Nothing to restore"}
                     </Button>

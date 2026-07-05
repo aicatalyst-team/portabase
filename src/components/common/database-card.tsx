@@ -34,7 +34,7 @@ export const DatabaseCard = (props: DatabaseCardProps) => {
         <Card
             className={cn(
                 "relative h-full flex flex-col p-4 transition-all border-border/50 bg-card hover:bg-accent/50 hover:border-primary/50 group-hover:shadow-lg overflow-hidden gap-0",
-                selected && "ring-2 ring-primary border-primary",
+                selected && "ring-1 ring-primary border-primary",
             )}>
             {selectable && (
                 <button

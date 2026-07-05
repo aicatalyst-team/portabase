@@ -8,7 +8,6 @@ import {ServerActionResult} from "@/types/action-type";
 import {userAction, ActionError} from "@/lib/safe-actions/actions";
 import {getOrganization} from "@/lib/auth/auth";
 
-// Throws if the project isn't in the active org, or any db isn't in the project.
 export async function assertDatabasesInOrgProject(projectId: string, databaseIds: string[]) {
     const organization = await getOrganization({});
     if (!organization) throw new ActionError("No active organization.");
@@ -33,11 +32,10 @@ export type RestorePreviewRow = {
     name: string;
     backupId?: string;
     backupStorageId?: string;
-    backupDate?: string; // ISO
+    backupDate?: string;
     restorable: boolean;
 };
 
-// For each db, latest non-deleted backup whose latest non-deleted backupStorage has status "success".
 async function resolveLatestRestorable(projectId: string, databaseIds: string[]): Promise<RestorePreviewRow[]> {
     const project = await db.query.project.findFirst({
         where: eq(drizzleDb.schemas.project.id, projectId),
@@ -84,8 +82,8 @@ async function resolveLatestRestorable(projectId: string, databaseIds: string[])
 }
 
 const bulkSchema = z.object({
-    projectId: z.string().uuid(),
-    databaseIds: z.array(z.string().uuid()).min(1),
+    projectId: z.uuid(),
+    databaseIds: z.array(z.uuid()).min(1),
 });
 
 export const bulkRestorePreviewAction = userAction
