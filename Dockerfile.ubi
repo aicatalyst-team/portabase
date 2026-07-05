@@ -32,7 +32,6 @@ USER 0
 
 # Add PostgreSQL 16 repo (PGDG) and install PostgreSQL + nginx
 RUN dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
-    dnf -qy module disable postgresql && \
     dnf install -y postgresql16-server postgresql16 nginx && \
     dnf clean all
 
