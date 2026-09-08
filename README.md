@@ -1,4 +1,10 @@
-<br />
+> [!WARNING]
+> **This repository is archived.**
+>
+> Archived on 2026-09-08 by the AI Catalyst Platform Team.
+> It is read-only and no longer maintained.
+
+---<br />
 <div align="center">
   <a href="https://portabase.io">
     <img src="/.github/assets/logo.png" alt="Logo" width="80" height="80">
